@@ -2,6 +2,10 @@
 https://www.curseforge.com/minecraft/mc-mods/sodium-reforged
 This is an Unofficial port of CaffeineMC's "Sodium" Mod, Ported from Fabric to Forge.
 
+The current plan is to migrate Iris and Hydrogen alongside this.
+Hydrogen 99%
+Iris - 75% (The bad way)
+
  
 
 Currently it is in 100% parity with Fabric Sodium 0.2.0, however I intend to migrate to 0.3.0 soon.
