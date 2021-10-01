@@ -1,0 +1,9 @@
+#this did not work
+.git
+.gradle
+.idea
+build
+logs
+run
+gradle
+
