@@ -12,18 +12,30 @@ Sodium is a free and open-source rendering engine replacement for the Minecraft 
 
  
 
-Features
+Features:
+
 A modern OpenGL rendering pipeline for chunk rendering that takes advantage of multi-draw techniques, allowing for a significant reduction in CPU overhead (~90%) when rendering the world. This can make a huge difference to frame rates for most computers that are not bottle-necked by the GPU or other components. Even if your GPU can't keep up, you'll experience much more stable frame times thanks to the CPU being able to work on other rendering tasks while it waits.
+
 Vertex data for rendered chunks is made much more compact, allowing for video memory and bandwidth requirements to be cut by almost 40%.
+
 Nearby block updates now take advantage of multi-threading, greatly reducing lag spikes caused by chunks needing to be updated.
+
 Chunk faces which are not visible (or facing away from the camera) are culled very early in the rendering process, eliminating a ton of geometry that would have to be processed on the GPU only to be immediately discarded. For integrated GPUs, this can greatly reduce memory bandwidth requirements and provide a modest speedup even when GPU-bound.
+
 Plentiful optimizations for chunk loading and block rendering, making chunk loading significantly faster and less damaging to frame rates. 
+
 Many optimizations for vertex building and matrix transformations, speeding up block entity, mob, and item rendering significantly for when you get carried away placing too many chests in one room.
+
 Many improvements to how the game manages memory and allocates objects, which in turn reduces memory consumption and lag spikes caused by garbage collector activity.
+
 Many graphical fixes for smooth lighting effects, making the game run better while still applying a healthy amount of optimization.
+
 Smooth lighting for fluids and other special blocks. 
+
 Smooth biome blending for blocks and fluids, providing greatly improved graphical quality that is significantly less computationally intensive. 
+
 Animated textures which are not visible in the world are not updated, speeding up texture updating on most hardware (especially AMD cards.)
+
 ... and much more, this list is still being written after the initial release.
 
  
