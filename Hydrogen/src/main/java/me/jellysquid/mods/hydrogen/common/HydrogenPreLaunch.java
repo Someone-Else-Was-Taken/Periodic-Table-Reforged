@@ -1,20 +1,16 @@
 package me.jellysquid.mods.hydrogen.common;
-/*
+
 import me.jellysquid.mods.hydrogen.client.HydrogenClientPreLaunch;
 import me.jellysquid.mods.hydrogen.common.jvm.ClassConstructors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class HydrogenPreLaunch implements PreLaunchEntrypoint {
-    @Override
-    public void onPreLaunch() {
-        ClassConstructors.init();
+public class HydrogenPreLaunch {
 
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            HydrogenClientPreLaunch.init();
+        @OnlyIn(Dist.CLIENT)
+        public void PreLaunch()
+        {
         }
-    }
 }
 
- */
+
