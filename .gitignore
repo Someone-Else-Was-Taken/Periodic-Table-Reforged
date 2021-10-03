@@ -3,6 +3,7 @@
 .gradle
 .idea
 build
+.gitignore
 logs
 run
 gradle
