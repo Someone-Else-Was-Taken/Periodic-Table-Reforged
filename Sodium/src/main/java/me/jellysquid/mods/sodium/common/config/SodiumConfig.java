@@ -4,6 +4,8 @@ package me.jellysquid.mods.sodium.common.config;
 //import net.fabricmc.loader.api.ModContainer;
 //import net.fabricmc.loader.api.metadata.CustomValue;
 //import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,6 +53,8 @@ public class SodiumConfig {
         this.addMixinRule("features.render_layer", true);
         this.addMixinRule("features.texture_tracking", true);
         this.addMixinRule("features.world_ticking", true);
+
+        this.applyModOverrides();
     }
 
     /**
@@ -93,6 +97,16 @@ public class SodiumConfig {
             option.setEnabled(enabled, true);
         }
     }
+
+    private void applyModOverrides() {
+        
+        if(FMLLoader.getLoadingModList().getModFileById("quark") != null)
+        {
+            this.options.get("features.item.MixinItemRenderer").addModOverride(false, "abnormals_core");
+        }
+
+    }
+
 
 
     /**
