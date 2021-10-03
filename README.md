@@ -1,4 +1,4 @@
-# Sodium-Reforged
+# CaffeineMC Reforged
 https://www.curseforge.com/minecraft/mc-mods/sodium-reforged
 This is an Unofficial port of CaffeineMC's "Sodium" Mod, Ported from Fabric to Forge.
 
