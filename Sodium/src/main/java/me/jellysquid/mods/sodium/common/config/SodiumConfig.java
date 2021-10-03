@@ -105,6 +105,11 @@ public class SodiumConfig {
             this.options.get("features.item.MixinItemRenderer").addModOverride(false, "quark");
         }
 
+        if(FMLLoader.getLoadingModList().getModFileById("abnormals_core") != null)
+        {
+            this.options.get("features.world_ticking.MixinClientWorld").addModOverride(false, "quark");
+        }
+
     }
 
 
