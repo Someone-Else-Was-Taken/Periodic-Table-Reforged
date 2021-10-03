@@ -99,10 +99,10 @@ public class SodiumConfig {
     }
 
     private void applyModOverrides() {
-        
+
         if(FMLLoader.getLoadingModList().getModFileById("quark") != null)
         {
-            this.options.get("features.item.MixinItemRenderer").addModOverride(false, "abnormals_core");
+            this.options.get("features.item.MixinItemRenderer").addModOverride(false, "quark");
         }
 
     }
