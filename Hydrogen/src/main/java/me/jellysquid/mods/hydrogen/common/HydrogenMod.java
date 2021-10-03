@@ -11,6 +11,6 @@ public class HydrogenMod {
 
     private static String MOD_VERSION;
     public void setup(final FMLCommonSetupEvent event) {
-        MOD_VERSION = ModList.get().getModContainerById("sodium").get().getModInfo().getVersion().toString();
+        MOD_VERSION = ModList.get().getModContainerById("hydrogen").get().getModInfo().getVersion().toString();
     }
 }
