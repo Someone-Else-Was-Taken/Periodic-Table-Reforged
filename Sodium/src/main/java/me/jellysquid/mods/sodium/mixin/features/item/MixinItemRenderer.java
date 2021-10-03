@@ -46,8 +46,9 @@ public class MixinItemRenderer {
      * @reason Avoid allocations
      * @author JellySquid
      */
+
     @Overwrite
-    private void renderModel(IBakedModel model, ItemStack stack, int light, int overlay, MatrixStack matrices, IVertexBuilder vertices) {
+    public void renderModel(IBakedModel model, ItemStack stack, int light, int overlay, MatrixStack matrices, IVertexBuilder vertices) {
         XoRoShiRoRandom random = this.random;
 
         for (Direction direction : DirectionUtil.ALL_DIRECTIONS) {
@@ -69,6 +70,7 @@ public class MixinItemRenderer {
      * @reason Use vertex building intrinsics
      * @author JellySquid
      */
+
     @Overwrite
     public void renderQuads(MatrixStack ms, IVertexBuilder builder, List<BakedQuad> quads, ItemStack stack, int lightmap, int overlay) {
 
@@ -103,4 +105,5 @@ public class MixinItemRenderer {
 
         drain.flush();
     }
+
 }

@@ -71,19 +71,6 @@ public class SodiumMixinPlugin implements IMixinConfigPlugin {
             }
         }
 
-        // mod compat
-        if ("me.jellysquid.mods.sodium.mixin.features.world_ticking.MixinClientWorld".equals(mixinClassName)
-                && classExists("com.minecraftabnormals.abnormals_core.core.AbnormalsCore")) {
-            logger.warn("Disabling MixinClientWorld due to conflict with AbnormalsCore");
-            return false;
-        }
-
-        if ("me.jellysquid.mods.sodium.mixin.gen.fast_island_noise.TheEndBiomeSourceMixin".equals(mixinClassName)
-                && (classExists("jpg.k.simplyimprovedterrain.mixin.MixinEndBiomeProvider")
-                || classExists("jpg.k.simplyimprovedterrain.SimplyImprovedTerrain"))) {
-            logger.warn("Disabling TheEndBiomeSourceMixin due to conflict with simplyimprovedterrain");
-            return false;
-        }
 
         return option.isEnabled();
     }
