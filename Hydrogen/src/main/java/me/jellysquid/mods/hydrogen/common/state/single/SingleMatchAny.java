@@ -2,8 +2,8 @@ package me.jellysquid.mods.hydrogen.common.state.single;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.block.BlockState;
-//import net.minecraft.state.property.Property;
 import net.minecraft.state.Property;
+//import net.minecraft.state.property.Property;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;

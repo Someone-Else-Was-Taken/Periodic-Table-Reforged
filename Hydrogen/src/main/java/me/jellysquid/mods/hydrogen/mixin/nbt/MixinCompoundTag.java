@@ -3,8 +3,6 @@ package me.jellysquid.mods.hydrogen.mixin.nbt;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.nbt.CompoundNBT;
-//import net.minecraft.nbt.CompoundTag;
-//import net.minecraft.nbt.NBT;
 import net.minecraft.tags.Tag;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

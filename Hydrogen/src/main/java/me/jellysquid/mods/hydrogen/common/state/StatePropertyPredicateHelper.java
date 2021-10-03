@@ -1,14 +1,10 @@
 package me.jellysquid.mods.hydrogen.common.state;
 
 import me.jellysquid.mods.hydrogen.common.state.all.AllMatchOneBoolean;
-//import me.jellysquid.mods.hydrogen.common.state.all.AllMatchOneObject;
-//import me.jellysquid.mods.hydrogen.common.state.any.AllMatchAnyObject;
-//import me.jellysquid.mods.hydrogen.common.state.single.SingleMatchAny;
 import me.jellysquid.mods.hydrogen.common.state.all.AllMatchOneObject;
 import me.jellysquid.mods.hydrogen.common.state.any.AllMatchAnyObject;
 import me.jellysquid.mods.hydrogen.common.state.single.SingleMatchAny;
 import me.jellysquid.mods.hydrogen.common.state.single.SingleMatchOne;
-//import me.jellysquid.mods.hydrogen.common.util.AllPredicate;
 import me.jellysquid.mods.hydrogen.common.util.AllPredicate;
 import me.jellysquid.mods.hydrogen.common.util.AnyPredicate;
 import net.minecraft.block.BlockState;

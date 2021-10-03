@@ -1,6 +1,5 @@
 package me.jellysquid.mods.hydrogen.common.state.all;
 
-//import me.jellysquid.mods.hydrogen.common.state.single.SingleMatchOne;
 import me.jellysquid.mods.hydrogen.common.state.single.SingleMatchOne;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.Property;

@@ -35,4 +35,3 @@ public class MixinAndMultipartModelSelector {
         }).collect(Collectors.toList()));
     }
 }
-

@@ -1,11 +1,12 @@
 package me.jellysquid.mods.hydrogen.common.cache;
-/*
+
 import me.jellysquid.mods.hydrogen.common.collections.FastImmutableTableCache;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.state.property.Property;
+import net.minecraft.state.Property;
+//import net.minecraft.state.property.Property;
 
 /**
  * Many of the column and row key arrays in block state tables will be duplicated, leading to an unnecessary waste of
@@ -18,14 +19,6 @@ import net.minecraft.state.property.Property;
  * the game. Even in the event of classloader pre-boot shenanigans, we still shouldn't leak memory as our cache will be
  * dropped along with the rest of the loaded classes when the class loader is reaped.
  */
-
-import me.jellysquid.mods.hydrogen.common.collections.FastImmutableTableCache;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.state.Property;
-
 public class StatePropertyTableCache {
     public static final FastImmutableTableCache<Property<?>, Comparable<?>, BlockState> BLOCK_STATE_TABLE =
             new FastImmutableTableCache<>();

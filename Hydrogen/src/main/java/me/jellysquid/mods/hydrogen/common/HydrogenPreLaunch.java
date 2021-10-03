@@ -1,16 +1,11 @@
 package me.jellysquid.mods.hydrogen.common;
 
-import me.jellysquid.mods.hydrogen.client.HydrogenClientPreLaunch;
 import me.jellysquid.mods.hydrogen.common.jvm.ClassConstructors;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+//import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 
 public class HydrogenPreLaunch {
 
-        @OnlyIn(Dist.CLIENT)
-        public void PreLaunch()
-        {
-        }
+    public void onLaunch() {
+        ClassConstructors.init();
+    }
 }
-
-

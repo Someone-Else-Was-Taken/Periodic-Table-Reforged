@@ -1,10 +1,9 @@
 package me.jellysquid.mods.hydrogen.common.state.any;
 
-//import me.jellysquid.mods.hydrogen.common.state.single.SingleMatchAny;
 import me.jellysquid.mods.hydrogen.common.state.single.SingleMatchAny;
 import net.minecraft.block.BlockState;
-//import net.minecraft.state.property.Property;
 import net.minecraft.state.Property;
+//import net.minecraft.state.property.Property;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
