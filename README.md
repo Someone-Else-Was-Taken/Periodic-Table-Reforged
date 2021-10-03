@@ -5,6 +5,7 @@ This is an Unofficial port of CaffeineMC's "Sodium" Mod, Ported from Fabric to F
 The current plan is to migrate Iris and Hydrogen alongside this.
 
 Hydrogen - 99%
+// No clue if it actually functions, seems to, don't have numbers.
 
 Iris - 75% (The bad way)
 
