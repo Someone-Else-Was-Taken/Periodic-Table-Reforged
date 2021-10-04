@@ -2,13 +2,17 @@ package me.jellysquid.mods.phosphor.mixin.chunk.light;
 
 import me.jellysquid.mods.phosphor.common.chunk.light.ServerLightingProviderAccess;
 import me.jellysquid.mods.phosphor.common.world.ThreadedAnvilChunkStorageAccess;
-import net.minecraft.server.world.ServerLightingProvider;
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+//import net.minecraft.server.world.ServerLightingProvider;
+//import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
+//import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.SectionPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.server.ChunkManager;
+import net.minecraft.world.server.ServerWorldLightManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -17,65 +21,65 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.IntSupplier;
 
-@Mixin(ServerLightingProvider.class)
+@Mixin(ServerWorldLightManager.class)
 public abstract class MixinServerLightingProvider extends MixinLightingProvider implements ServerLightingProviderAccess {
     @Shadow
-    protected abstract void enqueue(int x, int z, IntSupplier completedLevelSupplier, ServerLightingProvider.Stage stage, Runnable task);
+    protected abstract void func_215600_a(int x, int z, IntSupplier completedLevelSupplier, ServerWorldLightManager.Phase stage, Runnable task);
 
     @Shadow
-    protected abstract void enqueue(int x, int z, ServerLightingProvider.Stage stage, Runnable task);
+    protected abstract void func_215586_a(int x, int z, ServerWorldLightManager.Phase stage, Runnable task);
 
     @Override
     public CompletableFuture<Chunk> setupLightmaps(final Chunk chunk) {
         final ChunkPos chunkPos = chunk.getPos();
 
         // This evaluates the non-empty subchunks concurrently on the lighting thread...
-        this.enqueue(chunkPos.x, chunkPos.z, () -> 0, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable(() -> {
-            final ChunkSection[] chunkSections = chunk.getSectionArray();
+        this.func_215600_a(chunkPos.x, chunkPos.z, () -> 0, ServerWorldLightManager.Phase.PRE_UPDATE, Util.namedRunnable(() -> {
+            final ChunkSection[] chunkSections = chunk.getSections();
 
             for (int i = 0; i < chunkSections.length; ++i) {
                 if (!ChunkSection.isEmpty(chunkSections[i])) {
-                    super.setSectionStatus(ChunkSectionPos.from(chunkPos, i), false);
+                    super.updateSectionStatus(SectionPos.from(chunkPos, i), false);
                 }
             }
 
-            if (chunk.isLightOn()) {
-                super.enableSourceLight(ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z)));
+            if (chunk.hasLight()) {
+                super.enableSourceLight(SectionPos.toSectionColumnPos(SectionPos.asLong(chunkPos.x, 0, chunkPos.z)));
             }
 
-            super.enableLightUpdates(ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z)));
+            super.enableLightUpdates(SectionPos.toSectionColumnPos(SectionPos.asLong(chunkPos.x, 0, chunkPos.z)));
         },
             () -> "setupLightmaps " + chunkPos
         ));
 
         return CompletableFuture.supplyAsync(() -> {
-            super.setRetainData(chunkPos, false);
+            super.retainData(chunkPos, false);
             return chunk;
         },
-            (runnable) -> this.enqueue(chunkPos.x, chunkPos.z, () -> 0, ServerLightingProvider.Stage.POST_UPDATE, runnable)
+            (runnable) -> this.func_215600_a(chunkPos.x, chunkPos.z, () -> 0, ServerWorldLightManager.Phase.POST_UPDATE, runnable)
         );
     }
 
     @Shadow
     @Final
-    private ThreadedAnvilChunkStorage chunkStorage;
+    private ChunkManager chunkManager;
 
     /**
      * @author PhiPro
      * @reason Move parts of the logic to {@link #setupLightmaps(Chunk)}
      */
     @Overwrite
-    public CompletableFuture<Chunk> light(Chunk chunk, boolean excludeBlocks) {
+    public CompletableFuture<IChunk> lightChunk(IChunk chunk, boolean excludeBlocks) {
         final ChunkPos chunkPos = chunk.getPos();
 
-        this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable(() -> {
-            if (!chunk.isLightOn()) {
-                super.enableSourceLight(ChunkSectionPos.withZeroY(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z)));
+        this.func_215586_a(chunkPos.x, chunkPos.z, ServerWorldLightManager.Phase.PRE_UPDATE, Util.namedRunnable(() -> {
+            if (!chunk.hasLight()) {
+                super.enableSourceLight(SectionPos.toSectionColumnPos(SectionPos.asLong(chunkPos.x, 0, chunkPos.z)));
             }
 
             if (!excludeBlocks) {
-                chunk.getLightSourcesStream().forEach((blockPos) -> {
-                    super.addLightSource(blockPos, chunk.getLuminance(blockPos));
+                chunk.getLightSources().forEach((blockPos) -> {
+                    super.onBlockEmissionIncrease(blockPos, chunk.getLightValue(blockPos));
                 });
             }
         },
@@ -83,12 +87,12 @@ public abstract class MixinServerLightingProvider extends MixinLightingProvider 
         ));
 
         return CompletableFuture.supplyAsync(() -> {
-            chunk.setLightOn(true);
-            ((ThreadedAnvilChunkStorageAccess) this.chunkStorage).invokeReleaseLightTicket(chunkPos);
+            chunk.setLight(true);
+            ((ThreadedAnvilChunkStorageAccess) this.chunkManager).invokeReleaseLightTicket(chunkPos);
 
             return chunk;
         },
-            (runnable) -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.POST_UPDATE, runnable)
+            (runnable) -> this.func_215586_a(chunkPos.x, chunkPos.z, ServerWorldLightManager.Phase.POST_UPDATE, runnable)
         );
     }
 }
