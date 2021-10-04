@@ -9,11 +9,11 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(AbstractBlock.AbstractBlockState.class)
 public abstract class MixinAbstractBlockState implements BlockStateLightInfoAccess {
     @Shadow
-    protected AbstractBlock.AbstractBlockState.Cache shapeCache;
+    protected AbstractBlock.AbstractBlockState.Cache cache;
 
     @SuppressWarnings("ConstantConditions")
     @Override
     public BlockStateLightInfo getLightInfo() {
-        return (BlockStateLightInfo) (Object) this.shapeCache;
+        return (BlockStateLightInfo) (Object) this.cache;
     }
 }
