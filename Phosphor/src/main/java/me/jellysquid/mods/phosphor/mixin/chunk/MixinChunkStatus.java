@@ -41,7 +41,7 @@ public class MixinChunkStatus {
         ),
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/world/chunk/ChunkStatus;register(Ljava/lang/String;Lnet/minecraft/world/chunk/ChunkStatus;ILjava/util/EnumSet;Lnet/minecraft/world/chunk/ChunkStatus$ChunkType;Lnet/minecraft/world/chunk/ChunkStatus$GenerationTask;)Lnet/minecraft/world/chunk/ChunkStatus;",
+            target = "Lnet/minecraft/world/chunk/ChunkStatus;register(Ljava/lang/String;Lnet/minecraft/world/chunk/ChunkStatus;ILjava/util/EnumSet;Lnet/minecraft/world/chunk/ChunkStatus$Type;Lnet/minecraft/world/chunk/ChunkStatus$IGenerationWorker;)Lnet/minecraft/world/chunk/ChunkStatus;",
             ordinal = 0
         )
     )
