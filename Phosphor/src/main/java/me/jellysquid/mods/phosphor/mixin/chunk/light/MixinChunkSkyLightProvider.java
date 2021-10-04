@@ -34,8 +34,8 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-//import static net.minecraft.util.math.ChunkSectionPos.getLocalCoord;
-//import static net.minecraft.util.math.ChunkSectionPos.getSectionCoord;
+import static net.minecraft.util.math.SectionPos.mask;
+import static net.minecraft.util.math.SectionPos.toChunk;
 
 @Mixin(SkyLightEngine.class)
 public abstract class MixinChunkSkyLightProvider extends LightEngine<SkyLightStorage.StorageMap, SkyLightStorage>

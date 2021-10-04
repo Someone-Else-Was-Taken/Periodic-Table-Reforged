@@ -1,0 +1,39 @@
+
+{
+  "package": "me.jellysquid.mods.phosphor.mixin",
+  "minVersion": "0.8",
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "overwrites": {
+    "conformVisibility": true
+  },
+  "mixins": [
+    "block.MixinAbstractBlockState",
+    "block.MixinShapeCache",
+    "chunk.MixinChunkNibbleArray",
+    "chunk.MixinWorldChunk",
+    "chunk.light.MixinLightingProvider",
+    "chunk.light.MixinBlockLightStorageData",
+    "chunk.light.MixinChunkBlockLightProvider",
+    "chunk.light.MixinChunkLightProvider",
+    "chunk.light.MixinChunkSkyLightProvider",
+    "chunk.light.MixinChunkToNibbleArrayMap",
+    "chunk.light.MixinLevelPropagator",
+    "chunk.light.MixinLightStorage",
+    "chunk.light.MixinBlockLightStorage",
+    "chunk.light.MixinSkyLightStorage",
+    "chunk.light.MixinSkyLightStorageData",
+    "chunk.light.MixinServerLightingProvider",
+    "chunk.MixinProtoChunk",
+    "world.MixinThreadedAnvilChunkStorage",
+    "chunk.MixinChunkStatus",
+    "world.MixinChunkSerializer"
+  ],
+  "client": [
+    "client.world.MixinClientWorld"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "refmap": "phosphor.refmap.json"
+}

@@ -81,7 +81,7 @@ public abstract class MixinLevelPropagator implements LevelPropagatorExtended, L
 
     @Override
     public int getPropagatedLevel(long sourceId, BlockState sourceState, long targetId, int level) {
-        return this.getPropagatedLevel(sourceId, targetId, level);
+        return this.getEdgeLevel(sourceId, targetId, level);
     }
 
     @Redirect(method = { "removeToUpdate(JIIZ)V", "processUpdates" }, at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/longs/Long2ByteMap;remove(J)B", remap = false))

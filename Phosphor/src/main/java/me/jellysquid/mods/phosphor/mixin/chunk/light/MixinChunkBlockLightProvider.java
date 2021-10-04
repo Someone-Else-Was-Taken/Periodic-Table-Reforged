@@ -3,6 +3,7 @@ package me.jellysquid.mods.phosphor.mixin.chunk.light;
 import me.jellysquid.mods.phosphor.common.chunk.level.LevelPropagatorExtended;
 import me.jellysquid.mods.phosphor.common.chunk.light.BlockLightStorageAccess;
 import me.jellysquid.mods.phosphor.common.chunk.light.LightProviderBlockAccess;
+import me.jellysquid.mods.phosphor.common.chunk.light.LightStorageAccess;
 import me.jellysquid.mods.phosphor.common.util.LightUtil;
 import me.jellysquid.mods.phosphor.common.util.math.DirectionHelper;
 import net.minecraft.block.BlockState;
@@ -19,16 +20,15 @@ import net.minecraft.world.LightType;
 //import net.minecraft.world.chunk.light.ChunkBlockLightProvider;
 //import net.minecraft.world.chunk.light.ChunkLightProvider;
 import net.minecraft.world.chunk.IChunkLightProvider;
+import net.minecraft.world.chunk.NibbleArray;
+import net.minecraft.world.lighting.BlockLightEngine;
 import net.minecraft.world.lighting.BlockLightStorage;
 import net.minecraft.world.lighting.LightEngine;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 
-//import static net.minecraft.util.math.ChunkSectionPos.getSectionCoord;
+import static net.minecraft.util.math.SectionPos.toChunk;
 
-@Mixin(LightEngine.class)
+@Mixin(BlockLightEngine.class)
 public abstract class MixinChunkBlockLightProvider extends LightEngine<BlockLightStorage.StorageMap, BlockLightStorage>
         implements LevelPropagatorExtended, LightProviderBlockAccess {
     public MixinChunkBlockLightProvider(IChunkLightProvider chunkProvider, LightType type, BlockLightStorage lightStorage) {
@@ -41,8 +41,6 @@ public abstract class MixinChunkBlockLightProvider extends LightEngine<BlockLigh
     @Shadow
     @Final
     private static Direction[] DIRECTIONS;
-
-    @Shadow @Final protected S storage;
 
     /**
      * @reason Use optimized variant
@@ -118,17 +116,18 @@ public abstract class MixinChunkBlockLightProvider extends LightEngine<BlockLigh
         return 15;
     }
 
+
+
     /**
      * Avoids constantly (un)packing coordinates. This strictly copies vanilla's implementation.
      * @reason Use faster implementation
      * @author JellySquid
      */
-    @Override
     @Overwrite
     public void notifyNeighbors(long id, int targetLevel, boolean mergeAsMin) {
         int x = BlockPos.unpackX(id);
         int y = BlockPos.unpackY(id);
-        int z = BlockPos.unpackX(id);
+        int z = BlockPos.unpackZ(id);
 
         long chunk = SectionPos.asLong(toChunk(x), toChunk(y), toChunk(z));
 
@@ -139,7 +138,7 @@ public abstract class MixinChunkBlockLightProvider extends LightEngine<BlockLigh
             int adjY = y + dir.getYOffset();
             int adjZ = z + dir.getZOffset();
 
-            long adjChunk = SectionPos.asLong(toChunk(adjX), toChunk(adjY), gtoChunk(adjZ));
+            long adjChunk = SectionPos.asLong(toChunk(adjX), toChunk(adjY), toChunk(adjZ));
 
             if ((chunk == adjChunk) || this.storage.hasSection(adjChunk)) {
                 this.propagateLevel(id, state, BlockPos.pack(adjX, adjY, adjZ), targetLevel, mergeAsMin);

@@ -33,6 +33,7 @@ public class MixinChunkStatus {
     @Final
     private static ChunkStatus.ILoadingWorker NOOP_LOADING_WORKER;
 
+    @SuppressWarnings("UnresolvedMixinReference")
     @Redirect(
         method = "<clinit>",
         slice = @Slice(
@@ -58,7 +59,7 @@ public class MixinChunkStatus {
     }
 
     @Unique
-    private static CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> getPreLightFuture(final ServerWorldLightManager lightingProvider, final Either<Chunk, ChunkHolder.IChunkLoadingError> either) {
+    private static CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> getPreLightFuture(final ServerWorldLightManager lightingProvider, final Either<IChunk, ChunkHolder.IChunkLoadingError> either) {
         return either.map(
             chunk -> getPreLightFuture(lightingProvider, chunk),
             unloaded -> CompletableFuture.completedFuture(Either.right(unloaded))
@@ -66,7 +67,7 @@ public class MixinChunkStatus {
     }
 
     @Unique
-    private static CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> getPreLightFuture(final ServerWorldLightManager lightingProvider, final Chunk chunk) {
+    private static CompletableFuture<Either<IChunk, ChunkHolder.IChunkLoadingError>> getPreLightFuture(final ServerWorldLightManager lightingProvider, final IChunk chunk) {
         return ((ServerLightingProviderAccess) lightingProvider).setupLightmaps(chunk).thenApply(Either::left);
     }
 }

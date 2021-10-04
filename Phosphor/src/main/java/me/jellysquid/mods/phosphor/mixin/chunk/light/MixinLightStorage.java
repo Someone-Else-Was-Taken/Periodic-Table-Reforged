@@ -14,7 +14,7 @@ import me.jellysquid.mods.phosphor.common.chunk.light.LightProviderUpdateTracker
 import me.jellysquid.mods.phosphor.common.chunk.light.LightStorageAccess;
 import me.jellysquid.mods.phosphor.common.chunk.light.SharedLightStorageAccess;
 import me.jellysquid.mods.phosphor.common.util.chunk.light.EmptyChunkNibbleArray;
-import me.jellysquid.mods.phosphor.common.util.chunk.light.EmptyNibbleArray;
+//import me.jellysquid.mods.phosphor.common.util.chunk.light.EmptyNibbleArray;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SectionDistanceGraph;
 import net.minecraft.util.math.BlockPos;

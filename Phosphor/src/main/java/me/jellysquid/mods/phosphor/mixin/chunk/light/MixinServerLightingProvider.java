@@ -30,7 +30,7 @@ public abstract class MixinServerLightingProvider extends MixinLightingProvider 
     protected abstract void func_215586_a(int x, int z, ServerWorldLightManager.Phase stage, Runnable task);
 
     @Override
-    public CompletableFuture<Chunk> setupLightmaps(final Chunk chunk) {
+    public CompletableFuture<IChunk> setupLightmaps(final IChunk chunk) {
         final ChunkPos chunkPos = chunk.getPos();
 
         // This evaluates the non-empty subchunks concurrently on the lighting thread...
@@ -66,7 +66,7 @@ public abstract class MixinServerLightingProvider extends MixinLightingProvider 
 
     /**
      * @author PhiPro
-     * @reason Move parts of the logic to {@link #setupLightmaps(Chunk)}
+     * @reason Move parts of the logic to {@link #setupLightmaps(IChunk)}
      */
     @Overwrite
     public CompletableFuture<IChunk> lightChunk(IChunk chunk, boolean excludeBlocks) {
