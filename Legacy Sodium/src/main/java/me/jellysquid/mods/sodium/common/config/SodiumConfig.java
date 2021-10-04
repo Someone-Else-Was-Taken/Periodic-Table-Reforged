@@ -110,6 +110,11 @@ public class SodiumConfig {
             this.options.get("features.world_ticking.MixinClientWorld").addModOverride(false, "quark");
         }
 
+        if(FMLLoader.getLoadingModList().getModFileById("dynamictrees") != null)
+        {
+            this.options.get("features.world_ticking.MixinWorldRenderer").addModOverride(false, "dynamictrees");
+        }
+
     }
 
 
