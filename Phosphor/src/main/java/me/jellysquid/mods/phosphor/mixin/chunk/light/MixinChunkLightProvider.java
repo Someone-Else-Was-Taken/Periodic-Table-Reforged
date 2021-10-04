@@ -22,12 +22,9 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 //import net.minecraft.util.shape.VoxelShape;
 //import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.*;
 //import net.minecraft.world.chunk.ChunkProvider;
-import net.minecraft.world.chunk.ChunkSection;
 //import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.chunk.IChunkLightProvider;
 //import net.minecraft.world.chunk.light.ChunkLightProvider;
 //import net.minecraft.world.chunk.light.LevelPropagator;
 //import net.minecraft.world.chunk.light.LightStorage;
@@ -43,6 +40,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -169,11 +167,6 @@ public abstract class MixinChunkLightProvider<M extends LightDataMap<M>, S exten
         return VoxelShapes.getFaceShape(state.getRenderShape(this.chunkProvider.getWorld(), this.scratchPos.setPos(x, y, z)), dir);
     }
 
-    @Override
-    public void spreadLightInto(long a, long b) {
-        this.scheduleUpdate(a, b, this.getEdgeLevel(a, b, this.getLevel(a)), false);
-        this.scheduleUpdate(b, a, this.getEdgeLevel(b, a, this.getLevel(b)), false);
-    }
 
     /**
      * The vanilla implementation for removing pending light updates requires iterating over either every queued light
@@ -287,6 +280,13 @@ public abstract class MixinChunkLightProvider<M extends LightDataMap<M>, S exten
     @Final
     protected SectionLightStorage<?> storage;
 
+    @Shadow
+    protected void scheduleUpdate(long id) {}
+
+    @Shadow
+    protected abstract int getLevelFromArray(NibbleArray section, long blockPos);
+
+
     /**
      * @author PhiPro
      * @reason Re-implement completely. Change specification of the method.
@@ -315,4 +315,5 @@ public abstract class MixinChunkLightProvider<M extends LightDataMap<M>, S exten
     public void enableLightUpdates(final long chunkPos) {
         ((LightStorageAccess) this.storage).enableLightUpdates(chunkPos);
     }
+
 }
