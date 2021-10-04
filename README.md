@@ -2,7 +2,7 @@
 
 This is an unnoficial port of all the CaffeineMC Mods from Fabric to Forge
 
-Currently it consists of Sodium, Phosphor and Hydrogen. Later I will add Lithium and Iris alongside an Optifine Esc Extras mod.
+Currently it consists of Sodium, Phosphor and Hydrogen. Later I will add Lithium and Iris.
 
 For more in depth info on the features look at the Reforged CF Pages or the Official Mod Pages.
 
@@ -18,7 +18,5 @@ Hydrogen 99%
 Iris: 75%
 
 Lithium: 0%
-
-Nitrogen(Not CaffeineMC): 0%
 
 In the future, these mods may be packaged into one Mod of an undecided name, however this isn't final.
