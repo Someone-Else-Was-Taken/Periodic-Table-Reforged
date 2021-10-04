@@ -26,6 +26,7 @@ import net.minecraft.world.chunk.Chunk;
 //import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkSection;
 //import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
+import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.chunk.IChunkLightProvider;
 //import net.minecraft.world.chunk.light.ChunkLightProvider;
 //import net.minecraft.world.chunk.light.LevelPropagator;
@@ -114,7 +115,7 @@ public abstract class MixinChunkLightProvider<M extends LightDataMap<M>, S exten
     }
 
     private ChunkSection[] getAndCacheChunkSections(int x, int z) {
-        final Chunk chunk = (Chunk) this.chunkProvider.getChunkForLight(x, z);
+        final IChunk chunk = (IChunk) this.chunkProvider.getChunkForLight(x, z);
         final ChunkSection[] sections = chunk != null ? chunk.getSections() : EMPTY_SECTION_ARRAY;
 
         final ChunkSection[][] cachedSections = this.cachedChunkSections;
