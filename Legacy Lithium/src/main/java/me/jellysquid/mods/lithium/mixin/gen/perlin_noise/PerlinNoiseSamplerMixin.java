@@ -1,8 +1,10 @@
 package me.jellysquid.mods.lithium.mixin.gen.perlin_noise;
 
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.noise.PerlinNoiseSampler;
-import net.minecraft.util.math.noise.SimplexNoiseSampler;
+//import net.minecraft.util.math.noise.PerlinNoiseSampler;
+//import net.minecraft.util.math.noise.SimplexNoiseSampler;
+import net.minecraft.world.gen.PerlinNoiseGenerator;
+import net.minecraft.world.gen.SimplexNoiseGenerator;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -13,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Random;
 
-@Mixin(PerlinNoiseSampler.class)
+@Mixin(PerlinNoiseGenerator.class)
 public class PerlinNoiseSamplerMixin {
     private static final int GRADIENT_STRIDE = 4;
     private static final int GRADIENT_STRIDE_SH = 2;
@@ -24,15 +26,15 @@ public class PerlinNoiseSamplerMixin {
 
     @Shadow
     @Final
-    public double originX;
+    public double xCoord;
 
     @Shadow
     @Final
-    public double originY;
+    public double yCoord;
 
     @Shadow
     @Final
-    public double originZ;
+    public double zCoord;
 
     private final byte[] gradientTable = new byte[256 * GRADIENT_STRIDE];
 
@@ -42,7 +44,7 @@ public class PerlinNoiseSamplerMixin {
             int hash = this.permutations[i & 255] & 15;
 
             for (int j = 0; j < 3; j++) {
-                this.gradientTable[(i * GRADIENT_STRIDE) + j] = (byte) SimplexNoiseSampler.gradients[hash][j];
+                this.gradientTable[(i * GRADIENT_STRIDE) + j] = (byte) SimplexNoiseGenerator.GRADS[hash][j];
             }
         }
     }
@@ -52,10 +54,10 @@ public class PerlinNoiseSamplerMixin {
      * @author JellySquid
      */
     @Overwrite
-    public double sample(double x, double y, double z, double d, double e) {
-        final double ox = x + this.originX;
-        final double oy = y + this.originY;
-        final double oz = z + this.originZ;
+    public double func_215456_a(double x, double y, double z, double d, double e) {
+        final double ox = x + this.xCoord;
+        final double oy = y + this.yCoord;
+        final double oz = z + this.zCoord;
 
         final double fox = Math.floor(ox);
         final double foy = Math.floor(oy);
@@ -73,7 +75,7 @@ public class PerlinNoiseSamplerMixin {
             ooy = ooy - (Math.floor(Math.min(e, ooy) / d) * d);
         }
 
-        return this.sample((int) fox, (int) foy, (int) foz, oox, ooy, ooz, fx, fy, fz);
+        return this.func_215459_a((int) fox, (int) foy, (int) foz, oox, ooy, ooz, fx, fy, fz);
     }
 
     /**
@@ -87,7 +89,7 @@ public class PerlinNoiseSamplerMixin {
      * @author JellySquid
      */
     @Overwrite
-    public double sample(int sectionX, int sectionY, int sectionZ, double localX1, double localY1, double localZ1, double fadeLocalX, double fadeLocalY, double fadeLocalZ) {
+    public double func_215459_a(int sectionX, int sectionY, int sectionZ, double localX1, double localY1, double localZ1, double fadeLocalX, double fadeLocalY, double fadeLocalZ) {
         final byte[] perm = this.permutations;
 
         final int i = (perm[sectionX & 255] & 255) + sectionY;

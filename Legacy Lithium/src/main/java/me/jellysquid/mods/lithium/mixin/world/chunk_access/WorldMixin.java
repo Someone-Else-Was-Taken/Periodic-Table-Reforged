@@ -4,7 +4,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.*;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.IChunk;
+//import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
@@ -13,18 +14,18 @@ import org.spongepowered.asm.mixin.Overwrite;
  * method invocations between interface boundaries, helping the JVM to inline and optimize code.
  */
 @Mixin(World.class)
-public abstract class WorldMixin implements WorldAccess {
+public abstract class WorldMixin implements IWorld {
     /**
      * @reason Remove dynamic-dispatch and inline call
      * @author JellySquid
      */
     @Overwrite
-    public WorldChunk getWorldChunk(BlockPos pos) {
-        return (WorldChunk) this.getChunk(pos);
+    public Chunk getChunkAt(BlockPos pos) {
+        return (Chunk) this.getChunk(pos);
     }
 
     @Override
-    public Chunk getChunk(BlockPos pos) {
+    public IChunk getChunk(BlockPos pos) {
         return this.getChunkLithium(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, true);
     }
 
@@ -34,22 +35,22 @@ public abstract class WorldMixin implements WorldAccess {
      */
     @Override
     @Overwrite
-    public WorldChunk getChunk(int chunkX, int chunkZ) {
-        return (WorldChunk) this.getChunkLithium(chunkX, chunkZ, ChunkStatus.FULL, true);
+    public Chunk getChunk(int chunkX, int chunkZ) {
+        return (Chunk) this.getChunkLithium(chunkX, chunkZ, ChunkStatus.FULL, true);
     }
 
     @Override
-    public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus status) {
+    public IChunk getChunk(int chunkX, int chunkZ, ChunkStatus status) {
         return this.getChunkLithium(chunkX, chunkZ, status, true);
     }
 
     @Override
-    public BlockView getExistingChunk(int chunkX, int chunkZ) {
+    public IBlockReader getBlockReader(int chunkX, int chunkZ) {
         return this.getChunkLithium(chunkX, chunkZ, ChunkStatus.FULL, false);
     }
 
-    private Chunk getChunkLithium(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
-        Chunk chunk = this.getChunkManager().getChunk(chunkX, chunkZ, leastStatus, create);
+    private IChunk getChunkLithium(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
+        IChunk chunk = this.getChunkProvider().getChunk(chunkX, chunkZ, leastStatus, create);
 
         if (chunk == null && create) {
             throw new IllegalStateException("Should always be able to create a chunk!");

@@ -1,13 +1,17 @@
 package me.jellysquid.mods.lithium.mixin.chunk.count_oversized_blocks;
 
 import me.jellysquid.mods.lithium.common.entity.movement.ChunkAwareBlockCollisionSweeper;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+//import net.fabricmc.api.EnvType;
+//import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.PacketBuffer;
+//import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.palette.PalettedContainer;
 import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.PalettedContainer;
+//import net.minecraft.world.chunk.PalettedContainer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -27,28 +31,28 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(ChunkSection.class)
 public abstract class ChunkSectionMixin implements ChunkAwareBlockCollisionSweeper.OversizedBlocksCounter {
     @Shadow
-    public abstract void calculateCounts();
+    public abstract void recalculateRefCounts();
 
     @Unique
     private short oversizedBlockCount;
 
     @Redirect(
-            method = "calculateCounts",
+            method = "recalculateRefCounts",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/PalettedContainer;count(Lnet/minecraft/world/chunk/PalettedContainer$CountConsumer;)V"
+                    target = "Lnet/minecraft/util/palette/PalettedContainer;count(Lnet/minecraft/util/palette/PalettedContainer$ICountConsumer;)V"
             )
     )
-    private void addToOversizedBlockCount(PalettedContainer<BlockState> palettedContainer, PalettedContainer.CountConsumer<BlockState> consumer) {
+    private void addToOversizedBlockCount(PalettedContainer<BlockState> palettedContainer, PalettedContainer.ICountConsumer<BlockState> consumer) {
         palettedContainer.count((state, count) -> {
             consumer.accept(state, count);
-            if (state.exceedsCube()) {
+            if (state.isCollisionShapeLargerThanFullBlock()) {
                 this.oversizedBlockCount += count;
             }
         });
     }
 
-    @Inject(method = "calculateCounts", at = @At("HEAD"))
+    @Inject(method = "recalculateRefCounts", at = @At("HEAD"))
     private void resetOversizedBlockCount(CallbackInfo ci) {
         this.oversizedBlockCount = 0;
     }
@@ -58,13 +62,13 @@ public abstract class ChunkSectionMixin implements ChunkAwareBlockCollisionSweep
             at = @At(
                     ordinal = 0,
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/BlockState;hasRandomTicks()Z",
+                    target = "Lnet/minecraft/block/BlockState;ticksRandomly()Z",
                     shift = At.Shift.BEFORE
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void decrOversizedBlockCount(int x, int y, int z, BlockState state, boolean lock, CallbackInfoReturnable<BlockState> cir, BlockState blockState2, FluidState fluidState, FluidState fluidState2) {
-        if (blockState2.exceedsCube()) {
+        if (blockState2.isCollisionShapeLargerThanFullBlock()) {
             --this.oversizedBlockCount;
         }
     }
@@ -74,13 +78,13 @@ public abstract class ChunkSectionMixin implements ChunkAwareBlockCollisionSweep
             at = @At(
                     ordinal = 1,
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/BlockState;hasRandomTicks()Z",
+                    target = "Lnet/minecraft/block/BlockState;ticksRandomly()Z",
                     shift = At.Shift.BEFORE
             ),
             locals = LocalCapture.CAPTURE_FAILHARD
     )
     private void incrOversizedBlockCount(int x, int y, int z, BlockState state, boolean lock, CallbackInfoReturnable<BlockState> cir) {
-        if (state.exceedsCube()) {
+        if (state.isCollisionShapeLargerThanFullBlock()) {
             ++this.oversizedBlockCount;
         }
     }
@@ -94,9 +98,9 @@ public abstract class ChunkSectionMixin implements ChunkAwareBlockCollisionSweep
      * Initialize oversized block count in the client worlds.
      * This also initializes other values (randomtickable blocks counter), but they are unused in the client worlds.
      */
-    @Environment(EnvType.CLIENT)
-    @Inject(method = "fromPacket", at = @At("RETURN"))
-    private void initCounts(PacketByteBuf packetByteBuf, CallbackInfo ci) {
-        this.calculateCounts();
+    @OnlyIn(Dist.CLIENT)
+    @Inject(method = "read", at = @At("RETURN"))
+    private void initCounts(PacketBuffer packetByteBuf, CallbackInfo ci) {
+        this.recalculateRefCounts();
     }
 }

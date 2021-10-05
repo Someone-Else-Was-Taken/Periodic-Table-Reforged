@@ -4,8 +4,9 @@ import me.jellysquid.mods.lithium.common.entity.tracker.EntityTrackerEngine;
 import me.jellysquid.mods.lithium.common.entity.tracker.EntityTrackerEngineProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.world.ServerWorld;
+//import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.server.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -21,7 +22,7 @@ public class ServerWorldMixin {
      * Notify the entity tracker when an entity is removed from the world.
      */
     @Redirect(
-            method = "unloadEntities",
+            method = "onChunkUnloading",
             at = @At(
                     value = "INVOKE",
                     target = "Ljava/util/Iterator;next()Ljava/lang/Object;"
@@ -33,9 +34,9 @@ public class ServerWorldMixin {
             return entity;
         }
 
-        int chunkX = MathHelper.floor(entity.getX()) >> 4;
-        int chunkY = MathHelper.clamp(MathHelper.floor(entity.getY()) >> 4, 0, 15);
-        int chunkZ = MathHelper.floor(entity.getZ()) >> 4;
+        int chunkX = MathHelper.floor(entity.getPosX()) >> 4;
+        int chunkY = MathHelper.clamp(MathHelper.floor(entity.getPosY()) >> 4, 0, 15);
+        int chunkZ = MathHelper.floor(entity.getPosZ()) >> 4;
 
         EntityTrackerEngine tracker = EntityTrackerEngineProvider.getEntityTracker(this);
         tracker.onEntityRemoved(chunkX, chunkY, chunkZ, (LivingEntity) entity);

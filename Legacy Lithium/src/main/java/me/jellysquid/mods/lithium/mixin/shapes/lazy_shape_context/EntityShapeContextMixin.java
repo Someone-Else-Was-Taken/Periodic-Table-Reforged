@@ -1,29 +1,31 @@
 package me.jellysquid.mods.lithium.mixin.shapes.lazy_shape_context;
 
-import net.minecraft.block.EntityShapeContext;
+//import net.minecraft.block.EntityShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.fluid.FlowableFluid;
+//import net.minecraft.fluid.FlowableFluid;
+import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.util.math.shapes.EntitySelectionContext;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Predicate;
 
-@Mixin(EntityShapeContext.class)
+@Mixin(EntitySelectionContext.class)
 public class EntityShapeContextMixin {
     @Mutable
     @Shadow
     @Final
-    private Item heldItem;
+    private Item item;
     @Mutable
     @Shadow
     @Final
-    private Predicate<Fluid> field_24425;
+    private Predicate<Fluid> fluidPredicate;
 
     private Entity lithium_entity;
 
@@ -51,13 +53,13 @@ public class EntityShapeContextMixin {
             method = "<init>(Lnet/minecraft/entity/Entity;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/EntityShapeContext;<init>(ZDLnet/minecraft/item/Item;Ljava/util/function/Predicate;)V",
+                    //target = "Lnet/minecraft/util/math/shapes/EntitySelectionContext;<init>(ZDLnet/minecraft/item/Item;Ljava/util/function/Predicate;)V",
                     shift = At.Shift.AFTER
             )
     )
     private void initFields(Entity entity, CallbackInfo ci) {
-        this.heldItem = null;
-        this.field_24425 = null;
+        this.item = null;
+        this.fluidPredicate = null;
         this.lithium_entity = entity;
     }
 
@@ -66,11 +68,11 @@ public class EntityShapeContextMixin {
      * @reason allow skipping unused initialization
      */
     @Overwrite
-    public boolean isHolding(Item item) {
-        if (this.heldItem == null) {
-            this.heldItem = this.lithium_entity instanceof LivingEntity ? ((LivingEntity)this.lithium_entity).getMainHandStack().getItem() : Items.AIR;
+    public boolean hasItem(Item item) {
+        if (this.item == null) {
+            this.item = this.lithium_entity instanceof LivingEntity ? ((LivingEntity)this.lithium_entity).getHeldItemMainhand().getItem() : Items.AIR;
         }
-        return this.heldItem == item;
+        return this.item == item;
     }
 
     /**
@@ -78,7 +80,7 @@ public class EntityShapeContextMixin {
      * @reason allow skipping unused lambda allocation
      */
     @Overwrite
-    public boolean method_27866(FluidState aboveState, FlowableFluid fluid) {
-        return this.lithium_entity instanceof LivingEntity && ((LivingEntity) this.lithium_entity).canWalkOnFluid(fluid) && !aboveState.getFluid().matchesType(fluid);
+    public boolean func_230426_a_(FluidState aboveState, FlowingFluid fluid) {
+        return this.lithium_entity instanceof LivingEntity && ((LivingEntity) this.lithium_entity).func_230285_a_(fluid) && !aboveState.getFluid().isEquivalentTo(fluid);
     }
 }

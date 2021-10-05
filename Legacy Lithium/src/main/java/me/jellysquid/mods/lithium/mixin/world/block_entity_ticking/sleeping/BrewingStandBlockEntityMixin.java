@@ -2,21 +2,24 @@ package me.jellysquid.mods.lithium.mixin.world.block_entity_ticking.sleeping;
 
 import me.jellysquid.mods.lithium.common.world.blockentity.BlockEntitySleepTracker;
 import me.jellysquid.mods.lithium.common.world.blockentity.SleepingBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.BrewingStandBlockEntity;
+//import net.minecraft.block.entity.BlockEntity;
+//import net.minecraft.block.entity.BlockEntityType;
+//import net.minecraft.block.entity.BrewingStandBlockEntity;
+import net.minecraft.tileentity.BrewingStandTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(BrewingStandBlockEntity.class)
-public class BrewingStandBlockEntityMixin extends BlockEntity implements SleepingBlockEntity {
+@Mixin(BrewingStandTileEntity.class)
+public class BrewingStandBlockEntityMixin extends TileEntity implements SleepingBlockEntity {
     @Shadow
     private int brewTime;
 
-    public BrewingStandBlockEntityMixin(BlockEntityType<?> type) {
+    public BrewingStandBlockEntityMixin(TileEntityType<?> type) {
         super(type);
     }
 
@@ -35,9 +38,9 @@ public class BrewingStandBlockEntityMixin extends BlockEntity implements Sleepin
         }
     }
 
-    @Inject(method = "fromTag", at = @At("RETURN"))
+    @Inject(method = "read", at = @At("RETURN"))
     private void wakeUpAfterFromTag(CallbackInfo ci) {
-        if (!this.isTicking && this.world != null && !this.world.isClient()) {
+        if (!this.isTicking && this.world != null && !this.world.isRemote()) {
             this.isTicking = true;
             ((BlockEntitySleepTracker) this.world).setAwake(this, true);
         }
@@ -46,7 +49,7 @@ public class BrewingStandBlockEntityMixin extends BlockEntity implements Sleepin
     @Override
     public void markDirty() {
         super.markDirty();
-        if (!this.isTicking && this.world != null && !this.world.isClient()) {
+        if (!this.isTicking && this.world != null && !this.world.isRemote()) {
             this.isTicking = true;
             ((BlockEntitySleepTracker) this.world).setAwake(this, true);
         }

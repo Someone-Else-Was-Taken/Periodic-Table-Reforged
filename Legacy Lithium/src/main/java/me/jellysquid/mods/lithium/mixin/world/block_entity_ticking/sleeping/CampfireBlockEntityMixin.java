@@ -2,11 +2,15 @@ package me.jellysquid.mods.lithium.mixin.world.block_entity_ticking.sleeping;
 
 import me.jellysquid.mods.lithium.common.world.blockentity.BlockEntitySleepTracker;
 import net.minecraft.block.CampfireBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.CampfireBlockEntity;
+//import net.minecraft.block.entity.BlockEntity;
+//import net.minecraft.block.entity.BlockEntityType;
+//import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.tileentity.CampfireTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.NonNullList;
+//import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,11 +19,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(CampfireBlockEntity.class)
-public class CampfireBlockEntityMixin extends BlockEntity {
+@Mixin(CampfireTileEntity.class)
+public class CampfireBlockEntityMixin extends TileEntity {
     @Shadow
     @Final
-    private DefaultedList<ItemStack> itemsBeingCooked;
+    private NonNullList<ItemStack> inventory;
 
     @Shadow
     @Final
@@ -29,7 +33,7 @@ public class CampfireBlockEntityMixin extends BlockEntity {
     @Unique
     private boolean doInit = true;
 
-    public CampfireBlockEntityMixin(BlockEntityType<?> type) {
+    public CampfireBlockEntityMixin(TileEntityType<?> type) {
         super(type);
     }
 
@@ -40,21 +44,21 @@ public class CampfireBlockEntityMixin extends BlockEntity {
             this.checkSleepState();
         }
     }
-    @Inject(method = "fromTag", at = @At("RETURN"))
+    @Inject(method = "read", at = @At("RETURN"))
     private void wakeUpAfterFromTag(CallbackInfo ci) {
         this.checkSleepState();
     }
 
     private void checkSleepState() {
-        if (this.world == null || this.world.isClient()) {
+        if (this.world == null || this.world.isRemote) {
             return;
         }
         boolean shouldTick = false;
-        DefaultedList<ItemStack> beingCooked = this.itemsBeingCooked;
+        NonNullList<ItemStack> beingCooked = this.inventory;
         for (int i = 0; i < beingCooked.size(); i++) {
             ItemStack stack = beingCooked.get(i);
             if (!stack.isEmpty()) {
-                if (this.cookingTimes[i] > 0 || this.getCachedState().get(CampfireBlock.LIT)) {
+                if (this.cookingTimes[i] > 0 || this.getBlockState().get(CampfireBlock.LIT)) {
                     shouldTick = true;
                     break;
                 }
@@ -74,8 +78,8 @@ public class CampfireBlockEntityMixin extends BlockEntity {
     }
 
     @Override
-    public void resetBlock() {
-        super.resetBlock();
+    public void updateContainingBlockInfo() {
+        super.updateContainingBlockInfo();
         this.checkSleepState();
     }
 }

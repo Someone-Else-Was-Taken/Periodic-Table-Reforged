@@ -1,6 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.chunk.no_locking;
 
-import net.minecraft.world.chunk.PalettedContainer;
+import net.minecraft.util.palette.PalettedContainer;
+//import net.minecraft.world.chunk.PalettedContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 

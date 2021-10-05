@@ -5,7 +5,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.entity.Entity;
-import net.minecraft.server.world.ServerWorld;
+//import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.server.ServerWorld;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,8 +23,8 @@ public class ServerWorldMixin {
     @Redirect(
             method = "tick",
             slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/entity/boss/dragon/EnderDragonFight;tick()V"),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;loadEntityUnchecked(Lnet/minecraft/entity/Entity;)V")
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/world/end/DragonFightManager;tick()V"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/world/server/ServerWorld;onEntityAdded(Lnet/minecraft/entity/Entity;)V")
             ),
             at = @At(
                     remap = false,

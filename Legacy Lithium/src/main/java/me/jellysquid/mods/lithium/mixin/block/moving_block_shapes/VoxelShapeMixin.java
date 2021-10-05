@@ -2,8 +2,10 @@ package me.jellysquid.mods.lithium.mixin.block.moving_block_shapes;
 
 import me.jellysquid.mods.lithium.common.shapes.OffsetVoxelShapeCache;
 import me.jellysquid.mods.lithium.common.util.tuples.FinalObject;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.Direction;
+//import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.shapes.VoxelShape;
+//import net.minecraft.util.shape.VoxelShape;
 import org.spongepowered.asm.mixin.Mixin;
 
 
@@ -44,6 +46,6 @@ public class VoxelShapeMixin implements OffsetVoxelShapeCache {
         if (offset == 0f) {
             return 0; //can treat offsetting by 0 in all directions the same
         }
-        return (int) (2 * offset) + 2 * direction.getId();
+        return (int) (2 * offset) + 2 * direction.getIndex();
     }
 }

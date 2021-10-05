@@ -1,10 +1,11 @@
 package me.jellysquid.mods.lithium.mixin.ai.pathing;
 
-import me.jellysquid.mods.lithium.api.pathing.BlockPathingBehavior;
+//import me.jellysquid.mods.lithium.api.pathing.BlockPathingBehavior;
 import me.jellysquid.mods.lithium.common.ai.pathing.PathNodeDefaults;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.ai.pathing.PathNodeType;
+//import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.pathfinding.PathNodeType;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Block.class)

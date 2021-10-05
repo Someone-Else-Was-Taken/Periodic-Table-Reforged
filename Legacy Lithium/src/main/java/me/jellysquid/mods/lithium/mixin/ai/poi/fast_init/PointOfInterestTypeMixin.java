@@ -4,7 +4,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import me.jellysquid.mods.lithium.common.world.interests.PointOfInterestTypeHelper;
 import net.minecraft.block.BlockState;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.village.PointOfInterestType;
+//import net.minecraft.world.poi.PointOfInterestType;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -20,11 +21,11 @@ public class PointOfInterestTypeMixin {
     @Mutable
     @Shadow
     @Final
-    private static Map<BlockState, PointOfInterestType> BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE;
+    private static Map<BlockState, PointOfInterestType> POIT_BY_BLOCKSTATE;
 
     static {
-        BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE = new Reference2ReferenceOpenHashMap<>(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE);
+        POIT_BY_BLOCKSTATE = new Reference2ReferenceOpenHashMap<>(POIT_BY_BLOCKSTATE);
 
-        PointOfInterestTypeHelper.init(new ObjectArraySet<>(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.keySet()));
+        PointOfInterestTypeHelper.init(new ObjectArraySet<>(POIT_BY_BLOCKSTATE.keySet()));
     }
 }
