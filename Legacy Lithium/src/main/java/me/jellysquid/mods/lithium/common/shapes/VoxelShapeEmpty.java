@@ -2,10 +2,14 @@ package me.jellysquid.mods.lithium.common.shapes;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelSet;
-import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
+//import net.minecraft.util.math.Box;
+//import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapePart;
+//import net.minecraft.util.shape.VoxelSet;
+//import net.minecraft.util.shape.VoxelShape;
 
 /**
  * An efficient implementation of {@link VoxelShape} for a shape with no vertices. Vanilla normally represents this
@@ -16,12 +20,12 @@ import net.minecraft.util.shape.VoxelShape;
 public class VoxelShapeEmpty extends VoxelShape implements VoxelShapeCaster {
     private static final DoubleList EMPTY_LIST = DoubleArrayList.wrap(new double[]{0.0D});
 
-    public VoxelShapeEmpty(VoxelSet voxels) {
+    public VoxelShapeEmpty(VoxelShapePart voxels) {
         super(voxels);
     }
 
     @Override
-    public DoubleList getPointPositions(Direction.Axis axis) {
+    public DoubleList getValues(Direction.Axis axis) {
         return EMPTY_LIST;
     }
 
@@ -31,12 +35,12 @@ public class VoxelShapeEmpty extends VoxelShape implements VoxelShapeCaster {
     }
 
     @Override
-    public double getMin(Direction.Axis axis) {
+    public double getStart(Direction.Axis axis) {
         return Double.POSITIVE_INFINITY;
     }
 
     @Override
-    public double getMax(Direction.Axis axis) {
+    public double getEnd(Direction.Axis axis) {
         return Double.NEGATIVE_INFINITY;
     }
 
@@ -46,7 +50,7 @@ public class VoxelShapeEmpty extends VoxelShape implements VoxelShapeCaster {
     }
 
     @Override
-    public boolean intersects(Box box, double x, double y, double z) {
+    public boolean intersects(AxisAlignedBB box, double x, double y, double z) {
         return false;
     }
 }

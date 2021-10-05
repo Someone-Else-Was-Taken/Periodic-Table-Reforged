@@ -1,6 +1,7 @@
 package me.jellysquid.mods.lithium.common.util.collections;
 
-import org.jetbrains.annotations.NotNull;
+import org.antlr.v4.runtime.misc.NotNull;
+//import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;

@@ -22,7 +22,7 @@
     "mixins": [
         "lithium.mixins.json"
     ],
-    "accessWidener": "lithium.accesswidener",
+    "accessWidener": "accesstransformer.cfg",
     "depends": {
         "fabricloader": ">=0.10.5",
         "minecraft": ["1.16.2", "1.16.3", "1.16.4", "1.16.5"]

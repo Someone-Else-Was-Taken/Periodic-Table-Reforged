@@ -4,7 +4,8 @@ import com.google.common.collect.Iterators;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
-import org.jetbrains.annotations.NotNull;
+import org.antlr.v4.runtime.misc.NotNull;
+//import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -176,7 +177,8 @@ public class MaskedTickingBlockEntityList<T> implements List<T> {
     }
 
     @Override
-    public @NotNull Iterator<T> iterator() {
+    public @NotNull
+    Iterator<T> iterator() {
         return Iterators.unmodifiableIterator(this.allElements2Index.keySet().iterator());
     }
 
