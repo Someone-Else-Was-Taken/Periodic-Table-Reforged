@@ -1,6 +1,7 @@
 package net.coderbot.iris.gl.uniform;
 
-import net.coderbot.iris.vendored.joml.Matrix4f;
+//import net.coderbot.iris.vendored.joml.Matrix4f;
+import net.minecraft.util.math.vector.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL21;
 
@@ -26,7 +27,7 @@ public class JomlMatrixUniform extends Uniform {
 		if (!newValue.equals(cachedValue)) {
 			cachedValue = new Matrix4f(newValue);
 
-			cachedValue.get(buffer);
+			cachedValue.write(buffer);
 			buffer.rewind();
 
 			GL21.glUniformMatrix4fv(location, false, buffer);

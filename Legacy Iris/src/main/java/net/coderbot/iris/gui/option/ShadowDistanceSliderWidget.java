@@ -1,11 +1,14 @@
 package net.coderbot.iris.gui.option;
 
-import net.minecraft.client.gui.widget.DoubleOptionSliderWidget;
-import net.minecraft.client.options.DoubleOption;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.GameSettings;
+//import net.minecraft.client.gui.widget.DoubleOptionSliderWidget;
+import net.minecraft.client.gui.widget.OptionSlider;
+import net.minecraft.client.settings.SliderPercentageOption;
+//import net.minecraft.client.options.DoubleOption;
+//import net.minecraft.client.options.GameOptions;
 
-public class ShadowDistanceSliderWidget extends DoubleOptionSliderWidget {
-	public ShadowDistanceSliderWidget(GameOptions gameOptions, int x, int y, int width, int height, DoubleOption option) {
+public class ShadowDistanceSliderWidget extends OptionSlider {
+	public ShadowDistanceSliderWidget(GameSettings gameOptions, int x, int y, int width, int height, SliderPercentageOption option) {
 		super(gameOptions, x, y, width, height, option);
 	}
 

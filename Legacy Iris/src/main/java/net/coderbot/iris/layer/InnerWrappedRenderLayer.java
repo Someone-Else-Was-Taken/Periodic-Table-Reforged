@@ -4,14 +4,16 @@ import net.coderbot.batchedentityrendering.impl.WrappableRenderLayer;
 import net.coderbot.iris.mixin.renderlayer.RenderLayerAccessor;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.renderer.RenderState;
+import net.minecraft.client.renderer.RenderType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
 
-public class InnerWrappedRenderLayer extends RenderLayer implements WrappableRenderLayer {
-	private final RenderPhase extra;
-	private final RenderLayer wrapped;
+public class InnerWrappedRenderLayer extends RenderType implements WrappableRenderLayer {
+	private final RenderState extra;
+	private final RenderType wrapped;
 
 	public InnerWrappedRenderLayer(String name, RenderLayer wrapped, RenderPhase extra) {
 		super(name, wrapped.getVertexFormat(), wrapped.getDrawMode(), wrapped.getExpectedBufferSize(),

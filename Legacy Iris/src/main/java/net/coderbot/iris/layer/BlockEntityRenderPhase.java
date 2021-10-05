@@ -1,9 +1,10 @@
 package net.coderbot.iris.layer;
 
 import net.coderbot.iris.uniforms.CapturedRenderingState;
-import net.minecraft.client.render.RenderPhase;
+//import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.renderer.RenderState;
 
-public final class BlockEntityRenderPhase extends RenderPhase {
+public final class BlockEntityRenderPhase extends RenderState {
 	private static final BlockEntityRenderPhase UNIDENTIFIED = new BlockEntityRenderPhase(-1);
 
 	private final int entityId;

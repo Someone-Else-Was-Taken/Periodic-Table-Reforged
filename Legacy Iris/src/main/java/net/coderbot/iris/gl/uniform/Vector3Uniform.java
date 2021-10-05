@@ -2,11 +2,14 @@ package net.coderbot.iris.gl.uniform;
 
 import java.util.function.Supplier;
 
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.math.vector.Vector4f;
 import org.lwjgl.opengl.GL21;
 
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.client.util.math.Vector4f;
-import net.minecraft.util.math.Vec3d;
+//import net.minecraft.client.util.math.Vector3f;
+//import net.minecraft.client.util.math.Vector4f;
+//import net.minecraft.util.math.Vec3d;
 
 public class Vector3Uniform extends Uniform {
 	private final Vector3f cachedValue;
@@ -19,11 +22,11 @@ public class Vector3Uniform extends Uniform {
 		this.value = value;
 	}
 
-	static Vector3Uniform converted(int location, Supplier<Vec3d> value) {
+	static Vector3Uniform converted(int location, Supplier<Vector3d> value) {
 		Vector3f held = new Vector3f();
 
 		return new Vector3Uniform(location, () -> {
-			Vec3d updated = value.get();
+			Vector3d updated = value.get();
 
 			held.set((float) updated.x, (float) updated.y, (float) updated.z);
 

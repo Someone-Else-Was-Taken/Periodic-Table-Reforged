@@ -1,12 +1,18 @@
 package net.coderbot.iris.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+//import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.gui.AbstractGui;
+//import net.minecraft.client.gui.DrawableHelper;
+//import net.minecraft.client.sound.PositionedSoundInstance;
+//import net.minecraft.client.util.math.MatrixStack;
+//import net.minecraft.sound.SoundEvents;
+//import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 
 /**
  * Class serving as abstraction and
@@ -18,12 +24,12 @@ import net.minecraft.util.Identifier;
  * some code that will be changed.
  */
 public final class GuiUtil {
-	private static final Identifier IRIS_WIDGETS_TEX = new Identifier("iris", "textures/gui/widgets.png");
+	private static final ResourceLocation IRIS_WIDGETS_TEX = new ResourceLocation("iris", "textures/gui/widgets.png");
 
 	private GuiUtil() {}
 
-	private static MinecraftClient client() {
-		return MinecraftClient.getInstance();
+	private static Minecraft client() {
+		return Minecraft.getInstance();
 	}
 
 	/**
@@ -63,13 +69,13 @@ public final class GuiUtil {
 		RenderSystem.enableTexture();
 
 		// Top left section
-		DrawableHelper.drawTexture(matrices, x, y, 0, vOffset, halfWidth, halfHeight, 256, 256);
+		AbstractGui.blit(matrices, x, y, 0, vOffset, halfWidth, halfHeight, 256, 256);
 		// Top right section
-		DrawableHelper.drawTexture(matrices, x + halfWidth, y, 200 - (width - halfWidth), vOffset, width - halfWidth, halfHeight, 256, 256);
+		AbstractGui.blit(matrices, x + halfWidth, y, 200 - (width - halfWidth), vOffset, width - halfWidth, halfHeight, 256, 256);
 		// Bottom left section
-		DrawableHelper.drawTexture(matrices, x, y + halfHeight, 0, vOffset + (20 - (height - halfHeight)), halfWidth, height - halfHeight, 256, 256);
+		AbstractGui.blit(matrices, x, y + halfHeight, 0, vOffset + (20 - (height - halfHeight)), halfWidth, height - halfHeight, 256, 256);
 		// Bottom right section
-		DrawableHelper.drawTexture(matrices, x + halfWidth, y + halfHeight, 200 - (width - halfWidth), vOffset + (20 - (height - halfHeight)), width - halfWidth, height - halfHeight, 256, 256);
+		AbstractGui.blit(matrices, x + halfWidth, y + halfHeight, 200 - (width - halfWidth), vOffset + (20 - (height - halfHeight)), width - halfWidth, height - halfHeight, 256, 256);
 	}
 
 	/**
@@ -80,6 +86,6 @@ public final class GuiUtil {
 	 * or other action.
 	 */
 	public static void playButtonClickSound() {
-		client().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1));
+		client().getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1));
 	}
 }

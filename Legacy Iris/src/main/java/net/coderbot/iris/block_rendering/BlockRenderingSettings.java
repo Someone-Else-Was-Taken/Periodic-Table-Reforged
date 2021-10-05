@@ -1,7 +1,9 @@
 package net.coderbot.iris.block_rendering;
 
 import net.coderbot.iris.shaderpack.IdMap;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
+//import org.jetbrains.annotations.Nullable;
 
 public class BlockRenderingSettings {
 	public static final BlockRenderingSettings INSTANCE = new BlockRenderingSettings();

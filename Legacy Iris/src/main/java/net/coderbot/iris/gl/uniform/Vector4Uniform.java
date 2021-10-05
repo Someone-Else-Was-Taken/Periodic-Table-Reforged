@@ -2,9 +2,10 @@ package net.coderbot.iris.gl.uniform;
 
 import java.util.function.Supplier;
 
+import net.minecraft.util.math.vector.Vector4f;
 import org.lwjgl.opengl.GL21;
 
-import net.minecraft.client.util.math.Vector4f;
+//import net.minecraft.client.util.math.Vector4f;
 
 public class Vector4Uniform extends Uniform {
 	private final Vector4f cachedValue;
