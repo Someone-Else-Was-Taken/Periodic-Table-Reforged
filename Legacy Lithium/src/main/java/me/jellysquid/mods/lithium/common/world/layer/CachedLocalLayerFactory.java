@@ -24,7 +24,7 @@ public final class CachedLocalLayerFactory {
         });
     }
 
-    public static <R extends IArea> IAreaFactory<R> createParented(IAreaTransformer1 layer, CloneableContext<R> context, LayerFactory<R> parent) {
+    public static <R extends IArea> IAreaFactory<R> createParented(IAreaTransformer1 layer, CloneableContext<R> context, IAreaFactory<R> parent) {
         return createMemoized(() -> {
             IExtendedNoiseRandom<R> clonedContext = context.cloneContext();
             R parentSampler = parent.make();
@@ -36,7 +36,7 @@ public final class CachedLocalLayerFactory {
         });
     }
 
-    public static <R extends IArea> IAreaFactory<R> createMerging(IAreaTransformer2 layer, CloneableContext<R> context, LayerFactory<R> layer1, LayerFactory<R> layer2) {
+    public static <R extends IArea> IAreaFactory<R> createMerging(IAreaTransformer2 layer, CloneableContext<R> context, IAreaFactory<R> layer1, IAreaFactory<R> layer2) {
         return createMemoized(() -> {
             IExtendedNoiseRandom<R> clonedContext = context.cloneContext();
             R sampler1 = layer1.make();

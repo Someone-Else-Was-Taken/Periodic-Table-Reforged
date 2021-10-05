@@ -11,6 +11,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.SectionPos;
 import net.minecraft.village.PointOfInterestData;
 import net.minecraft.village.PointOfInterestManager;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.storage.RegionSectionCache;
 //import net.minecraft.world.poi.PointOfInterestSet;

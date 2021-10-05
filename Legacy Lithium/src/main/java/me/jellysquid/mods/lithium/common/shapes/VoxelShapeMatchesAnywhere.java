@@ -1,15 +1,15 @@
 package me.jellysquid.mods.lithium.common.shapes;
 
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import net.minecraft.util.function.BooleanBiFunction;
+//import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapePart;
-import net.minecraft.util.shape.VoxelSet;
-import net.minecraft.util.shape.VoxelShape;
+//import net.minecraft.util.shape.VoxelSet;
+//import net.minecraft.util.shape.VoxelShape;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static net.minecraft.util.math.Direction.Axis.*;
+import static net.minecraft.util.Direction.Axis.*;
 
 public class VoxelShapeMatchesAnywhere {
 

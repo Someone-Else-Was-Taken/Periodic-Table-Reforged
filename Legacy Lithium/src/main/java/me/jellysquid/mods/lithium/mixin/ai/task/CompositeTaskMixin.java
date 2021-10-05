@@ -34,7 +34,7 @@ public class CompositeTaskMixin<E extends LivingEntity> {
      * @author JellySquid
      */
     @Overwrite
-    protected boolean shouldContinueExecuting(ServerWorld world, E entity, long time) {
+    public boolean shouldContinueExecuting(ServerWorld world, E entity, long time) {
         for (Task<? super E> task : WeightedListIterable.cast(this.field_220419_e)) {
             if (task.getStatus() == Task.Status.RUNNING) {
                 if (task.shouldContinueExecuting(world, entity, time)) {

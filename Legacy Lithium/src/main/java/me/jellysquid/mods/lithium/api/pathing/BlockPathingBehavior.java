@@ -1,10 +1,11 @@
 package me.jellysquid.mods.lithium.api.pathing;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
-import net.minecraft.entity.ai.pathing.PathNodeType;
+//import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+//import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
+//import net.minecraft.world.BlockView;
 
 /**
  * Provides the ability for mods to specify what {@link PathNodeType} their block uses for path-finding. This exists

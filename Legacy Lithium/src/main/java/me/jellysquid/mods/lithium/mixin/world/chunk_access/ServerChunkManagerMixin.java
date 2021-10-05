@@ -2,7 +2,7 @@ package me.jellysquid.mods.lithium.mixin.world.chunk_access;
 
 import com.mojang.datafixers.util.Either;
 import me.jellysquid.mods.lithium.common.world.chunk.ChunkHolderExtended;
-import net.minecraft.server.world.*;
+//import net.minecraft.server.world.*;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;

@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.goal.AvoidEntityGoal;
 //import net.minecraft.entity.ai.goal.FleeEntityGoal;
 //import net.minecraft.entity.mob.PathAwareEntity;
 //import net.minecraft.util.math.Box;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,7 +38,7 @@ public class FleeEntityGoalMixin<T extends LivingEntity> {
                     target = "Lnet/minecraft/world/World;getClosestEntity(Ljava/lang/Class;Lnet/minecraft/entity/EntityPredicate;Lnet/minecraft/entity/LivingEntity;DDDLnet/minecraft/util/math/AxisAlignedBB;)Lnet/minecraft/entity/LivingEntity;"
             )
     )
-    private T redirectGetNearestEntity(World world, Class<? extends T> entityClass, EntityPredicate targetPredicate, LivingEntity entity, double x, double y, double z, Box box) {
+    private T redirectGetNearestEntity(World world, Class<? extends T> entityClass, EntityPredicate targetPredicate, LivingEntity entity, double x, double y, double z, AxisAlignedBB box) {
         return this.tracker.getClosestEntity(box, targetPredicate);
     }
 }
