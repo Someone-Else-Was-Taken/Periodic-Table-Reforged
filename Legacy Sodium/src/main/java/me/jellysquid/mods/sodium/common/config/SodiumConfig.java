@@ -102,17 +102,17 @@ public class SodiumConfig {
 
         if(FMLLoader.getLoadingModList().getModFileById("quark") != null)
         {
-            this.options.get("features.item").addModOverride(false, "quark");
+            this.options.get("mixin.features.item").addModOverride(false, "quark");
         }
 
         if(FMLLoader.getLoadingModList().getModFileById("abnormals_core") != null)
         {
-            this.options.get("features.world_ticking").addModOverride(false, "quark");
+            this.options.get("mixin.features.world_ticking").addModOverride(false, "quark");
         }
 
         if(FMLLoader.getLoadingModList().getModFileById("dynamictrees") != null)
         {
-            this.options.get("features.world_ticking").addModOverride(false, "dynamictrees");
+            this.options.get("mixin.features.world_ticking").addModOverride(false, "dynamictrees");
         }
 
     }
