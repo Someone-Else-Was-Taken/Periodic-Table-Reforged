@@ -3,18 +3,12 @@ package me.jellysquid.mods.lithium.common.shapes;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import net.minecraft.util.AxisRotation;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-//import net.minecraft.util.math.AxisCycleDirection;
-//import net.minecraft.util.math.Box;
-//import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapePart;
-import net.minecraft.util.math.shapes.VoxelShapes;
-//import net.minecraft.util.shape.VoxelSet;
-//import net.minecraft.util.shape.VoxelShape;
-//import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.util.math.AxisCycleDirection;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelSet;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 
 import java.util.List;
 
@@ -33,7 +27,7 @@ public class VoxelShapeSimpleCube extends VoxelShape implements VoxelShapeCaster
     final double minX, minY, minZ, maxX, maxY, maxZ;
     public final boolean isTiny;
 
-    public VoxelShapeSimpleCube(VoxelShapePart voxels, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+    public VoxelShapeSimpleCube(VoxelSet voxels, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
         super(voxels);
 
         this.minX = minX;
@@ -50,12 +44,12 @@ public class VoxelShapeSimpleCube extends VoxelShape implements VoxelShapeCaster
     }
 
     @Override
-    public VoxelShape withOffset(double x, double y, double z) {
-        return new VoxelShapeSimpleCube(this.part, this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
+    public VoxelShape offset(double x, double y, double z) {
+        return new VoxelShapeSimpleCube(this.voxels, this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
     }
 
     @Override
-    public double getAllowedOffset(AxisRotation cycleDirection, AxisAlignedBB box, double maxDist) {
+    public double calculateMaxDistance(AxisCycleDirection cycleDirection, Box box, double maxDist) {
         if (Math.abs(maxDist) < EPSILON) {
             return 0.0D;
         }
@@ -69,7 +63,7 @@ public class VoxelShapeSimpleCube extends VoxelShape implements VoxelShapeCaster
         return maxDist;
     }
 
-    private double calculatePenetration(AxisRotation dir, AxisAlignedBB box, double maxDist) {
+    private double calculatePenetration(AxisCycleDirection dir, Box box, double maxDist) {
         switch (dir) {
             case NONE:
                 return VoxelShapeSimpleCube.calculatePenetration(this.minX, this.maxX, box.minX, box.maxX, maxDist);
@@ -82,7 +76,7 @@ public class VoxelShapeSimpleCube extends VoxelShape implements VoxelShapeCaster
         }
     }
 
-    boolean intersects(AxisRotation dir, AxisAlignedBB box) {
+    boolean intersects(AxisCycleDirection dir, Box box) {
         switch (dir) {
             case NONE:
                 return lessThan(this.minY, box.maxY) && lessThan(box.minY, this.maxY) && lessThan(this.minZ, box.maxZ) && lessThan(box.minZ, this.maxZ);
@@ -120,27 +114,27 @@ public class VoxelShapeSimpleCube extends VoxelShape implements VoxelShapeCaster
     }
 
     @Override
-    public List<AxisAlignedBB> toBoundingBoxList() {
+    public List<Box> getBoundingBoxes() {
         return Lists.newArrayList(this.getBoundingBox());
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
-        return new AxisAlignedBB(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
+    public Box getBoundingBox() {
+        return new Box(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
     }
 
     @Override
-    public double getStart(Direction.Axis axis) {
-        return axis.getCoordinate(this.minX, this.minY, this.minZ);
+    public double getMin(Direction.Axis axis) {
+        return axis.choose(this.minX, this.minY, this.minZ);
     }
 
     @Override
-    public double getEnd(Direction.Axis axis) {
-        return axis.getCoordinate(this.maxX, this.maxY, this.maxZ);
+    public double getMax(Direction.Axis axis) {
+        return axis.choose(this.maxX, this.maxY, this.maxZ);
     }
 
     @Override
-    protected double getValueUnchecked(Direction.Axis axis, int index) {
+    protected double getPointPosition(Direction.Axis axis, int index) {
         if ((index < 0) || (index > 1)) {
             throw new ArrayIndexOutOfBoundsException();
         }
@@ -158,7 +152,7 @@ public class VoxelShapeSimpleCube extends VoxelShape implements VoxelShapeCaster
     }
 
     @Override
-    public DoubleList getValues(Direction.Axis axis) {
+    public DoubleList getPointPositions(Direction.Axis axis) {
         switch (axis) {
             case X:
                 return DoubleArrayList.wrap(new double[]{this.minX, this.maxX});
@@ -182,12 +176,12 @@ public class VoxelShapeSimpleCube extends VoxelShape implements VoxelShapeCaster
     }
 
     @Override
-    protected int getClosestIndex(Direction.Axis axis, double coord) {
-        if (coord < this.getStart(axis)) {
+    protected int getCoordIndex(Direction.Axis axis, double coord) {
+        if (coord < this.getMin(axis)) {
             return -1;
         }
 
-        if (coord >= this.getEnd(axis)) {
+        if (coord >= this.getMax(axis)) {
             return 1;
         }
 
@@ -199,7 +193,7 @@ public class VoxelShapeSimpleCube extends VoxelShape implements VoxelShapeCaster
     }
 
     @Override
-    public boolean intersects(AxisAlignedBB box, double x, double y, double z) {
+    public boolean intersects(Box box, double x, double y, double z) {
         return (box.minX < (this.maxX + x)) && (box.maxX > (this.minX + x)) &&
                 (box.minY < (this.maxY + y)) && (box.maxY > (this.minY + y)) &&
                 (box.minZ < (this.maxZ + z)) && (box.maxZ > (this.minZ + z));
@@ -207,7 +201,7 @@ public class VoxelShapeSimpleCube extends VoxelShape implements VoxelShapeCaster
 
 
     @Override
-    public void forEachBox(VoxelShapes.ILineConsumer boxConsumer) {
+    public void forEachBox(VoxelShapes.BoxConsumer boxConsumer) {
         boxConsumer.consume(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
     }
 }

@@ -3,14 +3,10 @@ package me.jellysquid.mods.lithium.mixin.entity.collisions;
 import me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions;
 import me.jellysquid.mods.lithium.common.entity.movement.BlockCollisionPredicate;
 import net.minecraft.entity.Entity;
-//import net.minecraft.util.math.Box;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.shapes.VoxelShape;
-//import net.minecraft.util.shape.VoxelShape;
-//import net.minecraft.world.CollisionView;
-//import net.minecraft.world.EntityView;
-import net.minecraft.world.ICollisionReader;
-import net.minecraft.world.IEntityReader;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.CollisionView;
+import net.minecraft.world.EntityView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
@@ -20,15 +16,15 @@ import java.util.stream.Stream;
 /**
  * Replaces collision testing methods with jumps to our own (faster) entity collision testing code.
  */
-@Mixin(ICollisionReader.class)
+@Mixin(CollisionView.class)
 public interface CollisionViewMixin {
     /**
      * @reason Use a faster implementation
      * @author JellySquid
      */
     @Overwrite
-    default Stream<VoxelShape> getBlockCollisionShapes(final Entity entity, AxisAlignedBB box) {
-        return LithiumEntityCollisions.getBlockCollisions((ICollisionReader) this, entity, box, BlockCollisionPredicate.ANY);
+    default Stream<VoxelShape> getBlockCollisions(final Entity entity, Box box) {
+        return LithiumEntityCollisions.getBlockCollisions((CollisionView) this, entity, box, BlockCollisionPredicate.ANY);
     }
 
     /**
@@ -36,12 +32,12 @@ public interface CollisionViewMixin {
      * @author JellySquid
      */
     @Overwrite
-    default boolean hasNoCollisions(Entity entity, AxisAlignedBB box, Predicate<Entity> predicate) {
-        boolean ret = !LithiumEntityCollisions.doesBoxCollideWithBlocks((ICollisionReader) this, entity, box, BlockCollisionPredicate.ANY);
+    default boolean isSpaceEmpty(Entity entity, Box box, Predicate<Entity> predicate) {
+        boolean ret = !LithiumEntityCollisions.doesBoxCollideWithBlocks((CollisionView) this, entity, box, BlockCollisionPredicate.ANY);
 
         // If no blocks were collided with, try to check for entity collisions if we can read entities
-        if (ret && this instanceof IEntityReader) {
-            ret = !LithiumEntityCollisions.doesBoxCollideWithEntities((IEntityReader) this, entity, box, predicate);
+        if (ret && this instanceof EntityView) {
+            ret = !LithiumEntityCollisions.doesBoxCollideWithEntities((EntityView) this, entity, box, predicate);
         }
 
         return ret;

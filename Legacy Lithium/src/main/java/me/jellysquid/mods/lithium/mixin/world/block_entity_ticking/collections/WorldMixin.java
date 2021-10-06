@@ -3,25 +3,17 @@ package me.jellysquid.mods.lithium.mixin.world.block_entity_ticking.collections;
 import me.jellysquid.mods.lithium.common.util.collections.BlockEntityList;
 import me.jellysquid.mods.lithium.common.util.collections.HashedReferenceList;
 import net.minecraft.block.BlockState;
-//import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.RegistryKey;
-//import net.minecraft.util.Tickable;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
-//import net.minecraft.util.profiler.Profiler;
-//import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.IWorld;
-//import net.minecraft.world.MutableWorldProperties;
+import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
-//import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.IChunk;
-//import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.storage.ISpawnWorldInfo;
+import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -34,45 +26,47 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @Mixin(World.class)
-public abstract class WorldMixin implements IWorld {
+public abstract class WorldMixin implements WorldAccess {
+    @Mutable
+    @Shadow
+    @Final
+    protected List<BlockEntity> unloadedBlockEntities;
+    @Shadow
+    @Final
+    public boolean isClient;
+    @Mutable
+    @Shadow
+    @Final
+    public List<BlockEntity> blockEntities;
 
     @Shadow
     @Final
-    public boolean isRemote;
+    public List<BlockEntity> tickingBlockEntities;
 
     @Mutable
     @Shadow
     @Final
-    public List<TileEntity> loadedTileEntityList;
+    protected List<BlockEntity> pendingBlockEntities;
 
     @Shadow
     @Final
-    public List<TileEntity> tickableTileEntities;
-
-    @Mutable
-    @Shadow
-    @Final
-    protected List<TileEntity> addedTileEntityList;
-
-    @Shadow
-    @Final
-    private Supplier<IProfiler> profiler;
+    private Supplier<Profiler> profiler;
 
     private BlockEntityList blockEntities$lithium;
     private BlockEntityList pendingBlockEntities$lithium;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void reinit(ISpawnWorldInfo properties, RegistryKey<World> registryKey, DimensionType dimensionType,
-                        Supplier<IProfiler> supplier, boolean bl, boolean bl2, long l, CallbackInfo ci) {
+    private void reinit(MutableWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType,
+                        Supplier<Profiler> supplier, boolean bl, boolean bl2, long l, CallbackInfo ci) {
         // Replace the fallback collections with our types as well
         // This won't guarantee mod compatibility, but at least it should fail loudly when it does
-        this.blockEntities$lithium = new BlockEntityList(this.loadedTileEntityList, false);
-        this.loadedTileEntityList = this.blockEntities$lithium;
+        this.blockEntities$lithium = new BlockEntityList(this.blockEntities, false);
+        this.blockEntities = this.blockEntities$lithium;
 
-        // Forge modifies World#tileEntitiesToBeRemoved to be a Set, so we can't use Lithium (Fabric)'s conversion from List to HashedReferenceList.
+        this.unloadedBlockEntities = new HashedReferenceList<>(this.unloadedBlockEntities);
 
-        this.pendingBlockEntities$lithium = new BlockEntityList(this.addedTileEntityList, true);
-        this.addedTileEntityList = this.pendingBlockEntities$lithium;
+        this.pendingBlockEntities$lithium = new BlockEntityList(this.pendingBlockEntities, true);
+        this.pendingBlockEntities = this.pendingBlockEntities$lithium;
     }
 
     /**
@@ -81,8 +75,8 @@ public abstract class WorldMixin implements IWorld {
      */
     @SuppressWarnings("OverwriteModifiers")
     @Overwrite
-    private TileEntity getPendingTileEntityAt(BlockPos pos) {
-        return this.pendingBlockEntities$lithium.getFirstNonRemovedBlockEntityAtPosition(pos.toLong());
+    private BlockEntity getPendingBlockEntity(BlockPos pos) {
+        return this.pendingBlockEntities$lithium.getFirstNonRemovedBlockEntityAtPosition(pos.asLong());
     }
 
     // We do not want the vanilla code for adding pending block entities to be ran. We'll inject later in
@@ -91,7 +85,7 @@ public abstract class WorldMixin implements IWorld {
             method = "tickBlockEntities",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/World;addedTileEntityList:Ljava/util/List;",
+                    target = "Lnet/minecraft/world/World;pendingBlockEntities:Ljava/util/List;",
                     ordinal = 0
             )
     )
@@ -102,12 +96,12 @@ public abstract class WorldMixin implements IWorld {
     // Add any pending block entities to the world.
     @Inject(method = "tickBlockEntities", at = @At("RETURN"))
     private void postBlockEntityTick(CallbackInfo ci) {
-        IProfiler profiler = this.profiler.get();
-        profiler.startSection("pendingBlockEntities$lithium");
+        Profiler profiler = this.profiler.get();
+        profiler.push("pendingBlockEntities$lithium");
 
         // The usage of a for-index loop is invalid with our optimized implementation, so use an iterator here
         // The overhead of this is essentially non-zero and doesn't matter in this code.
-        for (TileEntity entity : this.addedTileEntityList) {
+        for (BlockEntity entity : this.pendingBlockEntities) {
             if (entity.isRemoved()) {
                 continue;
             }
@@ -115,45 +109,46 @@ public abstract class WorldMixin implements IWorld {
             // Try-add directly to avoid the double map lookup, helps speed things along
             if (this.blockEntities$lithium.addIfAbsent(entity)) {
                 //vanilla has an extra updateListeners(...) call on the client here, but the one below should be enough
-                if (entity instanceof ITickableTileEntity) {
-                    this.tickableTileEntities.add(entity);
+                if (entity instanceof Tickable) {
+                    this.tickingBlockEntities.add(entity);
                 }
 
                 BlockPos pos = entity.getPos();
 
                 // Avoid the double chunk lookup (isLoaded followed by getChunk) by simply inlining getChunk call
                 // pass this.isClient instead of false, so the updateListeners call is always executed on the client (like vanilla)
-                IChunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, this.isRemote);
+                Chunk chunk = this.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, this.isClient);
 
                 if (chunk != null) {
                     BlockState state = chunk.getBlockState(pos);
-                    chunk.addTileEntity(pos, entity);
+                    chunk.setBlockEntity(pos, entity);
 
-                    this.notifyBlockUpdate(pos, state, state, 3);
+                    this.updateListeners(pos, state, state, 3);
                 }
             }
         }
 
-        this.addedTileEntityList.clear();
+        this.pendingBlockEntities.clear();
 
-        profiler.endSection();
+        profiler.pop();
     }
 
     // We don't want this code wasting a ton of CPU time trying to scan through our optimized collection
     // Instead, we simply run the code on those at the same position directly
     @Redirect(
-            method = "setTileEntity",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/tileentity/TileEntity;setWorldAndPos(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V"
+            method = "setBlockEntity",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/block/entity/BlockEntity;setLocation(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V"
             )
     )
-    private void setLocationAndRemoveAllAtPosition(TileEntity blockEntity, World world, BlockPos pos) {
-        blockEntity.setWorldAndPos(world, pos);
+    private void setLocationAndRemoveAllAtPosition(BlockEntity blockEntity, World world, BlockPos pos) {
+        blockEntity.setLocation(world, pos);
         this.pendingBlockEntities$lithium.markRemovedAndRemoveAllAtPosition(pos);
     }
 
     @Redirect(
-            method = "setTileEntity",
+            method = "setBlockEntity",
             at = @At(
                     value = "INVOKE",
                     target = "Ljava/util/List;iterator()Ljava/util/Iterator;"
@@ -164,5 +159,5 @@ public abstract class WorldMixin implements IWorld {
     }
 
     @Shadow
-    public abstract void notifyBlockUpdate(BlockPos pos, BlockState oldState, BlockState newState, int flags);
+    public abstract void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags);
 }

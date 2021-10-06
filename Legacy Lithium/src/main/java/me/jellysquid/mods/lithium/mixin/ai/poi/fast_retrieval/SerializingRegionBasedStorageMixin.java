@@ -7,13 +7,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import me.jellysquid.mods.lithium.common.util.Collector;
 import me.jellysquid.mods.lithium.common.util.collections.ListeningLong2ObjectOpenHashMap;
 import me.jellysquid.mods.lithium.common.world.interests.RegionBasedStorageSectionAccess;
-//import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.util.datafix.DefaultTypeReferences;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.util.math.ChunkPos;
-//import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.SectionPos;
-import net.minecraft.world.chunk.storage.RegionSectionCache;
-//import net.minecraft.world.storage.SerializingRegionBasedStorage;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.storage.SerializingRegionBasedStorage;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -30,25 +27,25 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // We don't get a choice, this is Minecraft's doing!
-@Mixin(RegionSectionCache.class)
+@Mixin(SerializingRegionBasedStorage.class)
 public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBasedStorageSectionAccess<R> {
     @Mutable
     @Shadow
     @Final
-    private Long2ObjectMap<Optional<R>> data;
+    private Long2ObjectMap<Optional<R>> loadedElements;
 
     @Shadow
-    protected abstract Optional<R> func_219113_d(long pos); //Is this used for anything? lithium-fabric has it, so I'm leaving it here -Aeiou
+    protected abstract Optional<R> get(long pos);
 
     @Shadow
-    protected abstract void func_219107_b(ChunkPos pos);
+    protected abstract void loadDataAt(ChunkPos pos);
 
     private Long2ObjectOpenHashMap<BitSet> columns;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(File directory, Function<Runnable, Codec<R>> function, Function<Runnable, R> function2, DataFixer dataFixer, DefaultTypeReferences dataFixTypes, boolean sync, CallbackInfo ci) {
+    private void init(File directory, Function<Runnable, Codec<R>> function, Function<Runnable, R> function2, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean sync, CallbackInfo ci) {
         this.columns = new Long2ObjectOpenHashMap<>();
-        this.data = new ListeningLong2ObjectOpenHashMap<>(this::onEntryAdded, this::onEntryRemoved);
+        this.loadedElements = new ListeningLong2ObjectOpenHashMap<>(this::onEntryAdded, this::onEntryRemoved);
     }
 
     private void onEntryRemoved(long key, Optional<R> value) {
@@ -57,17 +54,17 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
     }
 
     private void onEntryAdded(long key, Optional<R> value) {
-        int y = SectionPos.extractY(key);
+        int y = ChunkSectionPos.unpackY(key);
 
         // We only care about items belonging to a valid sub-chunk
         if (y < 0 || y >= 16) {
             return;
         }
 
-        int x = SectionPos.extractX(key);
-        int z = SectionPos.extractZ(key);
+        int x = ChunkSectionPos.unpackX(key);
+        int z = ChunkSectionPos.unpackZ(key);
 
-        long pos = ChunkPos.asLong(x, z);
+        long pos = ChunkPos.toLong(x, z);
 
         BitSet flags = this.columns.get(pos);
 
@@ -88,7 +85,7 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
         }
 
         return flags.stream()
-                .mapToObj((chunkY) -> this.data.get(SectionPos.asLong(chunkX, chunkY, chunkZ)).orElse(null))
+                .mapToObj((chunkY) -> this.loadedElements.get(ChunkSectionPos.asLong(chunkX, chunkY, chunkZ)).orElse(null))
                 .filter(Objects::nonNull);
     }
 
@@ -102,7 +99,7 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
         }
 
         for (int chunkY = flags.nextSetBit(0); chunkY >= 0; chunkY = flags.nextSetBit(chunkY + 1)) {
-            R obj = this.data.get(SectionPos.asLong(chunkX, chunkY, chunkZ)).orElse(null);
+            R obj = this.loadedElements.get(ChunkSectionPos.asLong(chunkX, chunkY, chunkZ)).orElse(null);
 
             if (obj != null && !consumer.collect(obj)) {
                 return false;
@@ -113,7 +110,7 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
     }
 
     private BitSet getCachedColumnInfo(int chunkX, int chunkZ) {
-        long pos = ChunkPos.asLong(chunkX, chunkZ);
+        long pos = ChunkPos.toLong(chunkX, chunkZ);
 
         BitSet flags = this.getColumnInfo(pos, false);
 
@@ -121,7 +118,7 @@ public abstract class SerializingRegionBasedStorageMixin<R> implements RegionBas
             return flags;
         }
 
-        this.func_219107_b(new ChunkPos(pos));
+        this.loadDataAt(new ChunkPos(pos));
 
         return this.getColumnInfo(pos, true);
     }

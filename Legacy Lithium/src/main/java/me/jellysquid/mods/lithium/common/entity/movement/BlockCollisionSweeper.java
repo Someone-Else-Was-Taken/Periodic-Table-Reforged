@@ -3,25 +3,17 @@ package me.jellysquid.mods.lithium.common.entity.movement;
 import me.jellysquid.mods.lithium.common.shapes.VoxelShapeCaster;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-//import net.minecraft.block.ShapeContext;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-//import net.minecraft.util.CuboidBlockIterator;
-//import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.CuboidBlockIterator;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
-//import net.minecraft.util.math.Box;
-import net.minecraft.util.math.CubeCoordinateIterator;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-//import net.minecraft.util.shape.VoxelShape;
-//import net.minecraft.util.shape.VoxelShapes;
-//import net.minecraft.world.BlockView;
-//import net.minecraft.world.CollisionView;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.ICollisionReader;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.CollisionView;
 
 import static me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions.EPSILON;
 
@@ -31,23 +23,23 @@ public class BlockCollisionSweeper {
     /**
      * The collision box being swept through the world.
      */
-    private final AxisAlignedBB box;
+    private final Box box;
 
     /**
      * The VoxelShape of the collision box being swept through the world.
      */
     private final VoxelShape shape;
 
-    private final ICollisionReader view;
-    private final ISelectionContext context;
-    private final CubeCoordinateIterator cuboidIt;
+    private final CollisionView view;
+    private final ShapeContext context;
+    private final CuboidBlockIterator cuboidIt;
 
     private VoxelShape collidedShape;
 
-    public BlockCollisionSweeper(ICollisionReader view, Entity entity, AxisAlignedBB box) {
+    public BlockCollisionSweeper(CollisionView view, Entity entity, Box box) {
         this.box = box;
-        this.shape = VoxelShapes.create(box);
-        this.context = entity == null ? ISelectionContext.dummy() : ISelectionContext.forEntity(entity);
+        this.shape = VoxelShapes.cuboid(box);
+        this.context = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
         this.view = view;
         this.cuboidIt = createVolumeIteratorForCollision(box);
     }
@@ -61,13 +53,13 @@ public class BlockCollisionSweeper {
     public boolean step() {
         this.collidedShape = null;
 
-        final CubeCoordinateIterator cuboidIt = this.cuboidIt;
+        final CuboidBlockIterator cuboidIt = this.cuboidIt;
 
-        if (!cuboidIt.hasNext()) {
+        if (!cuboidIt.step()) {
             return false;
         }
 
-        final int edgesHit = cuboidIt.numBoundariesTouched();
+        final int edgesHit = cuboidIt.getEdgeCoordinatesCount();
 
         if (edgesHit == 3) {
             return true;
@@ -77,14 +69,14 @@ public class BlockCollisionSweeper {
         final int y = cuboidIt.getY();
         final int z = cuboidIt.getZ();
 
-        final IBlockReader chunk = this.view.getBlockReader(x >> 4, z >> 4);
+        final BlockView chunk = this.view.getExistingChunk(x >> 4, z >> 4);
 
         if (chunk == null) {
             return true;
         }
 
         final BlockPos.Mutable mpos = this.mpos;
-        mpos.setPos(x, y, z);
+        mpos.set(x, y, z);
 
         final BlockState state = chunk.getBlockState(mpos);
 
@@ -111,7 +103,7 @@ public class BlockCollisionSweeper {
      * Returns an iterator which will include every block position that can contain a collision shape which can interact
      * with the {@param box}.
      */
-    private static CubeCoordinateIterator createVolumeIteratorForCollision(AxisAlignedBB box) {
+    private static CuboidBlockIterator createVolumeIteratorForCollision(Box box) {
         int minX = MathHelper.floor(box.minX - EPSILON) - 1;
         int maxX = MathHelper.floor(box.maxX + EPSILON) + 1;
         int minY = MathHelper.floor(box.minY - EPSILON) - 1;
@@ -119,7 +111,7 @@ public class BlockCollisionSweeper {
         int minZ = MathHelper.floor(box.minZ - EPSILON) - 1;
         int maxZ = MathHelper.floor(box.maxZ + EPSILON) + 1;
 
-        return new CubeCoordinateIterator(minX, minY, minZ, maxX, maxY, maxZ);
+        return new CuboidBlockIterator(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     /**
@@ -129,7 +121,7 @@ public class BlockCollisionSweeper {
      * @return True if the shape can be interacted with at the given edge boundary
      */
     private static boolean canInteractWithBlock(BlockState state, int edgesHit) {
-        return (edgesHit != 1 || state.isCollisionShapeLargerThanFullBlock()) && (edgesHit != 2 || state.getBlock() == Blocks.MOVING_PISTON);
+        return (edgesHit != 1 || state.exceedsCube()) && (edgesHit != 2 || state.getBlock() == Blocks.MOVING_PISTON);
     }
 
     /**
@@ -139,18 +131,18 @@ public class BlockCollisionSweeper {
      *
      * @return A {@link VoxelShape} which contains the shape representing that which was collided with, otherwise null
      */
-    private static VoxelShape getCollidedShape(AxisAlignedBB entityBox, VoxelShape entityShape, VoxelShape shape, int x, int y, int z) {
+    private static VoxelShape getCollidedShape(Box entityBox, VoxelShape entityShape, VoxelShape shape, int x, int y, int z) {
         if (shape instanceof VoxelShapeCaster) {
             if (((VoxelShapeCaster) shape).intersects(entityBox, x, y, z)) {
-                return shape.withOffset(x, y, z);
+                return shape.offset(x, y, z);
             } else {
                 return null;
             }
         }
 
-        shape = shape.withOffset(x, y, z);
+        shape = shape.offset(x, y, z);
 
-        if (VoxelShapes.compare(shape, entityShape, IBooleanFunction.AND)) {
+        if (VoxelShapes.matchesAnywhere(shape, entityShape, BooleanBiFunction.AND)) {
             return shape;
         }
 

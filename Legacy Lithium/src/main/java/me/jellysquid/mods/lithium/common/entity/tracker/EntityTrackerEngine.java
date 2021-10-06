@@ -6,11 +6,9 @@ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import me.jellysquid.mods.lithium.common.entity.tracker.nearby.NearbyEntityListener;
 import me.jellysquid.mods.lithium.common.entity.tracker.nearby.NearbyEntityListenerProvider;
 import net.minecraft.entity.LivingEntity;
-//import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableBoundingBox;
-import net.minecraft.util.math.SectionPos;
-//import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.ChunkSectionPos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +86,7 @@ public class EntityTrackerEngine {
 
         if (this.sectionsByEntity.containsKey(listener)) {
 
-            throw new IllegalStateException(errorMessageAlreadyListening(this.sectionsByEntity, listener, SectionPos.of(x, y, z)));
+            throw new IllegalStateException(errorMessageAlreadyListening(this.sectionsByEntity, listener, ChunkSectionPos.from(x, y, z)));
         }
 
         int yMin = Math.max(0, y - r);
@@ -136,21 +134,21 @@ public class EntityTrackerEngine {
             return;
         }
 
-        MutableBoundingBox before = new MutableBoundingBox(aX - radius, aY - radius, aZ - radius, aX + radius, aY + radius, aZ + radius);
-        MutableBoundingBox after = new MutableBoundingBox(aX - radius, aY - radius, aZ - radius, bX + radius, bY + radius, bZ + radius);
+        BlockBox before = new BlockBox(aX - radius, aY - radius, aZ - radius, aX + radius, aY + radius, aZ + radius);
+        BlockBox after = new BlockBox(aX - radius, aY - radius, aZ - radius, bX + radius, bY + radius, bZ + radius);
 
-        MutableBoundingBox merged = new MutableBoundingBox(before);
-        merged.expandTo(after);
+        BlockBox merged = new BlockBox(before);
+        merged.encompass(after);
 
         BlockPos.Mutable pos = new BlockPos.Mutable();
 
         for (int x = merged.minX; x <= merged.maxX; x++) {
             for (int y = merged.minY; y <= merged.maxY; y++) {
                 for (int z = merged.minZ; z <= merged.maxZ; z++) {
-                    pos.setPos(x, y, z);
+                    pos.set(x, y, z);
 
-                    boolean leaving = before.isVecInside(pos);
-                    boolean entering = after.isVecInside(pos);
+                    boolean leaving = before.contains(pos);
+                    boolean entering = after.contains(pos);
 
                     // Nothing to change
                     if (leaving == entering) {
@@ -185,11 +183,11 @@ public class EntityTrackerEngine {
     }
 
     private static long encode(int x, int y, int z) {
-        return SectionPos.asLong(x, y, z);
+        return ChunkSectionPos.asLong(x, y, z);
     }
 
-    private static SectionPos decode(long xyz) {
-        return SectionPos.from(xyz);
+    private static ChunkSectionPos decode(long xyz) {
+        return ChunkSectionPos.from(xyz);
     }
 
     private class TrackedEntityList {
@@ -250,7 +248,7 @@ public class EntityTrackerEngine {
     }
 
 
-    private static String errorMessageAlreadyListening(Reference2ReferenceOpenHashMap<NearbyEntityListener, List<TrackedEntityList>> sectionsByEntity, NearbyEntityListener listener, SectionPos newLocation) {
+    private static String errorMessageAlreadyListening(Reference2ReferenceOpenHashMap<NearbyEntityListener, List<TrackedEntityList>> sectionsByEntity, NearbyEntityListener listener, ChunkSectionPos newLocation) {
         StringBuilder builder = new StringBuilder();
         builder.append("Adding Entity listener a second time: ").append(listener.toString());
         builder.append("\n");

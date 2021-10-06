@@ -1,7 +1,6 @@
 package me.jellysquid.mods.lithium.mixin.math.fast_util;
 
-import net.minecraft.util.Direction;
-//import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -13,11 +12,11 @@ import java.util.Random;
 public class DirectionMixin {
     @Shadow
     @Final
-    private static Direction[] VALUES;
+    private static Direction[] ALL;
 
     @Shadow
     @Final
-    private int opposite;
+    private int idOpposite;
 
     /**
      * @reason Avoid the modulo/abs operations
@@ -25,7 +24,7 @@ public class DirectionMixin {
      */
     @Overwrite
     public Direction getOpposite() {
-        return VALUES[this.opposite];
+        return ALL[this.idOpposite];
     }
 
     /**
@@ -33,7 +32,7 @@ public class DirectionMixin {
      * @author JellySquid
      */
     @Overwrite
-    public static Direction getRandomDirection(Random rand) {
-        return VALUES[rand.nextInt(VALUES.length)];
+    public static Direction random(Random rand) {
+        return ALL[rand.nextInt(ALL.length)];
     }
 }

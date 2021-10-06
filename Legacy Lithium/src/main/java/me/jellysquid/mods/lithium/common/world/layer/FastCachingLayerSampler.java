@@ -3,10 +3,8 @@ package me.jellysquid.mods.lithium.common.world.layer;
 import it.unimi.dsi.fastutil.HashCommon;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-//import net.minecraft.world.biome.layer.util.CachingLayerSampler;
-//import net.minecraft.world.biome.layer.util.LayerOperator;
-import net.minecraft.world.gen.area.LazyArea;
-import net.minecraft.world.gen.layer.traits.IPixelTransformer;
+import net.minecraft.world.biome.layer.util.CachingLayerSampler;
+import net.minecraft.world.biome.layer.util.LayerOperator;
 
 import java.util.Arrays;
 
@@ -20,13 +18,13 @@ import java.util.Arrays;
  * values being returned. This implementation works in complement with a patch to the BiomeLayerSampler that initializes
  * the biome layer stack within a thread-local
  */
-public final class FastCachingLayerSampler extends LazyArea {
+public final class FastCachingLayerSampler extends CachingLayerSampler {
     private final long[] keys;
     private final int[] values;
 
     private final int mask;
 
-    public FastCachingLayerSampler(int capacity, IPixelTransformer operator) {
+    public FastCachingLayerSampler(int capacity, LayerOperator operator) {
         super(null, capacity, operator);
 
         capacity = MathHelper.smallestEncompassingPowerOfTwo(capacity);
@@ -38,7 +36,7 @@ public final class FastCachingLayerSampler extends LazyArea {
     }
 
     @Override
-    public int getValue(int x, int z) {
+    public int sample(int x, int z) {
         long key = key(x, z);
         int idx = hash(key) & this.mask;
 
@@ -48,7 +46,7 @@ public final class FastCachingLayerSampler extends LazyArea {
         }
 
         // cache miss: sample the operator and put the result into our cache entry
-        int sampled = this.pixelTransformer.apply(x, z);
+        int sampled = this.operator.apply(x, z);
         this.values[idx] = sampled;
         this.keys[idx] = key;
 
@@ -60,6 +58,6 @@ public final class FastCachingLayerSampler extends LazyArea {
     }
 
     private static long key(int x, int z) {
-        return ChunkPos.asLong(x, z);
+        return ChunkPos.toLong(x, z);
     }
 }

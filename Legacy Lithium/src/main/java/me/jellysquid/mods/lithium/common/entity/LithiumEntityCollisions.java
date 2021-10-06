@@ -5,16 +5,11 @@ import me.jellysquid.mods.lithium.common.entity.movement.ChunkAwareBlockCollisio
 import me.jellysquid.mods.lithium.common.util.Producer;
 import me.jellysquid.mods.lithium.common.world.WorldHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-//import net.minecraft.util.math.Box;
-import net.minecraft.util.math.shapes.VoxelShape;
-//import net.minecraft.util.shape.VoxelShape;
-//import net.minecraft.util.shape.VoxelShapes;
-//import net.minecraft.world.CollisionView;
-//import net.minecraft.world.EntityView;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.world.ICollisionReader;
-import net.minecraft.world.IEntityReader;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.CollisionView;
+import net.minecraft.world.EntityView;
 import net.minecraft.world.border.WorldBorder;
 
 import java.util.Iterator;
@@ -37,7 +32,7 @@ public class LithiumEntityCollisions {
      * The {@link BlockCollisionPredicate} can be used to filter which blocks will be considered for collision testing
      * during iteration.
      */
-    public static Stream<VoxelShape> getBlockCollisions(ICollisionReader world, Entity entity, AxisAlignedBB box, BlockCollisionPredicate predicate) {
+    public static Stream<VoxelShape> getBlockCollisions(CollisionView world, Entity entity, Box box, BlockCollisionPredicate predicate) {
         if (isBoxEmpty(box)) {
             return Stream.empty();
         }
@@ -65,7 +60,7 @@ public class LithiumEntityCollisions {
      *
      * @return True if the box (possibly that of an entity's) collided with any blocks
      */
-    public static boolean doesBoxCollideWithBlocks(ICollisionReader world, Entity entity, AxisAlignedBB box, BlockCollisionPredicate predicate) {
+    public static boolean doesBoxCollideWithBlocks(CollisionView world, Entity entity, Box box, BlockCollisionPredicate predicate) {
         if (isBoxEmpty(box)) {
             return false;
         }
@@ -81,23 +76,23 @@ public class LithiumEntityCollisions {
      *
      * @return True if the box (possibly that of an entity's) collided with any other entities
      */
-    public static boolean doesBoxCollideWithEntities(IEntityReader view, Entity entity, AxisAlignedBB box, Predicate<Entity> predicate) {
+    public static boolean doesBoxCollideWithEntities(EntityView view, Entity entity, Box box, Predicate<Entity> predicate) {
         if (isBoxEmpty(box)) {
             return false;
         }
 
-        return getEntityCollisionProducer(view, entity, box.grow(EPSILON), predicate).computeNext(null);
+        return getEntityCollisionProducer(view, entity, box.expand(EPSILON), predicate).computeNext(null);
     }
 
     /**
      * Returns a stream of entity collision boxes.
      */
-    public static Stream<VoxelShape> getEntityCollisions(IEntityReader view, Entity entity, AxisAlignedBB box, Predicate<Entity> predicate) {
+    public static Stream<VoxelShape> getEntityCollisions(EntityView view, Entity entity, Box box, Predicate<Entity> predicate) {
         if (isBoxEmpty(box)) {
             return Stream.empty();
         }
 
-        return Producer.asStream(getEntityCollisionProducer(view, entity, box.grow(EPSILON), predicate));
+        return Producer.asStream(getEntityCollisionProducer(view, entity, box.expand(EPSILON), predicate));
     }
 
     /**
@@ -105,7 +100,7 @@ public class LithiumEntityCollisions {
      * Re-implements the function named above without stream code or unnecessary allocations. This can provide a small
      * boost in some situations (such as heavy entity crowding) and reduces the allocation rate significantly.
      */
-    public static Producer<VoxelShape> getEntityCollisionProducer(IEntityReader view, Entity entity, AxisAlignedBB box, Predicate<Entity> predicate) {
+    public static Producer<VoxelShape> getEntityCollisionProducer(EntityView view, Entity entity, Box box, Predicate<Entity> predicate) {
         return new Producer<VoxelShape>() {
             private Iterator<Entity> it;
 
@@ -134,15 +129,15 @@ public class LithiumEntityCollisions {
                      * otherEntity as a vehicle.
                      */
                     if (entity == null) {
-                        if (!otherEntity.func_241845_aY()) {
+                        if (!otherEntity.isCollidable()) {
                             continue;
                         }
-                    } else if (!entity.canCollide(otherEntity)) {
+                    } else if (!entity.collidesWith(otherEntity)) {
                         continue;
                     }
 
                     if (consumer != null) {
-                        consumer.accept(VoxelShapes.create(otherEntity.getBoundingBox()));
+                        consumer.accept(VoxelShapes.cuboid(otherEntity.getBoundingBox()));
                     }
                     return true;
                 }
@@ -158,27 +153,27 @@ public class LithiumEntityCollisions {
      *
      * @return True if the {@param box} is fully within the {@param border}, otherwise false.
      */
-    public static boolean isWithinWorldBorder(WorldBorder border, AxisAlignedBB box) {
-        double wboxMinX = Math.floor(border.minX());
-        double wboxMinZ = Math.floor(border.minZ());
+    public static boolean isWithinWorldBorder(WorldBorder border, Box box) {
+        double wboxMinX = Math.floor(border.getBoundWest());
+        double wboxMinZ = Math.floor(border.getBoundNorth());
 
-        double wboxMaxX = Math.ceil(border.maxX());
-        double wboxMaxZ = Math.ceil(border.maxZ());
+        double wboxMaxX = Math.ceil(border.getBoundEast());
+        double wboxMaxZ = Math.ceil(border.getBoundSouth());
 
         return box.minX >= wboxMinX && box.minX < wboxMaxX && box.minZ >= wboxMinZ && box.minZ < wboxMaxZ &&
                 box.maxX >= wboxMinX && box.maxX < wboxMaxX && box.maxZ >= wboxMinZ && box.maxZ < wboxMaxZ;
     }
 
-    public static boolean canEntityCollideWithWorldBorder(ICollisionReader world, Entity entity) {
+    public static boolean canEntityCollideWithWorldBorder(CollisionView world, Entity entity) {
         WorldBorder border = world.getWorldBorder();
 
-        boolean isInsideBorder = isWithinWorldBorder(border, entity.getBoundingBox().shrink(EPSILON));
-        boolean isCrossingBorder = isWithinWorldBorder(border, entity.getBoundingBox().grow(EPSILON));
+        boolean isInsideBorder = isWithinWorldBorder(border, entity.getBoundingBox().contract(EPSILON));
+        boolean isCrossingBorder = isWithinWorldBorder(border, entity.getBoundingBox().expand(EPSILON));
 
         return !isInsideBorder && isCrossingBorder;
     }
 
-    private static boolean isBoxEmpty(AxisAlignedBB box) {
-        return box.getAverageEdgeLength() <= EPSILON;
+    private static boolean isBoxEmpty(Box box) {
+        return box.getAverageSideLength() <= EPSILON;
     }
 }

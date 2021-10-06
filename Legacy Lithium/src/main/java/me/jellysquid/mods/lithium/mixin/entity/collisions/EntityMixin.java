@@ -2,14 +2,10 @@ package me.jellysquid.mods.lithium.mixin.entity.collisions;
 
 import me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions;
 import net.minecraft.entity.Entity;
-//import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.math.AxisAlignedBB;
-//import net.minecraft.util.math.Box;
-//import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.shapes.IBooleanFunction;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-//import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,19 +23,19 @@ public abstract class EntityMixin {
     public World world;
 
     @Shadow
-    public abstract AxisAlignedBB getBoundingBox();
+    public abstract Box getBoundingBox();
 
     /**
      * Skips the matchesAnywhere evaluation, which is replaced with {@link EntityMixin#fastWorldBorderTest(Stream, Stream, Vec3d)}.
      */
     @Redirect(
-            method = "getAllowedMovement(Lnet/minecraft/util/math/vector/Vector3d;)Lnet/minecraft/util/math/vector/Vector3d;",
+            method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/shapes/VoxelShapes;compare(Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/IBooleanFunction;)Z"
+                    target = "Lnet/minecraft/util/shape/VoxelShapes;matchesAnywhere(Lnet/minecraft/util/shape/VoxelShape;Lnet/minecraft/util/shape/VoxelShape;Lnet/minecraft/util/function/BooleanBiFunction;)Z"
             )
     )
-    private boolean skipWorldBorderMatchesAnywhere(VoxelShape borderShape, VoxelShape entityShape, IBooleanFunction func, Vector3d motion) {
+    private boolean skipWorldBorderMatchesAnywhere(VoxelShape borderShape, VoxelShape entityShape, BooleanBiFunction func, Vec3d motion) {
         return false;
     }
 
@@ -47,21 +43,22 @@ public abstract class EntityMixin {
      * Skip creation of unused cuboid shape
      */
     @Redirect(
-            method = "getAllowedMovement(Lnet/minecraft/util/math/vector/Vector3d;)Lnet/minecraft/util/math/vector/Vector3d;",
+            method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/shapes/VoxelShapes;create(Lnet/minecraft/util/math/AxisAlignedBB;)Lnet/minecraft/util/math/shapes/VoxelShape;",
+                    target = "Lnet/minecraft/util/shape/VoxelShapes;cuboid(Lnet/minecraft/util/math/Box;)Lnet/minecraft/util/shape/VoxelShape;",
                     ordinal = 0
             )
     )
-    private VoxelShape skipCuboid(AxisAlignedBB box) {
+    private VoxelShape skipCuboid(Box box) {
         return null;
     }
+
     /**
      * Skip creation of unused stream
      */
     @Redirect(
-            method = "getAllowedMovement(Lnet/minecraft/util/math/vector/Vector3d;)Lnet/minecraft/util/math/vector/Vector3d;",
+            method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;",
             at = @At(
                     value = "INVOKE",
                     target = "Ljava/util/stream/Stream;empty()Ljava/util/stream/Stream;",
@@ -80,19 +77,19 @@ public abstract class EntityMixin {
      * @return The combined entity shapes and worldborder stream, or if the worldborder cannot be collided with the entity stream will be returned.
      */
     @Redirect(
-            method = "getAllowedMovement(Lnet/minecraft/util/math/vector/Vector3d;)Lnet/minecraft/util/math/vector/Vector3d;",
+            method = "adjustMovementForCollisions(Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/Vec3d;",
             at = @At(
                     value = "INVOKE",
                     target = "Ljava/util/stream/Stream;concat(Ljava/util/stream/Stream;Ljava/util/stream/Stream;)Ljava/util/stream/Stream;"
             )
     )
-    private Stream<VoxelShape> fastWorldBorderTest(Stream<VoxelShape> entityShapes, Stream<VoxelShape> emptyStream, Vector3d motion) {
-        if (LithiumEntityCollisions.isWithinWorldBorder(this.world.getWorldBorder(), this.getBoundingBox().expand(motion)) ||
-                !LithiumEntityCollisions.isWithinWorldBorder(this.world.getWorldBorder(), this.getBoundingBox().shrink(1.0E-7D))) {
+    private Stream<VoxelShape> fastWorldBorderTest(Stream<VoxelShape> entityShapes, Stream<VoxelShape> emptyStream, Vec3d motion) {
+        if (LithiumEntityCollisions.isWithinWorldBorder(this.world.getWorldBorder(), this.getBoundingBox().stretch(motion)) ||
+                !LithiumEntityCollisions.isWithinWorldBorder(this.world.getWorldBorder(), this.getBoundingBox().contract(1.0E-7D))) {
             return entityShapes;
         }
         //the world border shape will only be collided with, if the entity is colliding with the world border after movement but is not
         //colliding with the world border already
-        return Stream.concat(entityShapes, Stream.of(this.world.getWorldBorder().getShape()));
+        return Stream.concat(entityShapes, Stream.of(this.world.getWorldBorder().asVoxelShape()));
     }
 }

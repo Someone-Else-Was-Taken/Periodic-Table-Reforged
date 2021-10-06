@@ -5,20 +5,14 @@ import com.mojang.serialization.Codec;
 import me.jellysquid.mods.lithium.common.util.Collector;
 import me.jellysquid.mods.lithium.common.world.interests.PointOfInterestCollectors;
 import me.jellysquid.mods.lithium.common.world.interests.RegionBasedStorageSectionAccess;
-//import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.util.datafix.DefaultTypeReferences;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.village.PointOfInterest;
-import net.minecraft.village.PointOfInterestData;
-import net.minecraft.village.PointOfInterestManager;
-import net.minecraft.village.PointOfInterestType;
-import net.minecraft.world.chunk.storage.RegionSectionCache;
-//import net.minecraft.world.poi.PointOfInterest;
-//import net.minecraft.world.poi.PointOfInterestSet;
-//import net.minecraft.world.poi.PointOfInterestStorage;
-//import net.minecraft.world.poi.PointOfInterestType;
-//import net.minecraft.world.storage.SerializingRegionBasedStorage;
+import net.minecraft.world.poi.PointOfInterest;
+import net.minecraft.world.poi.PointOfInterestSet;
+import net.minecraft.world.poi.PointOfInterestStorage;
+import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.storage.SerializingRegionBasedStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
@@ -28,9 +22,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-@Mixin(PointOfInterestManager.class)
-public abstract class PointOfInterestStorageMixin extends RegionSectionCache<PointOfInterestData> {
-    public PointOfInterestStorageMixin(File directory, Function<Runnable, Codec<PointOfInterestData>> function, Function<Runnable, PointOfInterestData> function2, DataFixer dataFixer, DefaultTypeReferences dataFixTypes, boolean bl) {
+@Mixin(PointOfInterestStorage.class)
+public abstract class PointOfInterestStorageMixin extends SerializingRegionBasedStorage<PointOfInterestSet> {
+    public PointOfInterestStorageMixin(File directory, Function<Runnable, Codec<PointOfInterestSet>> function, Function<Runnable, PointOfInterestSet> function2, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean bl) {
         super(directory, function, function2, dataFixer, dataFixTypes, bl);
     }
 
@@ -40,10 +34,10 @@ public abstract class PointOfInterestStorageMixin extends RegionSectionCache<Poi
      */
     @SuppressWarnings("unchecked")
     @Overwrite
-    public Stream<PointOfInterest> getInChunk(Predicate<PointOfInterestType> predicate, ChunkPos pos, PointOfInterestManager.Status status) {
-        return ((RegionBasedStorageSectionAccess<PointOfInterestData>) this)
+    public Stream<PointOfInterest> getInChunk(Predicate<PointOfInterestType> predicate, ChunkPos pos, PointOfInterestStorage.OccupationStatus status) {
+        return ((RegionBasedStorageSectionAccess<PointOfInterestSet>) this)
                 .getWithinChunkColumn(pos.x, pos.z)
-                .flatMap((set) -> set.getRecords(predicate, status));
+                .flatMap((set) -> set.get(predicate, status));
     }
 
     /**
@@ -51,7 +45,7 @@ public abstract class PointOfInterestStorageMixin extends RegionSectionCache<Poi
      * @author JellySquid
      */
     @Overwrite
-    public Optional<BlockPos> getRandom(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> posPredicate, PointOfInterestManager.Status status, BlockPos pos, int radius, Random rand) {
+    public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> posPredicate, PointOfInterestStorage.OccupationStatus status, BlockPos pos, int radius, Random rand) {
         List<PointOfInterest> list = this.getAllWithinCircle(typePredicate, pos, radius, status);
 
         Collections.shuffle(list, rand);
@@ -70,14 +64,14 @@ public abstract class PointOfInterestStorageMixin extends RegionSectionCache<Poi
      * @author JellySquid
      */
     @Overwrite
-    public Optional<BlockPos> func_234148_d_(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestManager.Status status) {
+    public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus status) {
         List<PointOfInterest> points = this.getAllWithinCircle(predicate, pos, radius, status);
 
         BlockPos nearest = null;
         double nearestDistance = Double.POSITIVE_INFINITY;
 
         for (PointOfInterest point : points) {
-            double distance = point.getPos().distanceSq(pos);
+            double distance = point.getPos().getSquaredDistance(pos);
 
             if (distance < nearestDistance) {
                 nearest = point.getPos();
@@ -93,11 +87,11 @@ public abstract class PointOfInterestStorageMixin extends RegionSectionCache<Poi
      * @author JellySquid
      */
     @Overwrite
-    public long getCountInRange(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestManager.Status status) {
+    public long count(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus status) {
         return this.getAllWithinCircle(predicate, pos, radius, status).size();
     }
 
-    private List<PointOfInterest> getAllWithinCircle(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestManager.Status status) {
+    private List<PointOfInterest> getAllWithinCircle(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus status) {
         List<PointOfInterest> points = new ArrayList<>();
 
         this.collectWithinCircle(predicate, pos, radius, status, points::add);
@@ -105,9 +99,9 @@ public abstract class PointOfInterestStorageMixin extends RegionSectionCache<Poi
         return points;
     }
 
-    private void collectWithinCircle(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestManager.Status status, Collector<PointOfInterest> collector) {
+    private void collectWithinCircle(Predicate<PointOfInterestType> predicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus status, Collector<PointOfInterest> collector) {
         Collector<PointOfInterest> filter = PointOfInterestCollectors.collectAllWithinRadius(pos, radius, collector);
-        Collector<PointOfInterestData> consumer = PointOfInterestCollectors.collectAllMatching(predicate, status, filter);
+        Collector<PointOfInterestSet> consumer = PointOfInterestCollectors.collectAllMatching(predicate, status, filter);
 
         int minChunkX = (pos.getX() - radius - 1) >> 4;
         int minChunkZ = (pos.getZ() - radius - 1) >> 4;
@@ -116,7 +110,7 @@ public abstract class PointOfInterestStorageMixin extends RegionSectionCache<Poi
         int maxChunkZ = (pos.getZ() + radius + 1) >> 4;
 
         // noinspection unchecked
-        RegionBasedStorageSectionAccess<PointOfInterestData> storage = ((RegionBasedStorageSectionAccess<PointOfInterestData>) this);
+        RegionBasedStorageSectionAccess<PointOfInterestSet> storage = ((RegionBasedStorageSectionAccess<PointOfInterestSet>) this);
 
         for (int x = minChunkX; x <= maxChunkX; x++) {
             for (int z = minChunkZ; z <= maxChunkZ; z++) {

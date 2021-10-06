@@ -1,13 +1,10 @@
 package me.jellysquid.mods.lithium.common.entity.tracker.nearby;
 
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
-import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
-//import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.nbt.CompoundNBT;
-//import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.AxisAlignedBB;
-//import net.minecraft.util.math.Box;
+import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.Set;
@@ -66,18 +63,18 @@ public class NearbyEntityTracker<T extends LivingEntity> implements NearbyEntity
      * @param targetPredicate predicate the entity has to meet
      * @return the closest Entity that meets all requirements (distance, box intersection, predicate, type T)
      */
-    public T getClosestEntity(AxisAlignedBB box, EntityPredicate targetPredicate) {
-        double x = this.self.getPosX();
-        double y = this.self.getPosY();
-        double z = this.self.getPosZ();
+    public T getClosestEntity(Box box, TargetPredicate targetPredicate) {
+        double x = this.self.getX();
+        double y = this.self.getY();
+        double z = this.self.getZ();
 
         T nearest = null;
         double nearestDistance = Double.POSITIVE_INFINITY;
 
         for (T entity : this.nearby) {
-            double distance = entity.getDistanceSq(x, y, z);
+            double distance = entity.squaredDistanceTo(x, y, z);
 
-            if (distance < nearestDistance && (box == null || box.intersects(entity.getBoundingBox())) && targetPredicate.canTarget(this.self, entity)) {
+            if (distance < nearestDistance && (box == null || box.intersects(entity.getBoundingBox())) && targetPredicate.test(this.self, entity)) {
                 nearest = entity;
                 nearestDistance = distance;
             }
@@ -92,6 +89,6 @@ public class NearbyEntityTracker<T extends LivingEntity> implements NearbyEntity
 
     @Override
     public String toString() {
-        return super.toString() + " for entity class: " + this.clazz.getName() + ", in rangeSq: " + this.rangeSq + ", around entity: " + this.self.toString() + " with NBT: " + this.self.writeWithoutTypeId(new CompoundNBT());
+        return super.toString() + " for entity class: " + this.clazz.getName() + ", in rangeSq: " + this.rangeSq + ", around entity: " + this.self.toString() + " with NBT: " + this.self.toTag(new CompoundTag());
     }
 }

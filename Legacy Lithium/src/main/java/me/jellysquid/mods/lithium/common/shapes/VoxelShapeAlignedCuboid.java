@@ -1,19 +1,13 @@
 package me.jellysquid.mods.lithium.common.shapes;
 
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-//import net.minecraft.util.math.AxisCycleDirection;
-//import net.minecraft.util.math.Box;
-//import net.minecraft.util.math.Direction;
-import net.minecraft.util.AxisRotation;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.AxisCycleDirection;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.DoubleRangeList;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapePart;
-//import net.minecraft.util.shape.FractionalDoubleList;
-//import net.minecraft.util.shape.VoxelSet;
-//import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.FractionalDoubleList;
+import net.minecraft.util.shape.VoxelSet;
+import net.minecraft.util.shape.VoxelShape;
 
 /**
  * An efficient implementation of {@link VoxelShape} for a shape with one simple cuboid.
@@ -44,7 +38,7 @@ public class VoxelShapeAlignedCuboid extends VoxelShapeSimpleCube {
     /**
      * Constructor for use in offset() calls.
      */
-    public VoxelShapeAlignedCuboid(VoxelShapePart voxels, int xSegments, int ySegments, int zSegments, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+    public VoxelShapeAlignedCuboid(VoxelSet voxels, int xSegments, int ySegments, int zSegments, double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
         super(voxels, minX, minY, minZ, maxX, maxY, maxZ);
 
         this.xSegments = xSegments;
@@ -53,13 +47,13 @@ public class VoxelShapeAlignedCuboid extends VoxelShapeSimpleCube {
     }
 
     @Override
-    public VoxelShape withOffset(double x, double y, double z) {
-        return new VoxelShapeAlignedCuboidOffset(this, this.part, x, y, z);
+    public VoxelShape offset(double x, double y, double z) {
+        return new VoxelShapeAlignedCuboidOffset(this, this.voxels, x, y, z);
     }
 
 
     @Override
-    public double getAllowedOffset(AxisRotation cycleDirection, AxisAlignedBB box, double maxDist) {
+    public double calculateMaxDistance(AxisCycleDirection cycleDirection, Box box, double maxDist) {
         if (Math.abs(maxDist) < EPSILON) {
             return 0.0D;
         }
@@ -73,7 +67,7 @@ public class VoxelShapeAlignedCuboid extends VoxelShapeSimpleCube {
         return maxDist;
     }
 
-    private double calculatePenetration(AxisRotation dir, AxisAlignedBB box, double maxDist) {
+    private double calculatePenetration(AxisCycleDirection dir, Box box, double maxDist) {
         switch (dir) {
             case NONE:
                 return VoxelShapeAlignedCuboid.calculatePenetration(this.minX, this.maxX, this.xSegments, box.minX, box.maxX, maxDist);
@@ -139,18 +133,18 @@ public class VoxelShapeAlignedCuboid extends VoxelShapeSimpleCube {
     }
 
     @Override
-    public DoubleList getValues(Direction.Axis axis) {
-        return new DoubleRangeList(axis.getCoordinate(this.xSegments, this.ySegments, this.zSegments));
+    public DoubleList getPointPositions(Direction.Axis axis) {
+        return new FractionalDoubleList(axis.choose(this.xSegments, this.ySegments, this.zSegments));
     }
 
     @Override
-    protected double getValueUnchecked(Direction.Axis axis, int index) {
-        return (double) index / (double) axis.getCoordinate(this.xSegments, this.ySegments, this.zSegments);
+    protected double getPointPosition(Direction.Axis axis, int index) {
+        return (double) index / (double) axis.choose(this.xSegments, this.ySegments, this.zSegments);
     }
 
     @Override
-    protected int getClosestIndex(Direction.Axis axis, double coord) {
-        int i = axis.getCoordinate(this.xSegments, this.ySegments, this.zSegments);
+    protected int getCoordIndex(Direction.Axis axis, double coord) {
+        int i = axis.choose(this.xSegments, this.ySegments, this.zSegments);
         return MathHelper.clamp(MathHelper.floor(coord * (double) i), -1, i);
     }
 }

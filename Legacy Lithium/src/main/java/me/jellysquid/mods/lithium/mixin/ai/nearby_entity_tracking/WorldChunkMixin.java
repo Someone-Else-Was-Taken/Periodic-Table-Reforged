@@ -5,8 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-//import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.WorldChunk;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Chunk.class)
+@Mixin(WorldChunk.class)
 public class WorldChunkMixin {
 
     @Shadow
@@ -29,20 +28,20 @@ public class WorldChunkMixin {
             method = "addEntity",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/ClassInheritanceMultiMap;add(Ljava/lang/Object;)Z"
+                    target = "Lnet/minecraft/util/collection/TypeFilterableList;add(Ljava/lang/Object;)Z"
             )
     )
     private void onEntityAdded(Entity entity, CallbackInfo ci) {
         if (entity instanceof LivingEntity) {
-            EntityTrackerEngineProvider.getEntityTracker(this.world).onEntityAdded(entity.chunkCoordX, entity.chunkCoordY, entity.chunkCoordZ, (LivingEntity) entity);
+            EntityTrackerEngineProvider.getEntityTracker(this.world).onEntityAdded(entity.chunkX, entity.chunkY, entity.chunkZ, (LivingEntity) entity);
         }
     }
 
     @Inject(
-            method = "removeEntityAtIndex",
+            method = "remove(Lnet/minecraft/entity/Entity;I)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/ClassInheritanceMultiMap;remove(Ljava/lang/Object;)Z"
+                    target = "Lnet/minecraft/util/collection/TypeFilterableList;remove(Ljava/lang/Object;)Z"
             )
     )
     private void onEntityRemoved(Entity entity, int section, CallbackInfo ci) {

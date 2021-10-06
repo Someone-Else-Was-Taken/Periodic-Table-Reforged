@@ -3,22 +3,14 @@ package me.jellysquid.mods.lithium.common.world.chunk;
 import it.unimi.dsi.fastutil.HashCommon;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
-//import net.fabricmc.api.EnvType;
-//import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundNBT;
-//import net.minecraft.nbt.CompoundTag;
-//import net.minecraft.nbt.ListTag;
-//import net.minecraft.network.PacketByteBuf;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ObjectIntIdentityMap;
-//import net.minecraft.util.collection.IdList;
-import net.minecraft.util.palette.IPalette;
-import net.minecraft.util.palette.IResizeCallback;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-//import net.minecraft.world.chunk.Palette;
-//import net.minecraft.world.chunk.PaletteResizeListener;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.collection.IdList;
+import net.minecraft.world.chunk.Palette;
+import net.minecraft.world.chunk.PaletteResizeListener;
 
 import java.util.Arrays;
 import java.util.function.Function;
@@ -30,13 +22,13 @@ import static it.unimi.dsi.fastutil.Hash.FAST_LOAD_FACTOR;
  * Generally provides better performance over the vanilla {@link net.minecraft.world.chunk.BiMapPalette} when calling
  * {@link LithiumHashPalette#getIndex(Object)} through using a faster backing map and reducing pointer chasing.
  */
-public class LithiumHashPalette<T> implements IPalette<T> {
+public class LithiumHashPalette<T> implements Palette<T> {
     private static final int ABSENT_VALUE = -1;
 
-    private final ObjectIntIdentityMap<T> idList;
-    private final IResizeCallback<T> resizeHandler;
-    private final Function<CompoundNBT, T> elementDeserializer;
-    private final Function<T, CompoundNBT> elementSerializer;
+    private final IdList<T> idList;
+    private final PaletteResizeListener<T> resizeHandler;
+    private final Function<CompoundTag, T> elementDeserializer;
+    private final Function<T, CompoundTag> elementSerializer;
     private final int indexBits;
 
     private final Reference2IntMap<T> table;
@@ -44,7 +36,7 @@ public class LithiumHashPalette<T> implements IPalette<T> {
     private int size = 0;
 
     @SuppressWarnings("unchecked")
-    public LithiumHashPalette(ObjectIntIdentityMap<T> ids, int bits, IResizeCallback<T> resizeHandler, Function<CompoundNBT, T> deserializer, Function<T, CompoundNBT> serializer) {
+    public LithiumHashPalette(IdList<T> ids, int bits, PaletteResizeListener<T> resizeHandler, Function<CompoundTag, T> deserializer, Function<T, CompoundTag> serializer) {
         this.idList = ids;
         this.indexBits = bits;
         this.resizeHandler = resizeHandler;
@@ -59,7 +51,7 @@ public class LithiumHashPalette<T> implements IPalette<T> {
     }
 
     @Override
-    public int idFor(T obj) {
+    public int getIndex(T obj) {
         int id = this.table.getInt(obj);
 
         if (id == ABSENT_VALUE) {
@@ -103,7 +95,7 @@ public class LithiumHashPalette<T> implements IPalette<T> {
     }
 
     @Override
-    public boolean func_230341_a_(Predicate<T> predicate) {
+    public boolean accepts(Predicate<T> predicate) {
         for (int i = 0; i < this.size; ++i) {
             if (predicate.test(this.entries[i])) {
                 return true;
@@ -114,7 +106,7 @@ public class LithiumHashPalette<T> implements IPalette<T> {
     }
 
     @Override
-    public T get(int id) {
+    public T getByIndex(int id) {
         T[] entries = this.entries;
 
         if (id >= 0 && id < entries.length) {
@@ -125,40 +117,40 @@ public class LithiumHashPalette<T> implements IPalette<T> {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void read(PacketBuffer buf) {
+    @Environment(EnvType.CLIENT)
+    public void fromPacket(PacketByteBuf buf) {
         this.clear();
 
         int entryCount = buf.readVarInt();
 
         for (int i = 0; i < entryCount; ++i) {
-            this.addEntry(this.idList.getByValue(buf.readVarInt()));
+            this.addEntry(this.idList.get(buf.readVarInt()));
         }
     }
 
     @Override
-    public void write(PacketBuffer buf) {
+    public void toPacket(PacketByteBuf buf) {
         int size = this.size;
         buf.writeVarInt(size);
 
         for (int i = 0; i < size; ++i) {
-            buf.writeVarInt(this.idList.getId(this.get(i)));
+            buf.writeVarInt(this.idList.getRawId(this.getByIndex(i)));
         }
     }
 
     @Override
-    public int getSerializedSize() {
-        int size = PacketBuffer.getVarIntSize(this.size);
+    public int getPacketSize() {
+        int size = PacketByteBuf.getVarIntSizeBytes(this.size);
 
         for (int i = 0; i < this.size; ++i) {
-            size += PacketBuffer.getVarIntSize(this.idList.getId(this.get(i)));
+            size += PacketByteBuf.getVarIntSizeBytes(this.idList.getRawId(this.getByIndex(i)));
         }
 
         return size;
     }
 
     @Override
-    public void read(ListNBT list) {
+    public void fromTag(ListTag list) {
         this.clear();
 
         for (int i = 0; i < list.size(); ++i) {
@@ -166,9 +158,9 @@ public class LithiumHashPalette<T> implements IPalette<T> {
         }
     }
 
-    public void toTag(ListNBT list) {
+    public void toTag(ListTag list) {
         for (int i = 0; i < this.size; ++i) {
-            list.add(this.elementSerializer.apply(this.get(i)));
+            list.add(this.elementSerializer.apply(this.getByIndex(i)));
         }
     }
 

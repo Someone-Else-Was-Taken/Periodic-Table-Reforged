@@ -2,14 +2,14 @@ package me.jellysquid.mods.lithium.common.shapes.pairs;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
-import net.minecraft.util.math.shapes.IDoubleListMerger;
+import net.minecraft.util.shape.PairList;
 
 /**
  * Optimized variant of {@link net.minecraft.util.shape.SimplePairList}. This implementation works directly against
  * flat arrays and tries to organize code in a manner that hits the JIT's happy path. In my testing, this is about
  * ~50% faster than the vanilla implementation.
  */
-public final class LithiumDoublePairList implements IDoubleListMerger {
+public final class LithiumDoublePairList implements PairList {
     private final double[] merged;
     private final int[] indicesFirst;
     private final int[] indicesSecond;
@@ -84,7 +84,7 @@ public final class LithiumDoublePairList implements IDoubleListMerger {
     }
 
     @Override
-    public boolean forMergedIndexes(IDoubleListMerger.IConsumer predicate) {
+    public boolean forEachPair(PairList.Consumer predicate) {
         int l = this.pairs.size() - 1;
 
         for (int i = 0; i < l; i++) {
@@ -97,7 +97,7 @@ public final class LithiumDoublePairList implements IDoubleListMerger {
     }
 
     @Override
-    public DoubleList func_212435_a() {
+    public DoubleList getPairs() {
         return this.pairs;
     }
 

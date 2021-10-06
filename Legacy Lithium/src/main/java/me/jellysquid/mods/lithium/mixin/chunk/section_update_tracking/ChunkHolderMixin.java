@@ -2,8 +2,7 @@ package me.jellysquid.mods.lithium.mixin.chunk.section_update_tracking;
 
 import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.ShortSet;
-//import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.world.server.ChunkHolder;
+import net.minecraft.server.world.ChunkHolder;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,28 +14,28 @@ public class ChunkHolderMixin {
 
     @Shadow
     @Final
-    private ShortSet[] field_244383_q;
+    private ShortSet[] blockUpdatesBySection;
 
     @Shadow
-    private boolean field_244382_p;
+    private boolean pendingBlockUpdates;
 
     /**
      * Using Hashsets instead of ArraySets for better worst-case performance
      * The default case of just a few items may be very slightly slower
      */
     @ModifyVariable(
-            method = "func_244386_a",
+            method = "markForBlockUpdate",
             at = @At(
-                    value = "FIELD",
                     ordinal = 0,
-                    target = "Lnet/minecraft/world/server/ChunkHolder;field_244383_q:[Lit/unimi/dsi/fastutil/shorts/ShortSet;",
+                    value = "FIELD",
+                    target = "Lnet/minecraft/server/world/ChunkHolder;blockUpdatesBySection:[Lit/unimi/dsi/fastutil/shorts/ShortSet;",
                     shift = At.Shift.BEFORE
             )
     )
     private byte createShortHashSet(byte b) {
-        if (field_244383_q[b] == null) {
-            this.field_244382_p = true;
-            this.field_244383_q[b] = new ShortOpenHashSet();
+        if (blockUpdatesBySection[b] == null) {
+            this.pendingBlockUpdates = true;
+            this.blockUpdatesBySection[b] = new ShortOpenHashSet();
         }
         return b;
     }

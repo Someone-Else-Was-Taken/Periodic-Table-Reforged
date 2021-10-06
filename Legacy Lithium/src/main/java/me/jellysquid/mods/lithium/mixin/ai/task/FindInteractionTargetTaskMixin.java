@@ -2,17 +2,12 @@ package me.jellysquid.mods.lithium.mixin.ai.task;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
-//import net.minecraft.entity.ai.brain.EntityLookTarget;
-//import net.minecraft.entity.ai.brain.MemoryModuleState;
-//import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.memory.MemoryModuleStatus;
-import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.FindInteractionAndLookTargetTask;
-//import net.minecraft.entity.ai.brain.task.FindInteractionTargetTask;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.FindInteractionTargetTask;
 import net.minecraft.entity.ai.brain.task.Task;
-//import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.EntityPosWrapper;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -23,23 +18,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-@Mixin(FindInteractionAndLookTargetTask.class)
+@Mixin(FindInteractionTargetTask.class)
 public abstract class FindInteractionTargetTaskMixin extends Task<LivingEntity> {
     @Shadow
     @Final
-    private Predicate<LivingEntity> field_220536_d;
+    private Predicate<LivingEntity> shouldRunPredicate;
 
     @Shadow
     protected abstract List<LivingEntity> getVisibleMobs(LivingEntity entity);
 
     @Shadow
-    protected abstract boolean isNearInteractableEntity(LivingEntity entity);
+    protected abstract boolean test(LivingEntity entity);
 
     @Shadow
     @Final
-    private int field_220534_b;
+    private int maxSquaredDistance;
 
-    public FindInteractionTargetTaskMixin(Map<MemoryModuleType<?>, MemoryModuleStatus> memories) {
+    public FindInteractionTargetTaskMixin(Map<MemoryModuleType<?>, MemoryModuleState> memories) {
         super(memories);
     }
 
@@ -48,15 +43,15 @@ public abstract class FindInteractionTargetTaskMixin extends Task<LivingEntity> 
      * @author JellySquid
      */
     @Overwrite
-    public boolean shouldExecute(ServerWorld world, LivingEntity entity) {
-        if (!this.field_220536_d.test(entity)) {
+    public boolean shouldRun(ServerWorld world, LivingEntity entity) {
+        if (!this.shouldRunPredicate.test(entity)) {
             return false;
         }
 
         List<LivingEntity> visibleEntities = this.getVisibleMobs(entity);
 
         for (LivingEntity otherEntity : visibleEntities) {
-            if (this.isNearInteractableEntity(otherEntity)) {
+            if (this.test(otherEntity)) {
                 return true;
             }
         }
@@ -69,22 +64,22 @@ public abstract class FindInteractionTargetTaskMixin extends Task<LivingEntity> 
      * @author JellySquid
      */
     @Overwrite
-    public void startExecuting(ServerWorld world, LivingEntity entity, long time) {
-        super.startExecuting(world, entity, time);
+    public void run(ServerWorld world, LivingEntity entity, long time) {
+        super.run(world, entity, time);
 
         Brain<?> brain = entity.getBrain();
 
-        List<LivingEntity> visibleEntities = brain.getMemory(MemoryModuleType.VISIBLE_MOBS)
+        List<LivingEntity> visibleEntities = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
                 .orElse(Collections.emptyList());
 
         for (LivingEntity otherEntity : visibleEntities) {
-            if (otherEntity.getDistanceSq(entity) > (double) this.field_220534_b) {
+            if (otherEntity.squaredDistanceTo(entity) > (double) this.maxSquaredDistance) {
                 continue;
             }
 
-            if (this.isNearInteractableEntity(otherEntity)) {
-                brain.setMemory(MemoryModuleType.INTERACTION_TARGET, otherEntity);
-                brain.setMemory(MemoryModuleType.LOOK_TARGET, new EntityPosWrapper(otherEntity, true));
+            if (this.test(otherEntity)) {
+                brain.remember(MemoryModuleType.INTERACTION_TARGET, otherEntity);
+                brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(otherEntity, true));
 
                 break;
             }

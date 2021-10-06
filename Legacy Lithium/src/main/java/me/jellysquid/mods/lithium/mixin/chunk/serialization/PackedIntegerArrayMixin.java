@@ -1,71 +1,69 @@
 package me.jellysquid.mods.lithium.mixin.chunk.serialization;
 
 import me.jellysquid.mods.lithium.common.world.chunk.CompactingPackedIntegerArray;
-import net.minecraft.util.BitArray;
-//import net.minecraft.util.collection.PackedIntegerArray;
-import net.minecraft.util.palette.IPalette;
-//import net.minecraft.world.chunk.Palette;
+import net.minecraft.util.collection.PackedIntegerArray;
+import net.minecraft.world.chunk.Palette;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 /**
- * Extends {@link BitArray} with a special compaction method defined in {@link CompactingPackedIntegerArray}.
+ * Extends {@link PackedIntegerArray} with a special compaction method defined in {@link CompactingPackedIntegerArray}.
  */
-@Mixin(BitArray.class)
+@Mixin(PackedIntegerArray.class)
 public class PackedIntegerArrayMixin implements CompactingPackedIntegerArray {
     @Shadow
     @Final
-    private long[] longArray;
+    private long[] storage;
 
     @Shadow
     @Final
-    private int arraySize;
+    private int size;
 
     @Shadow
     @Final
-    private int bitsPerEntry;
+    private int elementBits;
 
     @Shadow
     @Final
-    private long maxEntryValue;
+    private long maxValue;
 
     @Shadow
     @Final
-    private int field_232982_f_;
+    private int field_24079;
 
     @Override
-    public <T> void compact(IPalette<T> srcPalette, IPalette<T> dstPalette, short[] out) {
-        if (this.arraySize >= Short.MAX_VALUE) {
+    public <T> void compact(Palette<T> srcPalette, Palette<T> dstPalette, short[] out) {
+        if (this.size >= Short.MAX_VALUE) {
             throw new IllegalStateException("Array too large");
         }
 
-        if (this.arraySize != out.length) {
+        if (this.size != out.length) {
             throw new IllegalStateException("Array size mismatch");
         }
 
-        short[] mappings = new short[(int) (this.maxEntryValue + 1)];
+        short[] mappings = new short[(int) (this.maxValue + 1)];
 
         int idx = 0;
 
-        for (long word : this.longArray) {
+        for (long word : this.storage) {
             long bits = word;
 
-            for (int elementIdx = 0; elementIdx < this.field_232982_f_; ++elementIdx) {
-                int value = (int) (bits & this.maxEntryValue);
+            for (int elementIdx = 0; elementIdx < this.field_24079; ++elementIdx) {
+                int value = (int) (bits & this.maxValue);
                 int remappedId = mappings[value];
 
                 if (remappedId == 0) {
-                    remappedId = dstPalette.idFor(srcPalette.get(value)) + 1;
+                    remappedId = dstPalette.getIndex(srcPalette.getByIndex(value)) + 1;
                     mappings[value] = (short) remappedId;
                 }
 
                 out[idx] = (short) (remappedId - 1);
-                bits >>= this.bitsPerEntry;
+                bits >>= this.elementBits;
 
                 ++idx;
 
-                if (idx >= this.arraySize) {
+                if (idx >= this.size) {
                     return;
                 }
             }

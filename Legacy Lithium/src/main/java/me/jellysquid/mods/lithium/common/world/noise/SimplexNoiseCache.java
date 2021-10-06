@@ -3,8 +3,7 @@ package me.jellysquid.mods.lithium.common.world.noise;
 import it.unimi.dsi.fastutil.HashCommon;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-//import net.minecraft.util.math.noise.SimplexNoiseSampler;
-import net.minecraft.world.gen.SimplexNoiseGenerator;
+import net.minecraft.util.math.noise.SimplexNoiseSampler;
 
 import java.util.Arrays;
 
@@ -25,9 +24,9 @@ public class SimplexNoiseCache {
     private final long[] keys;
     private final float[] values;
 
-    private final SimplexNoiseGenerator sampler;
+    private final SimplexNoiseSampler sampler;
 
-    public SimplexNoiseCache(SimplexNoiseGenerator sampler) {
+    public SimplexNoiseCache(SimplexNoiseSampler sampler) {
         this.sampler = sampler;
 
         this.mask = CACHE_SIZE - 1;
@@ -43,7 +42,7 @@ public class SimplexNoiseCache {
      */
     private float getDistanceFactor(int x, int z) {
         // Hash key and get index
-        long key = ChunkPos.asLong(x, z);
+        long key = ChunkPos.toLong(x, z);
         int idx = (int) HashCommon.mix(key) & this.mask;
 
         if (this.keys[idx] == key) {
@@ -63,7 +62,7 @@ public class SimplexNoiseCache {
         // Ensure we are 64 grid cells away from the origin.
         if (distanceFromOriginSq > 64 * 64) {
             // Reduce the number of island-forming grid cells by sampling noise with a threshold
-            if (this.sampler.getValue(x, z) < -0.9) {
+            if (this.sampler.sample(x, z) < -0.9) {
                 // Generate a pseudo-random value from 9 to 21
                 value = (MathHelper.abs(x) * 3439.0F + MathHelper.abs(z) * 147.0F) % 13.0F + 9.0F;
             }

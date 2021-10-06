@@ -2,8 +2,7 @@ package me.jellysquid.mods.lithium.mixin.entity.data_tracker.no_locks;
 
 import me.jellysquid.mods.lithium.common.util.lock.NullReadWriteLock;
 import net.minecraft.entity.Entity;
-//import net.minecraft.entity.data.DataTracker;
-import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.entity.data.DataTracker;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -23,7 +22,7 @@ import java.util.concurrent.locks.ReadWriteLock;
  * baking entities) during entity initialization and main-thread network updates, and as such the locking mechanism
  * is unnecessary since the job is to only protect against simultaneous reading and writing.
  */
-@Mixin(value = EntityDataManager.class, priority = 1001)
+@Mixin(value = DataTracker.class, priority = 1001)
 public abstract class DataTrackerMixin {
     @Mutable
     @Shadow

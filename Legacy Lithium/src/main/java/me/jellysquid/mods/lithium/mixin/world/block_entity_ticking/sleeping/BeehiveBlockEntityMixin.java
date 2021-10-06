@@ -3,12 +3,9 @@ package me.jellysquid.mods.lithium.mixin.world.block_entity_ticking.sleeping;
 import me.jellysquid.mods.lithium.common.util.collections.ListeningList;
 import me.jellysquid.mods.lithium.common.world.blockentity.BlockEntitySleepTracker;
 import me.jellysquid.mods.lithium.common.world.blockentity.SleepingBlockEntity;
-//import net.minecraft.block.entity.BeehiveBlockEntity;
-//import net.minecraft.block.entity.BlockEntity;
-//import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.tileentity.BeehiveTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.block.entity.BeehiveBlockEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -16,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(BeehiveTileEntity.class)
-public class BeehiveBlockEntityMixin extends TileEntity implements SleepingBlockEntity {
+@Mixin(BeehiveBlockEntity.class)
+public class BeehiveBlockEntityMixin extends BlockEntity implements SleepingBlockEntity {
 
     @Mutable
     @Shadow
@@ -29,7 +26,7 @@ public class BeehiveBlockEntityMixin extends TileEntity implements SleepingBlock
     @Unique
     private boolean doInit;
 
-    public BeehiveBlockEntityMixin(TileEntityType<?> type) {
+    public BeehiveBlockEntityMixin(BlockEntityType<?> type) {
         super(type);
     }
 
@@ -54,7 +51,7 @@ public class BeehiveBlockEntityMixin extends TileEntity implements SleepingBlock
     }
 
     private void checkSleepState() {
-        if (this.world != null && !this.world.isRemote) {
+        if (this.world != null && !this.world.isClient) {
             if ((this.bees.size() == 0) == this.isTicking) {
                 this.isTicking = !this.isTicking;
                 ((BlockEntitySleepTracker) this.world).setAwake(this, this.isTicking);

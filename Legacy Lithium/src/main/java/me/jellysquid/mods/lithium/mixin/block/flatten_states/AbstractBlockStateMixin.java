@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractBlock.AbstractBlockState.class)
 public abstract class AbstractBlockStateMixin {
     @Shadow
-    protected abstract BlockState getSelf();
+    protected abstract BlockState asBlockState();
 
     @Shadow
     public abstract Block getBlock();
@@ -38,10 +38,10 @@ public abstract class AbstractBlockStateMixin {
     /**
      * We can't use the ctor as a BlockState will be constructed *before* a Block has fully initialized.
      */
-    @Inject(method = "cacheState", at = @At("HEAD"))
+    @Inject(method = "initShapeCache", at = @At("HEAD"))
     private void init(CallbackInfo ci) {
-        this.fluidStateCache = this.getBlock().getFluidState(this.getSelf());
-        this.isTickable = this.getBlock().ticksRandomly(this.getSelf());
+        this.fluidStateCache = this.getBlock().getFluidState(this.asBlockState());
+        this.isTickable = this.getBlock().hasRandomTicks(this.asBlockState());
     }
 
     /**
@@ -51,7 +51,7 @@ public abstract class AbstractBlockStateMixin {
     @Overwrite
     public FluidState getFluidState() {
         if (this.fluidStateCache == null) {
-            this.fluidStateCache = this.getBlock().getFluidState(this.getSelf());
+            this.fluidStateCache = this.getBlock().getFluidState(this.asBlockState());
         }
 
         return this.fluidStateCache;
@@ -62,7 +62,7 @@ public abstract class AbstractBlockStateMixin {
      * @author Maity
      */
     @Overwrite
-    public boolean ticksRandomly() {
+    public boolean hasRandomTicks() {
         return this.isTickable;
     }
 }

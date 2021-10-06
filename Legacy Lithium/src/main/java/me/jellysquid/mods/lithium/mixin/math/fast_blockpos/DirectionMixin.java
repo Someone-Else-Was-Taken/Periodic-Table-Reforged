@@ -1,9 +1,7 @@
 package me.jellysquid.mods.lithium.mixin.math.fast_blockpos;
 
-import net.minecraft.util.Direction;
-//import net.minecraft.util.math.Direction;
-//import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +17,7 @@ public class DirectionMixin {
     private int offsetX, offsetY, offsetZ;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void reinit(String enumName, int ordinal, int id, int idOpposite, int idHorizontal, String name, Direction.AxisDirection direction, Direction.Axis axis, Vector3i vector, CallbackInfo ci) {
+    private void reinit(String enumName, int ordinal, int id, int idOpposite, int idHorizontal, String name, Direction.AxisDirection direction, Direction.Axis axis, Vec3i vector, CallbackInfo ci) {
         this.offsetX = vector.getX();
         this.offsetY = vector.getY();
         this.offsetZ = vector.getZ();
@@ -30,7 +28,7 @@ public class DirectionMixin {
      * @author JellySquid
      */
     @Overwrite
-    public int getXOffset() {
+    public int getOffsetX() {
         return this.offsetX;
     }
 
@@ -39,7 +37,7 @@ public class DirectionMixin {
      * @author JellySquid
      */
     @Overwrite
-    public int getYOffset() {
+    public int getOffsetY() {
         return this.offsetY;
     }
 
@@ -48,7 +46,7 @@ public class DirectionMixin {
      * @author JellySquid
      */
     @Overwrite
-    public int getZOffset() {
+    public int getOffsetZ() {
         return this.offsetZ;
     }
 }

@@ -1,15 +1,13 @@
 package me.jellysquid.mods.lithium.mixin.gen.voronoi_biomes;
 
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeManager;
-import net.minecraft.world.biome.FuzzedBiomeMagnifier;
-//import net.minecraft.world.biome.source.BiomeAccess;
-//import net.minecraft.world.biome.source.VoronoiBiomeAccessType;
+import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.VoronoiBiomeAccessType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(FuzzedBiomeMagnifier.class)
+@Mixin(VoronoiBiomeAccessType.class)
 public abstract class VoronoiBiomeAccessTypeMixin {
     /**
      * @reason Avoid memory allocations, use faster loop
@@ -18,7 +16,7 @@ public abstract class VoronoiBiomeAccessTypeMixin {
     // Disable constant condition warnings due to IDEA not being able to see that a method will be replaced at runtime
     @SuppressWarnings("ConstantConditions")
     @Overwrite
-    public Biome getBiome(long seed, int x, int y, int z, BiomeManager.IBiomeReader storage) {
+    public Biome getBiome(long seed, int x, int y, int z, BiomeAccess.Storage storage) {
         int x1 = x - 2;
         int y1 = y - 2;
         int z1 = z - 2;
@@ -74,7 +72,7 @@ public abstract class VoronoiBiomeAccessTypeMixin {
                 sZ = z3 - 1.0D;
             }
 
-            double dist = distanceToCorner(seed, bX, bY, bZ, sX, sY, sZ);
+            double dist = calcSquaredDistance(seed, bX, bY, bZ, sX, sY, sZ);
 
             if (minDist > dist) {
                 minDist = dist;
@@ -85,7 +83,7 @@ public abstract class VoronoiBiomeAccessTypeMixin {
             }
         }
 
-        return storage.getNoiseBiome(retX, retY, retZ);
+        return storage.getBiomeForNoiseGen(retX, retY, retZ);
     }
 
     /**
@@ -93,12 +91,12 @@ public abstract class VoronoiBiomeAccessTypeMixin {
      * @author Kroppeb
      */
     @Overwrite
-    private static double randomDouble(long seed) {
+    private static double distribute(long seed) {
         return (((seed >> 24) & 1023L) - 512) * 0.00087890625; // * 0.9 / 1024.0d
     }
 
     @Shadow
-    private static double distanceToCorner(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {
+    private static double calcSquaredDistance(long seed, int x, int y, int z, double xFraction, double yFraction, double zFraction) {
         throw new UnsupportedOperationException();
     }
 }

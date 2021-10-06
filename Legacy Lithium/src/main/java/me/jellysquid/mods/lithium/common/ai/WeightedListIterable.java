@@ -1,7 +1,6 @@
 package me.jellysquid.mods.lithium.common.ai;
 
-import net.minecraft.util.WeightedList;
-//import net.minecraft.util.collection.WeightedList;
+import net.minecraft.util.collection.WeightedList;
 
 import java.util.Iterator;
 
@@ -40,7 +39,7 @@ public interface WeightedListIterable<U> extends Iterable<U> {
 
         @Override
         public U next() {
-            return this.inner.next().getValue();
+            return this.inner.next().getElement();
         }
     }
 }

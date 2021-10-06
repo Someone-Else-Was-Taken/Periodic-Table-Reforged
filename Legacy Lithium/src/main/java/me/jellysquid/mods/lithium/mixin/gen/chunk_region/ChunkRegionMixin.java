@@ -1,16 +1,12 @@
 package me.jellysquid.mods.lithium.mixin.gen.chunk_region;
 
 import net.minecraft.block.BlockState;
-//import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-//import net.minecraft.world.ChunkRegion;
-import net.minecraft.world.ISeedReader;
-//import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.gen.WorldGenRegion;
-import net.minecraft.world.server.ServerWorld;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -21,18 +17,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(WorldGenRegion.class)
-public abstract class ChunkRegionMixin implements ISeedReader {
+@Mixin(ChunkRegion.class)
+public abstract class ChunkRegionMixin implements StructureWorldAccess {
     @Shadow
     @Final
-    private ChunkPos field_241160_n_;
+    private ChunkPos lowerCorner;
 
     @Shadow
     @Final
-    private int field_217380_e; //width
+    private int width;
 
     // Array view of the chunks in the region to avoid an unnecessary de-reference
-    private IChunk[] chunksArr;
+    private Chunk[] chunksArr;
 
     // The starting position of this region
     private int minChunkX, minChunkZ;
@@ -41,11 +37,11 @@ public abstract class ChunkRegionMixin implements ISeedReader {
      * @author JellySquid
      */
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(ServerWorld world, List<IChunk> chunks, CallbackInfo ci) {
-        this.minChunkX = this.field_241160_n_.x;
-        this.minChunkZ = this.field_241160_n_.z;
+    private void init(ServerWorld world, List<Chunk> chunks, CallbackInfo ci) {
+        this.minChunkX = this.lowerCorner.x;
+        this.minChunkZ = this.lowerCorner.z;
 
-        this.chunksArr = chunks.toArray(new IChunk[0]);
+        this.chunksArr = chunks.toArray(new Chunk[0]);
     }
 
     /**
@@ -56,7 +52,7 @@ public abstract class ChunkRegionMixin implements ISeedReader {
     public BlockState getBlockState(BlockPos pos) {
         int x = (pos.getX() >> 4) - this.minChunkX;
         int z = (pos.getZ() >> 4) - this.minChunkZ;
-        int w = this.field_217380_e;
+        int w = this.width;
 
         if (x >= 0 && z >= 0 && x < w && z < w) {
             return this.chunksArr[x + z * w].getBlockState(pos);
@@ -70,10 +66,10 @@ public abstract class ChunkRegionMixin implements ISeedReader {
      * @author SuperCoder7979, 2No2Name
      */
     @Overwrite
-    public IChunk getChunk(int chunkX, int chunkZ) {
+    public Chunk getChunk(int chunkX, int chunkZ) {
         int x = chunkX - this.minChunkX;
         int z = chunkZ - this.minChunkZ;
-        int w = this.field_217380_e;
+        int w = this.width;
 
         if (x >= 0 && z >= 0 && x < w && z < w) {
             return this.chunksArr[x + z * w];
@@ -85,7 +81,7 @@ public abstract class ChunkRegionMixin implements ISeedReader {
     /**
      * Use our chunk fetch function
      */
-    public IChunk getChunk(BlockPos pos) {
+    public Chunk getChunk(BlockPos pos) {
         // Skip checking chunk.getStatus().isAtLeast(ChunkStatus.EMPTY) here, because it is always true
         return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
     }
