@@ -54,7 +54,7 @@ public class SodiumConfig {
         this.addMixinRule("features.texture_tracking", true);
         this.addMixinRule("features.world_ticking", true);
 
-        this.applyModOverrides();
+        this.applyOverridesForModConflicts();
     }
 
     /**
@@ -98,23 +98,37 @@ public class SodiumConfig {
         }
     }
 
-    private void applyModOverrides() {
+    
+    private void applyOverridesForModConflicts() {
+        // Array of modIds for which to disable Sodium mixins
+        final String[] modOverrideList = {
+                "abnormals_core",
+                "quark",
+                "dynamictrees"
+        };
 
-        if(FMLLoader.getLoadingModList().getModFileById("quark") != null)
-        {
-            this.options.get("features.item").addModOverride(false, "quark");
+        // Array of mixin rules to disable for each of the above modIds
+        final String[][] rulesToOverride = {
+                /* ABNORMALS CORE */
+                {"features.world_ticking"},
+
+                /* QUARK */
+                {"features.item"},
+
+                /* Dynamic Trees */
+                {"features.world_ticking"}
+
+        };
+
+        // For each of the above modIds that's loaded, override the corresponding mixin rules
+        for (int i = 0; i < modOverrideList.length; i++) {
+            if(FMLLoader.getLoadingModList().getModFileById(modOverrideList[i]) != null) {
+                for (String rule : rulesToOverride[i]) {
+                    this.options.get(getMixinRuleName(rule))
+                            .addModOverride(false, modOverrideList[i]);
+                }
+            }
         }
-
-        if(FMLLoader.getLoadingModList().getModFileById("abnormals_core") != null)
-        {
-            this.options.get("features.world_ticking").addModOverride(false, "quark");
-        }
-
-        if(FMLLoader.getLoadingModList().getModFileById("dynamictrees") != null)
-        {
-            this.options.get("features.world_ticking").addModOverride(false, "dynamictrees");
-        }
-
     }
 
 
