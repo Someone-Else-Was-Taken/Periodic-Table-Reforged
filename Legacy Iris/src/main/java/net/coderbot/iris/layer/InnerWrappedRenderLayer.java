@@ -2,12 +2,13 @@ package net.coderbot.iris.layer;
 
 import net.coderbot.batchedentityrendering.impl.WrappableRenderLayer;
 import net.coderbot.iris.mixin.renderlayer.RenderLayerAccessor;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
+//import net.minecraft.client.render.RenderLayer;
+//import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.renderer.RenderState;
 import net.minecraft.client.renderer.RenderType;
-import org.jetbrains.annotations.Nullable;
+//import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -15,41 +16,41 @@ public class InnerWrappedRenderLayer extends RenderType implements WrappableRend
 	private final RenderState extra;
 	private final RenderType wrapped;
 
-	public InnerWrappedRenderLayer(String name, RenderLayer wrapped, RenderPhase extra) {
-		super(name, wrapped.getVertexFormat(), wrapped.getDrawMode(), wrapped.getExpectedBufferSize(),
-			wrapped.hasCrumbling(), isTranslucent(wrapped), wrapped::startDrawing, wrapped::endDrawing);
+	public InnerWrappedRenderLayer(String name, RenderType wrapped, RenderState extra) {
+		super(name, wrapped.getVertexFormat(), wrapped.getDrawMode(), wrapped.getBufferSize(),
+			wrapped.isUseDelegate(), isTranslucent(wrapped), wrapped::setupRenderState, wrapped::clearRenderState);
 
 		this.extra = extra;
 		this.wrapped = wrapped;
 	}
 
 	@Override
-	public void startDrawing() {
-		super.startDrawing();
+	public void setupRenderState() {
+		super.setupRenderState();
 
-		extra.startDrawing();
+		extra.setupRenderState();
 	}
 
 	@Override
-	public void endDrawing() {
-		extra.endDrawing();
+	public void clearRenderState() {
+		extra.clearRenderState();
 
-		super.endDrawing();
+		super.clearRenderState();
 	}
 
 	@Override
-	public RenderLayer unwrap() {
+	public RenderType unwrap() {
 		return this.wrapped;
 	}
 
 	@Override
-	public Optional<RenderLayer> getAffectedOutline() {
-		return this.wrapped.getAffectedOutline();
+	public Optional<RenderType> getOutline() {
+		return this.wrapped.getOutline();
 	}
 
 	@Override
-	public boolean isOutline() {
-		return this.wrapped.isOutline();
+	public boolean isColoredOutlineBuffer() {
+		return this.wrapped.isColoredOutlineBuffer();
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public class InnerWrappedRenderLayer extends RenderType implements WrappableRend
 		return "iris_wrapped:" + this.wrapped.toString();
 	}
 
-	private static boolean isTranslucent(RenderLayer layer) {
+	private static boolean isTranslucent(RenderType layer) {
 		return ((RenderLayerAccessor) layer).isTranslucent();
 	}
 }

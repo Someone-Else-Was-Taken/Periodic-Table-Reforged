@@ -1,10 +1,11 @@
 package net.coderbot.iris.layer;
 
-import net.minecraft.client.render.RenderPhase;
+//import net.minecraft.client.render.RenderPhase;
+import net.minecraft.client.renderer.RenderState;
 
 import java.util.Objects;
 
-public class UseProgramRenderPhase extends RenderPhase {
+public class UseProgramRenderPhase extends RenderState {
 	private GbufferProgram program;
 
 	public UseProgramRenderPhase(GbufferProgram program) {
