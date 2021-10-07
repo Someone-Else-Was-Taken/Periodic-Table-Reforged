@@ -29,7 +29,7 @@ public class WorldChunkMixin {
             method = "addEntity",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/collection/TypeFilterableList;add(Ljava/lang/Object;)Z"
+                    target = "Lnet/minecraft/util/ClassInheritanceMultiMap;add(Ljava/lang/Object;)Z"
             )
     )
     private void onEntityAdded(Entity entity, CallbackInfo ci) {
@@ -42,7 +42,7 @@ public class WorldChunkMixin {
             method = "removeEntityAtIndex",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/collection/TypeFilterableList;remove(Ljava/lang/Object;)Z"
+                    target = "Lnet/minecraft/util/ClassInheritanceMultiMap;remove(Ljava/lang/Object;)Z"
             )
     )
     private void onEntityRemoved(Entity entity, int section, CallbackInfo ci) {

@@ -62,7 +62,7 @@ public abstract class ChunkSectionMixin implements ChunkAwareBlockCollisionSweep
             at = @At(
                     ordinal = 0,
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/BlockState;hasRandomTicks()Z",
+                    target = "Lnet/minecraft/block/BlockState;ticksRandomly()Z",
                     shift = At.Shift.BEFORE
             ),
             locals = LocalCapture.CAPTURE_FAILHARD

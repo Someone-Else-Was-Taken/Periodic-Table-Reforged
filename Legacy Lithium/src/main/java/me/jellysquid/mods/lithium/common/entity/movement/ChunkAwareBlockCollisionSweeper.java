@@ -19,8 +19,8 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 //import net.minecraft.util.shape.VoxelShapes;
 //import net.minecraft.world.CollisionView;
 import net.minecraft.world.ICollisionReader;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.IChunk;
 
 import static me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions.EPSILON;
 
@@ -64,7 +64,7 @@ public class ChunkAwareBlockCollisionSweeper {
     private int cIterated;
 
     private boolean sectionOversizedBlocks;
-    private Chunk cachedChunk;
+    private IChunk cachedChunk;
     private ChunkSection cachedChunkSection;
     private boolean needEntityCollisionCheck;
 
@@ -118,7 +118,7 @@ public class ChunkAwareBlockCollisionSweeper {
                         }
                     }
                     //Casting to Chunk is not checked, together with other mods this could cause a ClassCastException
-                    this.cachedChunk = (Chunk) this.view.getBlockReader(this.chunkX, this.chunkZ);
+                    this.cachedChunk = (IChunk) this.view.getBlockReader(this.chunkX, this.chunkZ);
                     if (this.cachedChunk != null) {
                         this.cachedChunkSection = this.cachedChunk.getSections()[this.chunkY];
                     }
@@ -285,7 +285,7 @@ public class ChunkAwareBlockCollisionSweeper {
      *
      * @return Whether there are any oversized blocks in the chunk section.
      */
-    private static boolean hasChunkSectionOversizedBlocks(Chunk chunk, int chunkY) {
+    private static boolean hasChunkSectionOversizedBlocks(IChunk chunk, int chunkY) {
         if (OVERSIZED_BLOCK_COUNTING_ENABLED) {
             ChunkSection section = chunk.getSections()[chunkY];
             return section != null && ((OversizedBlocksCounter) section).hasOversizedBlocks();

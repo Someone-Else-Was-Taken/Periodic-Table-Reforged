@@ -32,7 +32,7 @@ public abstract class ChunkRegionMixin implements ISeedReader {
     private int field_217380_e;
 
     // Array view of the chunks in the region to avoid an unnecessary de-reference
-    private Chunk[] chunksArr;
+    private IChunk[] chunksArr;
 
     // The starting position of this region
     private int minChunkX, minChunkZ;
@@ -45,7 +45,7 @@ public abstract class ChunkRegionMixin implements ISeedReader {
         this.minChunkX = this.field_241160_n_.x;
         this.minChunkZ = this.field_241160_n_.z;
 
-        this.chunksArr = chunks.toArray(new Chunk[0]);
+        this.chunksArr = chunks.toArray(new IChunk[0]);
     }
 
     /**
@@ -86,7 +86,7 @@ public abstract class ChunkRegionMixin implements ISeedReader {
      * Use our chunk fetch function
      */
     public IChunk getChunk(BlockPos pos) {
-        // Skip checking chunk.getStatus().isAtLeast(ChunkStatus.EMPTY) here, because it is always true
+        // skip checking chunk.getStatus().isAtLeast(ChunkStatus.EMPTY) here, because it is always true
         return this.getChunk(pos.getX() >> 4, pos.getZ() >> 4);
     }
 }

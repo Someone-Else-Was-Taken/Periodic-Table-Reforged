@@ -45,7 +45,7 @@ public class EnderChestBlockEntityMixin extends TileEntity {
     @Inject(method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;addSyncedBlockEvent(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/Block;II)V",
+                    target = "Lnet/minecraft/world/World;addBlockEvent(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/Block;II)V",
                     shift = At.Shift.BEFORE
             )
     )
