@@ -15,7 +15,7 @@ public class PistonBlockMixin {
             method = "shouldBeExtended",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/Direction;values()[Lnet/minecraft/util/math/Direction;"
+                    target = "Lnet/minecraft/util/Direction;values()[Lnet/minecraft/util/Direction;"
             )
     )
     private Direction[] redirectShouldExtendDirectionValues() {

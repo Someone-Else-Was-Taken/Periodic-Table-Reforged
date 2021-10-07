@@ -40,7 +40,7 @@ public abstract class ChunkSectionMixin implements ChunkAwareBlockCollisionSweep
             method = "recalculateRefCounts",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/PalettedContainer;count(Lnet/minecraft/world/chunk/PalettedContainer$CountConsumer;)V"
+                    target = "Lnet/minecraft/util/palette/PalettedContainer;count(Lnet/minecraft/util/palette/PalettedContainer$ICountConsumer;)V"
             )
     )
     private void addToOversizedBlockCount(PalettedContainer<BlockState> palettedContainer, PalettedContainer.ICountConsumer<BlockState> consumer) {
@@ -78,7 +78,7 @@ public abstract class ChunkSectionMixin implements ChunkAwareBlockCollisionSweep
             at = @At(
                     ordinal = 1,
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/BlockState;hasRandomTicks()Z",
+                    target = "Lnet/minecraft/block/BlockState;ticksRandomly()Z",
                     shift = At.Shift.BEFORE
             ),
             locals = LocalCapture.CAPTURE_FAILHARD

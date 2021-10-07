@@ -27,7 +27,7 @@ public class ArmorStandEntityMixin {
             method = "collideWithNearbyEntities",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;getOtherEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;)Ljava/util/List;"
+                    target = "Lnet/minecraft/world/World;getEntitiesInAABBexcluding(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Ljava/util/function/Predicate;)Ljava/util/List;"
             )
     )
     private List<Entity> getMinecartsDirectly(World world, Entity excluded, AxisAlignedBB box, Predicate<? super Entity> predicate) {

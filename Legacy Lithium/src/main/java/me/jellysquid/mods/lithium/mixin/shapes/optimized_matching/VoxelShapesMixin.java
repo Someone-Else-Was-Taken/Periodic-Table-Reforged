@@ -19,7 +19,7 @@ public class VoxelShapesMixin {
             at = @At(
                     shift = At.Shift.BEFORE,
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/shape/VoxelShape;getPointPositions(Lnet/minecraft/util/math/Direction$Axis;)Lit/unimi/dsi/fastutil/doubles/DoubleList;",
+                    target = "Lnet/minecraft/util/math/shapes/VoxelShape;getValues(Lnet/minecraft/util/Direction$Axis;)Lit/unimi/dsi/fastutil/doubles/DoubleList;",
                     ordinal = 0
             ),
             cancellable = true

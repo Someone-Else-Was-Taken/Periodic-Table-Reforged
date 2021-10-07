@@ -82,7 +82,7 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
             method = "onEntityAdded",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/MobEntity;getNavigation()Lnet/minecraft/pathfinding/PathNavigator;"
+                    target = "Lnet/minecraft/entity/MobEntity;getNavigator()Lnet/minecraft/pathfinding/PathNavigator;"
             )
     )
     private PathNavigator startListeningOnEntityLoad(MobEntity mobEntity) {
@@ -95,7 +95,7 @@ public abstract class ServerWorldMixin extends World implements ServerWorldExten
     }
 
     @Redirect(
-            method = "removeEntityComplete",
+            method = "Lnet/minecraft/world/server/ServerWorld;removeEntityComplete(Lnet/minecraft/entity/Entity;Z)V",
             remap = false,
             at = @At(
                     value = "INVOKE",

@@ -2,6 +2,7 @@ package me.jellysquid.mods.lithium.mixin.ai.pathing;
 
 import me.jellysquid.mods.lithium.api.pathing.BlockPathingBehavior;
 import me.jellysquid.mods.lithium.common.ai.pathing.BlockStatePathingCache;
+import me.jellysquid.mods.lithium.common.ai.pathing.PathNodeDefaults;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,11 +22,14 @@ public abstract class MixinAbstractBlockState implements BlockStatePathingCache 
 
     @Inject(method = "cacheState", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
-        BlockState state = this.getSelf();
-        BlockPathingBehavior behavior = (BlockPathingBehavior) this.getBlock();
 
-        this.pathNodeType = Validate.notNull(behavior.getPathNodeType(state));
-        this.pathNodeTypeNeighbor = Validate.notNull(behavior.getPathNodeTypeAsNeighbor(state));
+        if(PathNodeDefaults.isAllowAccess()) {
+            BlockState state = this.getSelf();
+            BlockPathingBehavior behavior = (BlockPathingBehavior) this.getBlock();
+
+            this.pathNodeType = Validate.notNull(behavior.getPathNodeType(state));
+            this.pathNodeTypeNeighbor = Validate.notNull(behavior.getPathNodeTypeAsNeighbor(state));
+        }
     }
 
     @Override

@@ -11,6 +11,8 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 
 public class PathNodeDefaults {
+    private static boolean allowAccess = false;
+
     public static PathNodeType getNeighborNodeType(BlockState state) {
         if (state.isAir()) {
             return PathNodeType.OPEN;
@@ -100,5 +102,17 @@ public class PathNodeDefaults {
 
     private static boolean isFireDangerSource(BlockState blockState) {
         return blockState.isIn(BlockTags.FIRE) || blockState.matchesBlock(Blocks.LAVA) || blockState.matchesBlock(Blocks.MAGMA_BLOCK) || CampfireBlock.isLit(blockState);
+    }
+
+    public static void allowAccess() {
+        allowAccess = true;
+    }
+
+    public static void disallowAccess() {
+        allowAccess = false;
+    }
+
+    public static boolean isAllowAccess() {
+        return allowAccess;
     }
 }

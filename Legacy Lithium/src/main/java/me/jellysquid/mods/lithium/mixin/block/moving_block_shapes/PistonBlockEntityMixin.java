@@ -48,7 +48,7 @@ public abstract class PistonBlockEntityMixin {
             method = "getCollisionShape",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/Direction;getOffsetX()I",
+                    target = "Lnet/minecraft/util/Direction;getXOffset()I",
                     shift = At.Shift.BEFORE
             ),
             locals = LocalCapture.CAPTURE_FAILHARD,

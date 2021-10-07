@@ -28,7 +28,7 @@ public class WorldMixin {
             method = "tickBlockEntities",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/ChunkManager;shouldTickBlock(Lnet/minecraft/util/math/BlockPos;)Z"
+                    target = "Lnet/minecraft/world/chunk/AbstractChunkProvider;canTick(Lnet/minecraft/util/math/BlockPos;)Z"
             )
     )
     private boolean shouldTick(AbstractChunkProvider chunkManager, BlockPos pos) {

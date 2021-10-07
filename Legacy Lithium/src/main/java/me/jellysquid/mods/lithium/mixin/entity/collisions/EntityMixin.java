@@ -50,7 +50,7 @@ public abstract class EntityMixin {
             method = "getAllowedMovement(Lnet/minecraft/util/math/vector/Vector3d;)Lnet/minecraft/util/math/vector/Vector3d;",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/shape/VoxelShapes;cuboid(Lnet/minecraft/util/math/Box;)Lnet/minecraft/util/shape/VoxelShape;",
+                    target = "Lnet/minecraft/util/math/shapes/VoxelShapes;create(Lnet/minecraft/util/math/AxisAlignedBB;)Lnet/minecraft/util/math/shapes/VoxelShape;",
                     ordinal = 0
             )
     )

@@ -29,7 +29,7 @@ public class ChunkHolderMixin {
             at = @At(
                     ordinal = 0,
                     value = "FIELD",
-                    target = "Lnet/minecraft/server/world/ChunkHolder;blockUpdatesBySection:[Lit/unimi/dsi/fastutil/shorts/ShortSet;",
+                    target = "Lnet/minecraft/world/server/ChunkHolder;field_244383_q:[Lit/unimi/dsi/fastutil/shorts/ShortSet;",
                     shift = At.Shift.BEFORE
             )
     )

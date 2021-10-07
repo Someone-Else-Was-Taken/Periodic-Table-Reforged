@@ -24,8 +24,8 @@ public class WorldMixin {
                     target = "Lnet/minecraft/world/World;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/BlockState;"
             ),
             slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/util/function/Supplier;)V"),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/util/Tickable;tick()V")
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/IProfiler;startSection(Ljava/util/function/Supplier;)V"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/ITickableTileEntity;tick()V")
             )
     )
     private BlockState getNullBlockState(World world, BlockPos pos) {
@@ -39,8 +39,8 @@ public class WorldMixin {
                     target = "Lnet/minecraft/block/BlockState;getBlock()Lnet/minecraft/block/Block;"
             ),
             slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/util/function/Supplier;)V"),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/util/Tickable;tick()V")
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/IProfiler;startSection(Ljava/util/function/Supplier;)V"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/ITickableTileEntity;tick()V")
             )
     )
     private Block getNullBlock(BlockState blockState) {
@@ -51,11 +51,11 @@ public class WorldMixin {
             method = "tickBlockEntities",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/entity/BlockEntity;getType()Lnet/minecraft/block/entity/BlockEntityType;"
+                    target = "Lnet/minecraft/tileentity/TileEntity;getType()Lnet/minecraft/tileentity/TileEntityType;"
             ),
             slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/util/function/Supplier;)V"),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/util/Tickable;tick()V")
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/IProfiler;startSection(Ljava/util/function/Supplier;)V"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/ITickableTileEntity;tick()V")
             )
     )
     private TileEntityType<?> getNullIfSupported(TileEntity blockEntity) {
@@ -65,11 +65,11 @@ public class WorldMixin {
             method = "tickBlockEntities",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/entity/BlockEntityType;supports(Lnet/minecraft/block/Block;)Z"
+                    target = "Lnet/minecraft/tileentity/TileEntityType;isValidBlock(Lnet/minecraft/block/Block;)Z"
             ),
             slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiler/Profiler;push(Ljava/util/function/Supplier;)V"),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/util/Tickable;tick()V")
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/IProfiler;startSection(Ljava/util/function/Supplier;)V"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/ITickableTileEntity;tick()V")
             )
     )
     private boolean isFirstArgNull(TileEntityType<?> blockEntityType, Block block) {

@@ -30,7 +30,7 @@ public class VoxelShapesMixin {
             method = "getAllowedOffset(Lnet/minecraft/util/math/AxisAlignedBB;Lnet/minecraft/world/IWorldReader;DLnet/minecraft/util/math/shapes/ISelectionContext;Lnet/minecraft/util/AxisRotation;Ljava/util/stream/Stream;)D",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/util/math/AxisCycleDirection;opposite()Lnet/minecraft/util/math/AxisCycleDirection;",
+                    target = "Lnet/minecraft/util/AxisRotation;reverse()Lnet/minecraft/util/AxisRotation;",
                     ordinal = 0
             ),
             cancellable = true,

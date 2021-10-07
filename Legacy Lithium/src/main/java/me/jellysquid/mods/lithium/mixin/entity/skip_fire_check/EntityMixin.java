@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 //import net.minecraft.util.math.Box;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,15 +25,15 @@ public abstract class EntityMixin {
             method = "move",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;method_29556(Lnet/minecraft/util/math/Box;)Ljava/util/stream/Stream;"
+                    target = "Lnet/minecraft/util/math/BlockPos;getAllInBox(Lnet/minecraft/util/math/AxisAlignedBB;)Ljava/util/stream/Stream;"
             )
     )
-    private Stream<BlockState> skipFireTestIfResultDoesNotMatter(World world, AxisAlignedBB box) {
+    private Stream<BlockPos> skipFireTestIfResultDoesNotMatter(AxisAlignedBB box) {
         // Skip scanning the blocks around the entity touches by returning an empty stream when the result does not matter
         if (this.fire > 0 || this.fire == -this.getFireImmuneTicks()) {
             return Stream.empty();
         }
 
-        return world.getStatesInArea(box);
+        return BlockPos.getAllInBox(box);
     }
 }

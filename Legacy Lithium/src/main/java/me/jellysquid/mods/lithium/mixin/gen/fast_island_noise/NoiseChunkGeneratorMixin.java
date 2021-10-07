@@ -39,7 +39,7 @@ public class NoiseChunkGeneratorMixin {
             method = "fillNoiseColumn([DII)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/biome/source/TheEndBiomeSource;getNoiseAt(Lnet/minecraft/util/math/noise/SimplexNoiseSampler;II)F"
+                    target = "Lnet/minecraft/world/biome/provider/EndBiomeProvider;getRandomNoise(Lnet/minecraft/world/gen/SimplexNoiseGenerator;II)F"
             )
     )
     private float handleNoiseSample(SimplexNoiseGenerator simplexNoiseSampler, int x, int z) {

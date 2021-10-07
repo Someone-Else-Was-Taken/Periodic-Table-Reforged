@@ -35,7 +35,7 @@ public class FleeEntityGoalMixin<T extends LivingEntity> {
             method = "shouldExecute",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;getClosestEntityIncludingUngeneratedChunks(Ljava/lang/Class;Lnet/minecraft/entity/ai/TargetPredicate;Lnet/minecraft/entity/LivingEntity;DDDLnet/minecraft/util/math/Box;)Lnet/minecraft/entity/LivingEntity;"
+                    target = "Lnet/minecraft/world/World;getClosestEntity(Ljava/lang/Class;Lnet/minecraft/entity/EntityPredicate;Lnet/minecraft/entity/LivingEntity;DDDLnet/minecraft/util/math/AxisAlignedBB;)Lnet/minecraft/entity/LivingEntity;"
             )
     )
     private T redirectGetNearestEntity(World world, Class<? extends T> entityClass, EntityPredicate entityPredicate, LivingEntity entity, double x, double y, double z, AxisAlignedBB box) {

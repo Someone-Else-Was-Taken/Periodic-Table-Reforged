@@ -31,7 +31,7 @@ public abstract class EntityNavigationMixin implements EntityNavigationExtended 
             method = "updatePath",
             at = @At(
                     value = "INVOKE_ASSIGN",
-                    target = "Lnet/minecraft/entity/ai/pathing/EntityNavigation;findPathTo(Lnet/minecraft/util/math/BlockPos;I)Lnet/minecraft/entity/ai/pathing/Path;",
+                    target = "Lnet/minecraft/pathfinding/PathNavigator;getPathToPos(Lnet/minecraft/util/math/BlockPos;I)Lnet/minecraft/pathfinding/Path;",
                     shift = At.Shift.AFTER
             )
     )

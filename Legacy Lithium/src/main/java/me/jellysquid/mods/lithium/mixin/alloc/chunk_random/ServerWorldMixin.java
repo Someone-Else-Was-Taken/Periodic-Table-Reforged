@@ -24,7 +24,7 @@ public abstract class ServerWorldMixin {
             method = "tickEnvironment",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/world/ServerWorld;getRandomPosInChunk(IIII)Lnet/minecraft/util/math/BlockPos;"
+                    target = "Lnet/minecraft/world/server/ServerWorld;getBlockRandomPos(IIII)Lnet/minecraft/util/math/BlockPos;"
             )
     )
     private BlockPos redirectTickGetRandomPosInChunk(ServerWorld serverWorld, int x, int y, int z, int mask) {
@@ -40,7 +40,7 @@ public abstract class ServerWorldMixin {
             method = "tickEnvironment",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Ljava/util/Random;)V"
+                    target = "Lnet/minecraft/block/BlockState;randomTick(Lnet/minecraft/world/server/ServerWorld;Lnet/minecraft/util/math/BlockPos;Ljava/util/Random;)V"
             )
     )
     private void redirectBlockStateTick(BlockState blockState, ServerWorld world, BlockPos pos, Random rand) {
@@ -54,7 +54,7 @@ public abstract class ServerWorldMixin {
             method = "tickEnvironment",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/fluid/FluidState;onRandomTick(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Ljava/util/Random;)V"
+                    target = "Lnet/minecraft/fluid/FluidState;randomTick(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Ljava/util/Random;)V"
             )
     )
     private void redirectFluidStateTick(FluidState fluidState, World world, BlockPos pos, Random rand) {

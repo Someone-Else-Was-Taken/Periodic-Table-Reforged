@@ -26,7 +26,7 @@ public abstract class ServerWorldMixin {
             method = "<init>",
             at = @At(
                     value = "NEW",
-                    target = "net/minecraft/server/world/ServerTickScheduler"
+                    target = "net/minecraft/world/server/ServerTickList"
             )
     )
     private <T> ServerTickList<T> redirectServerTickSchedulerCtor(ServerWorld world, Predicate<T> invalidPredicate, Function<T, ResourceLocation> idToName, Consumer<NextTickListEntry<T>> tickConsumer) {

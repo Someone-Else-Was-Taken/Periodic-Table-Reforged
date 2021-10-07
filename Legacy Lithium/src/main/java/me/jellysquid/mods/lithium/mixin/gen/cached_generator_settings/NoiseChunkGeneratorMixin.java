@@ -33,11 +33,7 @@ public class NoiseChunkGeneratorMixin {
      */
     @Inject(
             method = "<init>(Lnet/minecraft/world/biome/provider/BiomeProvider;Lnet/minecraft/world/biome/provider/BiomeProvider;JLjava/util/function/Supplier;)V",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/gen/chunk/ChunkGeneratorSettings;getGenerationShapeConfig()Lnet/minecraft/world/gen/chunk/GenerationShapeConfig;",
-                    shift = At.Shift.BEFORE
-            )
+            at = @At("RETURN")
     )
     private void hookConstructor(BiomeProvider populationSource, BiomeProvider biomeSource, long seed, Supplier<DimensionSettings> settings, CallbackInfo ci) {
         this.cachedSeaLevel = settings.get().getSeaLevel();

@@ -18,7 +18,7 @@ public class LivingEntityMixin {
             method = "func_241354_r_",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/EquipmentSlot;values()[Lnet/minecraft/entity/EquipmentSlot;"
+                    target = "Lnet/minecraft/inventory/EquipmentSlotType;values()[Lnet/minecraft/inventory/EquipmentSlotType;"
             )
     )
     private EquipmentSlotType[] redirectEquipmentSlotsClone() {

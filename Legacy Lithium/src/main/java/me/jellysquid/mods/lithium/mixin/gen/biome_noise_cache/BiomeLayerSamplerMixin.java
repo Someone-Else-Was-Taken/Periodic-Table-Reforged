@@ -31,7 +31,7 @@ public abstract class BiomeLayerSamplerMixin {
             method = "func_242936_a",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/biome/layer/util/CachingLayerSampler;sample(II)I"
+                    target = "Lnet/minecraft/world/gen/area/LazyArea;getValue(II)I"
             )
     )
     private int sampleThreadLocal(LazyArea cachingLayerSampler, int i, int j) {

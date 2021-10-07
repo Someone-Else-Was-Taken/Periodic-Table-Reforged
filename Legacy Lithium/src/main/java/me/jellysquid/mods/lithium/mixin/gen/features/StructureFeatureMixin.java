@@ -39,11 +39,11 @@ public class StructureFeatureMixin {
             method = "func_236388_a_",
             slice = @Slice(
                     from = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/world/chunk/ChunkStatus;STRUCTURE_STARTS:Lnet/minecraft/world/chunk/ChunkStatus;", ordinal = 0),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;getPos()Lnet/minecraft/util/math/ChunkPos;", ordinal = 0)
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/IChunk;getPos()Lnet/minecraft/util/math/ChunkPos;", ordinal = 0)
             ),
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/WorldView;getChunk(IILnet/minecraft/world/chunk/ChunkStatus;)Lnet/minecraft/world/chunk/Chunk;",
+                    target = "Lnet/minecraft/world/IWorldReader;getChunk(IILnet/minecraft/world/chunk/ChunkStatus;)Lnet/minecraft/world/chunk/IChunk;",
                     ordinal = 0
             )
     )
@@ -65,15 +65,15 @@ public class StructureFeatureMixin {
     @Redirect(
             method = "func_236388_a_",
             slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/world/WorldView;getChunk(IILnet/minecraft/world/chunk/ChunkStatus;)Lnet/minecraft/world/chunk/Chunk;", ordinal = 0),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/ChunkSectionPos;from(Lnet/minecraft/util/math/ChunkPos;I)Lnet/minecraft/util/math/ChunkSectionPos;", ordinal = 0)
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/world/IWorldReader;getChunk(IILnet/minecraft/world/chunk/ChunkStatus;)Lnet/minecraft/world/chunk/IChunk;", ordinal = 0),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/SectionPos;from(Lnet/minecraft/util/math/ChunkPos;I)Lnet/minecraft/util/math/SectionPos;", ordinal = 0)
             ),
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/chunk/Chunk;getPos()Lnet/minecraft/util/math/ChunkPos;", ordinal = 0
+                    target = "Lnet/minecraft/world/chunk/IChunk;getPos()Lnet/minecraft/util/math/ChunkPos;", ordinal = 0
             )
     )
-    private ChunkPos checkForNull(Chunk chunk) {
+    private ChunkPos checkForNull(IChunk chunk) {
         return chunk == null ? new ChunkPos(0, 0) : chunk.getPos();
     }
 
@@ -85,12 +85,12 @@ public class StructureFeatureMixin {
     @Redirect(
             method = "func_236388_a_",
             slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/ChunkSectionPos;from(Lnet/minecraft/util/math/ChunkPos;I)Lnet/minecraft/util/math/ChunkSectionPos;", ordinal = 0),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/structure/StructureStart;hasChildren()Z", ordinal = 0)
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/SectionPos;from(Lnet/minecraft/util/math/ChunkPos;I)Lnet/minecraft/util/math/SectionPos;", ordinal = 0),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/structure/StructureStart;isValid()Z", ordinal = 0)
             ),
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/gen/StructureAccessor;getStructureStart(Lnet/minecraft/util/math/ChunkSectionPos;Lnet/minecraft/world/gen/feature/StructureFeature;Lnet/minecraft/world/StructureHolder;)Lnet/minecraft/structure/StructureStart;",
+                    target = "Lnet/minecraft/world/gen/feature/structure/StructureManager;getStructureStart(Lnet/minecraft/util/math/SectionPos;Lnet/minecraft/world/gen/feature/structure/Structure;Lnet/minecraft/world/IStructureReader;)Lnet/minecraft/world/gen/feature/structure/StructureStart;",
                     ordinal = 0
             )
     )

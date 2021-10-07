@@ -21,7 +21,7 @@ public class VoxelShapesMixin {
             at = @At(
                     shift = At.Shift.BEFORE,
                     value = "NEW",
-                    target = "net/minecraft/util/shape/SimplePairList"
+                    target = "net/minecraft/util/math/shapes/IndirectMerger"
             ),
             cancellable = true
     )

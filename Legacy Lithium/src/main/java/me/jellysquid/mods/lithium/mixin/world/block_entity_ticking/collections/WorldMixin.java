@@ -89,7 +89,7 @@ public abstract class WorldMixin implements IWorld {
             method = "tickBlockEntities",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/world/World;pendingBlockEntities:Ljava/util/List;",
+                    target = "Lnet/minecraft/world/World;addedTileEntityList:Ljava/util/List;",
                     ordinal = 0
             )
     )
@@ -143,7 +143,7 @@ public abstract class WorldMixin implements IWorld {
             method = "setTileEntity",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/block/entity/BlockEntity;setLocation(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V"
+                    target = "Lnet/minecraft/tileentity/TileEntity;setWorldAndPos(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V"
             )
     )
     private void setLocationAndRemoveAllAtPosition(TileEntity blockEntity, World world, BlockPos pos) {

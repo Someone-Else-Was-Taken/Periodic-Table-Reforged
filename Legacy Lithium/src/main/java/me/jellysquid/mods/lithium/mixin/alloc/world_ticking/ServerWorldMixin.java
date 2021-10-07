@@ -23,8 +23,8 @@ public class ServerWorldMixin {
     @Redirect(
             method = "tick",
             slice = @Slice(
-                    from = @At(value = "INVOKE", target = "Lnet/minecraft/entity/boss/dragon/EnderDragonFight;tick()V"),
-                    to = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;loadEntityUnchecked(Lnet/minecraft/entity/Entity;)V")
+                    from = @At(value = "INVOKE", target = "Lnet/minecraft/world/end/DragonFightManager;tick()V"),
+                    to = @At(value = "INVOKE", target = "Lnet/minecraft/world/server/ServerWorld;onEntityAdded(Lnet/minecraft/entity/Entity;)V")
             ),
             at = @At(
                     remap = false,

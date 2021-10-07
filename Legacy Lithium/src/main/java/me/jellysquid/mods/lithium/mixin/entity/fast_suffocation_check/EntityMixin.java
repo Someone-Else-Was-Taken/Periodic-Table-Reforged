@@ -27,7 +27,7 @@ public abstract class EntityMixin {
             method = "isEntityInsideOpaqueBlock",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;getBlockCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;Ljava/util/function/BiPredicate;)Ljava/util/stream/Stream;"
+                    target = "Lnet/minecraft/world/World;func_241457_a_(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/AxisAlignedBB;Ljava/util/function/BiPredicate;)Ljava/util/stream/Stream;"
             )
     )
     public Stream<VoxelShape> isInsideWall(World world, Entity entity, AxisAlignedBB box, BiPredicate<BlockState, BlockPos> biPredicate) {
