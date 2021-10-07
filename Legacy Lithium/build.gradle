@@ -16,8 +16,8 @@ apply plugin: "org.spongepowered.mixin"
 
 
 version = '1.0'
-group = 'someoneelse.phosphorreforged' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'phosphor'
+group = 'someoneelse.lithiumreforged' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'lithium'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -63,7 +63,7 @@ minecraft {
 }
 
 mixin {
-    add sourceSets.main, "phosphor.refmap.json"
+    add sourceSets.main, "lithium.refmap.json"
 }
 
 dependencies {
