@@ -6,6 +6,18 @@
   "injectors": {
     "defaultRequire": 1
   },
+  "client": [
+    "client.model.MixinBakedQuad",
+    "client.model.MixinBasicBakedModel",
+    "client.model.MixinModelLoader",
+    "client.model.MixinMultipartBakedModel",
+    "client.model.MixinWeightedBakedModel",
+    "client.model.json.MixinAndMultipartModelSelector",
+    "client.model.json.MixinModelOverride",
+    "client.model.json.MixinModelOverrideList",
+    "client.model.json.MixinOrMultipartModelSelector",
+    "client.model.json.MixinSimpleMultipartModelSelector"
+  ],
   "mixins": [
     "ai.goal.GoalSelectorMixin",
     "ai.nearby_entity_tracking.LivingEntityMixin",
@@ -53,6 +65,9 @@
     "cached_hashcode.BlockNeighborGroupMixin",
     "chunk.count_oversized_blocks.ChunkSectionMixin",
     "chunk.entity_class_groups.TypeFilterableListMixin",
+    "chunk.MixinBiomeArray",
+    "chunk.MixinChunkSerializer",
+    "chunk.MixinWorldChunk",
     "chunk.no_locking.PalettedContainerMixin",
     "chunk.palette.PalettedContainerMixin",
     "chunk.section_update_tracking.ChunkHolderMixin",
@@ -98,6 +113,7 @@
     "math.fast_util.BoxMixin",
     "math.fast_util.DirectionMixin",
     "math.sine_lut.MixinMathHelper",
+    "nbt.MixinCompoundTag",
     "shapes.blockstate_cache.BlockMixin",
     "shapes.lazy_shape_context.EntityShapeContextMixin",
     "shapes.optimized_matching.VoxelShapesMixin",
@@ -106,6 +122,7 @@
     "shapes.shape_merging.VoxelShapesMixin",
     "shapes.specialized_shapes.VoxelShapeMixin",
     "shapes.specialized_shapes.VoxelShapesMixin",
+    "state.MixinState",
     "tag.SetTagMixin",
     "world.block_entity_ticking.collections.WorldMixin",
     "world.block_entity_ticking.should_tick_cache.WorldMixin",
