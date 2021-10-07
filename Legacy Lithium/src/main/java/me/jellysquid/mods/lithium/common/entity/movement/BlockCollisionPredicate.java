@@ -2,11 +2,12 @@ package me.jellysquid.mods.lithium.common.entity.movement;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.CollisionView;
+//import net.minecraft.world.CollisionView;
+import net.minecraft.world.ICollisionReader;
 
 public interface BlockCollisionPredicate {
     BlockCollisionPredicate ANY = (world, pos, state) -> true;
-    BlockCollisionPredicate SUFFOCATES = (world, pos, state) -> state.shouldSuffocate(world, pos);
+    BlockCollisionPredicate SUFFOCATES = (world, pos, state) -> state.isSuffocating(world, pos);
 
     /**
      * @param world The world of which collision tests are being performed in
@@ -14,5 +15,5 @@ public interface BlockCollisionPredicate {
      * @param state The block state that is being collided with
      * @return True if the block can be collided with, otherwise false
      */
-    boolean test(CollisionView world, BlockPos pos, BlockState state);
+    boolean test(ICollisionReader world, BlockPos pos, BlockState state);
 }

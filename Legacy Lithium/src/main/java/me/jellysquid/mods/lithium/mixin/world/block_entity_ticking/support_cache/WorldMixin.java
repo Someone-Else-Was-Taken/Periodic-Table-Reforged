@@ -3,8 +3,10 @@ package me.jellysquid.mods.lithium.mixin.world.block_entity_ticking.support_cach
 import me.jellysquid.mods.lithium.common.world.blockentity.SupportCache;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
+//import net.minecraft.block.entity.BlockEntity;
+//import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -56,8 +58,8 @@ public class WorldMixin {
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/util/Tickable;tick()V")
             )
     )
-    private BlockEntityType<?> getNullIfSupported(BlockEntity blockEntity) {
-        return ((SupportCache) blockEntity).isSupported() ? null : BlockEntityType.BANNER;
+    private TileEntityType<?> getNullIfSupported(TileEntity blockEntity) {
+        return ((SupportCache) blockEntity).isSupported() ? null : TileEntityType.BANNER;
     }
     @Redirect(
             method = "tickBlockEntities",
@@ -70,7 +72,7 @@ public class WorldMixin {
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/util/Tickable;tick()V")
             )
     )
-    private boolean isFirstArgNull(BlockEntityType<?> blockEntityType, Block block) {
+    private boolean isFirstArgNull(TileEntityType<?> blockEntityType, Block block) {
         return blockEntityType == null;
     }
 

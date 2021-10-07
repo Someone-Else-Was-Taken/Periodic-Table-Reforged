@@ -5,7 +5,8 @@ import me.jellysquid.mods.lithium.common.ai.pathing.BlockStatePathingCache;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.ai.pathing.PathNodeType;
+//import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.pathfinding.PathNodeType;
 import org.apache.commons.lang3.Validate;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,9 +19,9 @@ public abstract class MixinAbstractBlockState implements BlockStatePathingCache 
     private PathNodeType pathNodeType = PathNodeType.OPEN;
     private PathNodeType pathNodeTypeNeighbor = PathNodeType.OPEN;
 
-    @Inject(method = "initShapeCache", at = @At("RETURN"))
+    @Inject(method = "cacheState", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
-        BlockState state = this.asBlockState();
+        BlockState state = this.getSelf();
         BlockPathingBehavior behavior = (BlockPathingBehavior) this.getBlock();
 
         this.pathNodeType = Validate.notNull(behavior.getPathNodeType(state));
@@ -38,7 +39,7 @@ public abstract class MixinAbstractBlockState implements BlockStatePathingCache 
     }
 
     @Shadow
-    protected abstract BlockState asBlockState();
+    protected abstract BlockState getSelf();
 
     @Shadow
     public abstract Block getBlock();

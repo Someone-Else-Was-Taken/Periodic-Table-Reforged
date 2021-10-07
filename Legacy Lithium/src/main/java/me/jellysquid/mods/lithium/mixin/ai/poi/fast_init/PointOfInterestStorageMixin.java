@@ -3,15 +3,21 @@ package me.jellysquid.mods.lithium.mixin.ai.poi.fast_init;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Codec;
 import me.jellysquid.mods.lithium.common.world.interests.PointOfInterestTypeHelper;
-import net.minecraft.datafixer.DataFixTypes;
+//import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.util.datafix.DefaultTypeReferences;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
+//import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.SectionPos;
+import net.minecraft.village.PointOfInterestData;
+import net.minecraft.village.PointOfInterestManager;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.poi.PointOfInterestSet;
-import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
-import net.minecraft.world.storage.SerializingRegionBasedStorage;
+import net.minecraft.world.chunk.storage.RegionSectionCache;
+//import net.minecraft.world.poi.PointOfInterestSet;
+//import net.minecraft.world.poi.PointOfInterestStorage;
+//import net.minecraft.world.poi.PointOfInterestType;
+//import net.minecraft.world.storage.SerializingRegionBasedStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,36 +26,36 @@ import java.io.File;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-@Mixin(PointOfInterestStorage.class)
-public abstract class PointOfInterestStorageMixin extends SerializingRegionBasedStorage<PointOfInterestSet> {
-    public PointOfInterestStorageMixin(File directory, Function<Runnable, Codec<PointOfInterestSet>> function, Function<Runnable, PointOfInterestSet> function2, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean bl) {
+@Mixin(PointOfInterestManager.class)
+public abstract class PointOfInterestStorageMixin extends RegionSectionCache<PointOfInterestData> {
+    public PointOfInterestStorageMixin(File directory, Function<Runnable, Codec<PointOfInterestData>> function, Function<Runnable, PointOfInterestData> function2, DataFixer dataFixer, DefaultTypeReferences dataFixTypes, boolean bl) {
         super(directory, function, function2, dataFixer, dataFixTypes, bl);
     }
 
     @Shadow
-    protected abstract void scanAndPopulate(ChunkSection section, ChunkSectionPos sectionPos, BiConsumer<BlockPos, PointOfInterestType> entryConsumer);
+    protected abstract void updateFromSelection(ChunkSection section, SectionPos sectionPos, BiConsumer<BlockPos, PointOfInterestType> entryConsumer);
 
     /**
      * @reason Avoid Stream API
      * @author Jellysquid
      */
     @Overwrite
-    public void initForPalette(ChunkPos chunkPos_1, ChunkSection section) {
-        ChunkSectionPos sectionPos = ChunkSectionPos.from(chunkPos_1, section.getYOffset() >> 4);
+    public void checkConsistencyWithBlocks(ChunkPos chunkPos_1, ChunkSection section) {
+        SectionPos sectionPos = SectionPos.from(chunkPos_1, section.getYLocation() >> 4);
 
-        PointOfInterestSet set = this.get(sectionPos.asLong()).orElse(null);
+        PointOfInterestData set = this.func_219113_d(sectionPos.asLong()).orElse(null);
 
         if (set != null) {
-            set.updatePointsOfInterest((consumer) -> {
+            set.refresh((consumer) -> {
                 if (PointOfInterestTypeHelper.shouldScan(section)) {
-                    this.scanAndPopulate(section, sectionPos, consumer);
+                    this.updateFromSelection(section, sectionPos, consumer);
                 }
             });
         } else {
             if (PointOfInterestTypeHelper.shouldScan(section)) {
-                set = this.getOrCreate(sectionPos.asLong());
+                set = this.func_235995_e_(sectionPos.asLong());
 
-                this.scanAndPopulate(section, sectionPos, set::add);
+                this.updateFromSelection(section, sectionPos, set::add);
             }
         }
     }

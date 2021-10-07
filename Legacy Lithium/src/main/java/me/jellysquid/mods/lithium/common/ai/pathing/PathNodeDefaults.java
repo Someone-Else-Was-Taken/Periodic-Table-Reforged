@@ -1,10 +1,14 @@
 package me.jellysquid.mods.lithium.common.ai.pathing;
 
 import net.minecraft.block.*;
-import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.block.material.Material;
+//import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.pathfinding.PathNodeType;
+//import net.minecraft.tag.BlockTags;
+//import net.minecraft.tag.FluidTags;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.FluidTags;
 
 public class PathNodeDefaults {
     public static PathNodeType getNeighborNodeType(BlockState state) {
@@ -14,13 +18,13 @@ public class PathNodeDefaults {
 
         // [VanillaCopy] LandPathNodeMaker#getNodeTypeFromNeighbors
         // Determine what kind of obstacle type this neighbor is
-        if (state.isOf(Blocks.CACTUS)) {
+        if (state.matchesBlock(Blocks.CACTUS)) {
             return PathNodeType.DANGER_CACTUS;
-        } else if (state.isOf(Blocks.SWEET_BERRY_BUSH)) {
+        } else if (state.matchesBlock(Blocks.SWEET_BERRY_BUSH)) {
             return PathNodeType.DANGER_OTHER;
         } else if (isFireDangerSource(state)) {
             return PathNodeType.DANGER_FIRE;
-        } else if (state.getFluidState().isIn(FluidTags.WATER)) {
+        } else if (state.getFluidState().isTagged(FluidTags.WATER)) {
             return PathNodeType.WATER_BORDER;
         } else {
             return PathNodeType.OPEN;
@@ -35,31 +39,31 @@ public class PathNodeDefaults {
         Block block = state.getBlock();
         Material material = state.getMaterial();
 
-        if (state.isIn(BlockTags.TRAPDOORS) || state.isOf(Blocks.LILY_PAD)) {
+        if (state.isIn(BlockTags.TRAPDOORS) || state.matchesBlock(Blocks.LILY_PAD)) {
             return PathNodeType.TRAPDOOR;
         }
 
-        if (state.isOf(Blocks.CACTUS)) {
+        if (state.matchesBlock(Blocks.CACTUS)) {
             return PathNodeType.DAMAGE_CACTUS;
         }
 
-        if (state.isOf(Blocks.SWEET_BERRY_BUSH)) {
+        if (state.matchesBlock(Blocks.SWEET_BERRY_BUSH)) {
             return PathNodeType.DAMAGE_OTHER;
         }
 
-        if (state.isOf(Blocks.HONEY_BLOCK)) {
+        if (state.matchesBlock(Blocks.HONEY_BLOCK)) {
             return PathNodeType.STICKY_HONEY;
         }
 
-        if (state.isOf(Blocks.COCOA)) {
+        if (state.matchesBlock(Blocks.COCOA)) {
             return PathNodeType.COCOA;
         }
 
         // Retrieve the fluid state from the block state to avoid a second lookup
         FluidState fluidState = state.getFluidState();
-        if (fluidState.isIn(FluidTags.WATER)) {
+        if (fluidState.isTagged(FluidTags.WATER)) {
             return PathNodeType.WATER;
-        } else if (fluidState.isIn(FluidTags.LAVA)) {
+        } else if (fluidState.isTagged(FluidTags.LAVA)) {
             return PathNodeType.LAVA;
         }
 
@@ -67,11 +71,11 @@ public class PathNodeDefaults {
             return PathNodeType.DAMAGE_FIRE;
         }
 
-        if (DoorBlock.isWoodenDoor(state) && !state.get(DoorBlock.OPEN)) {
+        if (DoorBlock.isWooden(state) && !state.get(DoorBlock.OPEN)) {
             return PathNodeType.DOOR_WOOD_CLOSED;
         }
 
-        if ((block instanceof DoorBlock) && (material == Material.METAL) && !state.get(DoorBlock.OPEN)) {
+        if ((block instanceof DoorBlock) && (material == Material.IRON) && !state.get(DoorBlock.OPEN)) {
             return PathNodeType.DOOR_IRON_CLOSED;
         }
 
@@ -95,6 +99,6 @@ public class PathNodeDefaults {
     }
 
     private static boolean isFireDangerSource(BlockState blockState) {
-        return blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState);
+        return blockState.isIn(BlockTags.FIRE) || blockState.matchesBlock(Blocks.LAVA) || blockState.matchesBlock(Blocks.MAGMA_BLOCK) || CampfireBlock.isLit(blockState);
     }
 }

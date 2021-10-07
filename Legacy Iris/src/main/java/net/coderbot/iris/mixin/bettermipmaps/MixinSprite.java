@@ -1,15 +1,18 @@
 package net.coderbot.iris.mixin.bettermipmaps;
 
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+//import net.minecraft.client.texture.NativeImage;
+//import net.minecraft.client.texture.Sprite;
+//import net.minecraft.client.texture.SpriteAtlasTexture;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Sprite.class)
+@Mixin(TextureAtlasSprite.class)
 public class MixinSprite {
 	// Generate some color tables for gamma correction.
 	private static final float[] SRGB_TO_LINEAR = new float[256];
@@ -28,9 +31,9 @@ public class MixinSprite {
 	 * this code tries to calculate a decent average color to assign to these fully-transparent pixels so that their
 	 * black color does not leak over into sampling.
 	 */
-	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/client/texture/MipmapHelper.getMipmapLevelsImages (Lnet/minecraft/client/texture/NativeImage;I)[Lnet/minecraft/client/texture/NativeImage;"))
-	private void fillInTransparentPixelColors(SpriteAtlasTexture spriteAtlasTexture, Sprite.Info info, int maxLevel, int atlasWidth, int atlasHeight, int atlasX, int atlasY, NativeImage image, CallbackInfo ci) {
-		if (info.getId().getPath().contains("leaves")) {
+	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/client/renderer/texture/MipmapGenerator.generateMipmaps (Lnet/minecraft/client/renderer/texture/NativeImage;I)[Lnet/minecraft/client/renderer/texture/NativeImage;"))
+	private void fillInTransparentPixelColors(AtlasTexture spriteAtlasTexture, TextureAtlasSprite.Info info, int maxLevel, int atlasWidth, int atlasHeight, int atlasX, int atlasY, NativeImage image, CallbackInfo ci) {
+		if (info.getSpriteLocation().getPath().contains("leaves")) {
 			// Don't ruin the textures of leaves on fast graphics, since they're supposed to have black pixels
 			// apparently.
 			return;
@@ -46,7 +49,7 @@ public class MixinSprite {
 
 		for (int y = 0; y < image.getHeight(); y++) {
 			for (int x = 0; x < image.getWidth(); x++) {
-				int color = image.getPixelColor(x, y);
+				int color = image.getPixelRGBA(x, y);
 				int alpha = (color >> 24) & 255;
 
 				if (alpha == 0) {
@@ -78,7 +81,7 @@ public class MixinSprite {
 
 		for (int y = 0; y < image.getHeight(); y++) {
 			for (int x = 0; x < image.getWidth(); x++) {
-				int color = image.getPixelColor(x, y);
+				int color = image.getPixelRGBA(x, y);
 				int alpha = (color >> 24) & 255;
 
 				// If this pixel has nonzero alpha, don't touch it.
@@ -87,7 +90,7 @@ public class MixinSprite {
 				}
 
 				// Replace the color values of this pixel with the average colors.
-				image.setPixelColor(x, y, resultColor);
+				image.setPixelRGBA(x, y, resultColor);
 			}
 		}
 	}

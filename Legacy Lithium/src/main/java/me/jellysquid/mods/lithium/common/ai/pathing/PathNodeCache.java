@@ -3,7 +3,8 @@ package me.jellysquid.mods.lithium.common.ai.pathing;
 import it.unimi.dsi.fastutil.objects.Reference2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.ai.pathing.PathNodeType;
+//import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.world.chunk.ChunkSection;
 
 public class PathNodeCache {
@@ -50,8 +51,8 @@ public class PathNodeCache {
     }
 
     private static boolean isChunkSectionDangerousNeighbor(ChunkSection section) {
-        return section.getContainer()
-                .hasAny(state -> getNeighborPathNodeType(state) != PathNodeType.OPEN);
+        return section.getData()
+                .func_235963_a_(state -> getNeighborPathNodeType(state) != PathNodeType.OPEN);
     }
 
     public static PathNodeType getPathNodeType(BlockState state) {

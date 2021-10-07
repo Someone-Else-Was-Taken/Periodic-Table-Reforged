@@ -34,14 +34,14 @@ public class CompactSineLUT {
     static {
         // Copy the sine table, covering to raw int bits
         for (int i = 0; i < SINE_TABLE_INT.length; i++) {
-            SINE_TABLE_INT[i] = Float.floatToRawIntBits(MathHelper.SINE_TABLE[i]);
+            SINE_TABLE_INT[i] = Float.floatToRawIntBits(MathHelper.SIN_TABLE[i]);
         }
 
-        SINE_TABLE_MIDPOINT = MathHelper.SINE_TABLE[MathHelper.SINE_TABLE.length / 2];
+        SINE_TABLE_MIDPOINT = MathHelper.SIN_TABLE[MathHelper.SIN_TABLE.length / 2];
 
         // Test that the lookup table is correct during runtime
-        for (int i = 0; i < MathHelper.SINE_TABLE.length; i++) {
-            float expected = MathHelper.SINE_TABLE[i];
+        for (int i = 0; i < MathHelper.SIN_TABLE.length; i++) {
+            float expected = MathHelper.SIN_TABLE[i];
             float value = lookup(i);
 
             if (expected != value) {

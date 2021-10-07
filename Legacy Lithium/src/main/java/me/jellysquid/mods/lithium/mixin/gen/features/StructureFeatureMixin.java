@@ -1,14 +1,21 @@
 package me.jellysquid.mods.lithium.mixin.gen.features;
 
-import net.minecraft.structure.StructureStart;
+//import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.StructureHolder;
-import net.minecraft.world.WorldView;
+//import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.SectionPos;
+import net.minecraft.world.IStructureReader;
+import net.minecraft.world.IWorldReader;
+//import net.minecraft.world.StructureHolder;
+//import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.chunk.IChunk;
+//import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.structure.Structure;
+import net.minecraft.world.gen.feature.structure.StructureManager;
+import net.minecraft.world.gen.feature.structure.StructureStart;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.Slice;
  *
  * @author TelepathicGrunt
  */
-@Mixin(StructureFeature.class)
+@Mixin(Structure.class)
 public class StructureFeatureMixin {
 
     /**
@@ -29,7 +36,7 @@ public class StructureFeatureMixin {
      * @author MrGrim
      */
     @Redirect(
-            method = "locateStructure",
+            method = "func_236388_a_",
             slice = @Slice(
                     from = @At(value = "FIELD", opcode = Opcodes.GETSTATIC, target = "Lnet/minecraft/world/chunk/ChunkStatus;STRUCTURE_STARTS:Lnet/minecraft/world/chunk/ChunkStatus;", ordinal = 0),
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;getPos()Lnet/minecraft/util/math/ChunkPos;", ordinal = 0)
@@ -40,10 +47,10 @@ public class StructureFeatureMixin {
                     ordinal = 0
             )
     )
-    private Chunk biomeConditionalGetChunk(WorldView worldView, int x, int z, ChunkStatus status) {
-        // Magic numbers << 2) + 2 and biomeY = 0 taken from ChunkGenerator.setStructureStarts
+    private IChunk biomeConditionalGetChunk(IWorldReader worldView, int x, int z, ChunkStatus status) {
+        //magic numbers << 2) + 2 and biomeY = 0 taken from ChunkGenerator.setStructureStarts
         //noinspection rawtypes
-        if (worldView.getBiomeForNoiseGen((x << 2) + 2, 0, (z << 2) + 2).getGenerationSettings().hasStructureFeature((StructureFeature) (Object) this)) {
+        if (worldView.getNoiseBiome((x << 2) + 2, 0, (z << 2) + 2).getGenerationSettings().hasStructure((Structure) (Object) this)) {
             return worldView.getChunk(x, z, status);
         } else {
             return null;
@@ -56,7 +63,7 @@ public class StructureFeatureMixin {
      * @author MrGrim
      */
     @Redirect(
-            method = "locateStructure",
+            method = "func_236388_a_",
             slice = @Slice(
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/world/WorldView;getChunk(IILnet/minecraft/world/chunk/ChunkStatus;)Lnet/minecraft/world/chunk/Chunk;", ordinal = 0),
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/ChunkSectionPos;from(Lnet/minecraft/util/math/ChunkPos;I)Lnet/minecraft/util/math/ChunkSectionPos;", ordinal = 0)
@@ -76,7 +83,7 @@ public class StructureFeatureMixin {
      * @author MrGrim
      */
     @Redirect(
-            method = "locateStructure",
+            method = "func_236388_a_",
             slice = @Slice(
                     from = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/ChunkSectionPos;from(Lnet/minecraft/util/math/ChunkPos;I)Lnet/minecraft/util/math/ChunkSectionPos;", ordinal = 0),
                     to = @At(value = "INVOKE", target = "Lnet/minecraft/structure/StructureStart;hasChildren()Z", ordinal = 0)
@@ -87,7 +94,7 @@ public class StructureFeatureMixin {
                     ordinal = 0
             )
     )
-    private StructureStart<?> checkChunkBeforeGetStructureStart(StructureAccessor structureAccessor, ChunkSectionPos sectionPos, StructureFeature<?> thisStructure, StructureHolder chunk) {
+    private StructureStart<?> checkChunkBeforeGetStructureStart(StructureManager structureAccessor, SectionPos sectionPos, Structure<?> thisStructure, IStructureReader chunk) {
         return chunk == null ? null : structureAccessor.getStructureStart(sectionPos, thisStructure, chunk);
     }
 }

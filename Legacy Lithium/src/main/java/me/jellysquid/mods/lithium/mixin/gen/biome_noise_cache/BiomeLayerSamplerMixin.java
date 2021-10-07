@@ -1,20 +1,23 @@
 package me.jellysquid.mods.lithium.mixin.gen.biome_noise_cache;
 
-import net.minecraft.world.biome.layer.util.CachingLayerSampler;
-import net.minecraft.world.biome.layer.util.LayerFactory;
-import net.minecraft.world.biome.source.BiomeLayerSampler;
+//import net.minecraft.world.biome.layer.util.CachingLayerSampler;
+//import net.minecraft.world.biome.layer.util.LayerFactory;
+//import net.minecraft.world.biome.source.BiomeLayerSampler;
+import net.minecraft.world.gen.area.IAreaFactory;
+import net.minecraft.world.gen.area.LazyArea;
+import net.minecraft.world.gen.layer.Layer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(BiomeLayerSampler.class)
+@Mixin(Layer.class)
 public abstract class BiomeLayerSamplerMixin {
-    private ThreadLocal<CachingLayerSampler> tlSampler;
+    private ThreadLocal<LazyArea> tlSampler;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(LayerFactory<CachingLayerSampler> factory, CallbackInfo ci) {
+    private void init(IAreaFactory<LazyArea> factory, CallbackInfo ci) {
         this.tlSampler = ThreadLocal.withInitial(factory::make);
     }
 
@@ -25,13 +28,13 @@ public abstract class BiomeLayerSamplerMixin {
      * Original implementation by gegy1000, 2No2Name replaced @Overwrite with @Redirect
      */
     @Redirect(
-            method = "sample",
+            method = "func_242936_a",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/biome/layer/util/CachingLayerSampler;sample(II)I"
             )
     )
-    private int sampleThreadLocal(CachingLayerSampler cachingLayerSampler, int i, int j) {
-        return this.tlSampler.get().sample(i, j);
+    private int sampleThreadLocal(LazyArea cachingLayerSampler, int i, int j) {
+        return this.tlSampler.get().getValue(i, j);
     }
 }

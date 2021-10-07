@@ -32,7 +32,6 @@ public abstract class MixinDebugHud {
         strings.add("Sodium Renderer");
         strings.add(TextFormatting.UNDERLINE + getFormattedVersionText());
         strings.add("");
-        strings.addAll(getChunkRendererDebugStrings());
 
         if (SodiumClientMod.options().advanced.ignoreDriverBlacklist) {
             strings.add(TextFormatting.RED + "(!!) Driver blacklist ignored");
@@ -66,15 +65,7 @@ public abstract class MixinDebugHud {
         return color + version;
     }
 
-    private static List<String> getChunkRendererDebugStrings() {
-        ChunkRenderBackend<?> backend = SodiumWorldRenderer.getInstance().getChunkRenderer();
 
-        List<String> strings = new ArrayList<>(4);
-        strings.add("Chunk Renderer: " + backend.getRendererName());
-        strings.addAll(backend.getDebugStrings());
-
-        return strings;
-    }
 
     private static String getNativeMemoryString() {
         return "Off-Heap: +" + bytesToMb(ManagementFactory.getMemoryMXBean().getNonHeapMemoryUsage().getUsed()) + "MB";

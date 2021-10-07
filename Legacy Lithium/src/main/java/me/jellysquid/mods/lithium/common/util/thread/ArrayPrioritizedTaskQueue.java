@@ -1,7 +1,8 @@
 package me.jellysquid.mods.lithium.common.util.thread;
 
 import com.google.common.collect.Queues;
-import net.minecraft.util.thread.TaskQueue;
+import net.minecraft.util.concurrent.ITaskQueue;
+//import net.minecraft.util.thread.TaskQueue;
 
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * messages in the queue by avoiding usages of the Stream API. The improvement from this change can be most noticeably
  * seen when enqueueing light updates which occur during block updates.
  */
-public class ArrayPrioritizedTaskQueue implements TaskQueue<TaskQueue.PrioritizedTask, Runnable> {
+public class ArrayPrioritizedTaskQueue implements ITaskQueue<ITaskQueue.RunnableWithPriority, Runnable> {
     // A simple array type is used to avoid needing to allocate an iterator to work on the queue
     private final Queue<Runnable>[] queues;
 
@@ -45,7 +46,7 @@ public class ArrayPrioritizedTaskQueue implements TaskQueue<TaskQueue.Prioritize
     }
 
     @Override
-    public boolean add(TaskQueue.PrioritizedTask task) {
+    public boolean enqueue(ITaskQueue.RunnableWithPriority task) {
         this.size.incrementAndGet();
 
         Queue<Runnable> queue = this.queues[task.getPriority()];

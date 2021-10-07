@@ -6,7 +6,8 @@ import me.jellysquid.mods.lithium.common.entity.EntityClassGroup;
 import me.jellysquid.mods.lithium.common.world.WorldHelper;
 import me.jellysquid.mods.lithium.common.world.chunk.ClassGroupFilterableList;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.collection.TypeFilterableList;
+import net.minecraft.util.ClassInheritanceMultiMap;
+//import net.minecraft.util.collection.TypeFilterableList;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,14 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Patches {@link TypeFilterableList} to allow grouping entities by arbitrary groups of classes instead of one class only.
+ * Patches {@link ClassInheritanceMultiMap} to allow grouping entities by arbitrary groups of classes instead of one class only.
  */
-@Mixin(TypeFilterableList.class)
+@Mixin(ClassInheritanceMultiMap.class)
 public abstract class TypeFilterableListMixin<T> implements ClassGroupFilterableList<T>, WorldHelper.MixinLoadTest {
 
     @Shadow
     @Final
-    private List<T> allElements;
+    private List<T> values;
 
     private final Reference2ReferenceArrayMap<EntityClassGroup, ReferenceLinkedOpenHashSet<T>> entitiesByGroup =
             new Reference2ReferenceArrayMap<>();
@@ -75,7 +76,7 @@ public abstract class TypeFilterableListMixin<T> implements ClassGroupFilterable
     private Collection<T> createAllOfGroupType(EntityClassGroup type) {
         ReferenceLinkedOpenHashSet<T> allOfType = new ReferenceLinkedOpenHashSet<>();
 
-        for (T entity : this.allElements) {
+        for (T entity : this.values) {
             if (type.contains(entity.getClass())) {
                 allOfType.add(entity);
             }

@@ -1,8 +1,10 @@
 package me.jellysquid.mods.lithium.mixin.math.fast_blockpos;
 
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
+//import net.minecraft.util.math.Direction;
+import net.minecraft.util.Direction;
+//import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.vector.Vector3i;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
@@ -18,12 +20,11 @@ import org.spongepowered.asm.mixin.Overwrite;
  * instruction count, which seems to match what I would expect.
  */
 @Mixin(BlockPos.class)
-public abstract class BlockPosMixin extends Vec3i {
+public abstract class BlockPosMixin extends Vector3i {
 
     public BlockPosMixin(int x, int y, int z) {
         super(x, y, z);
     }
-
     /**
      * @author JellySquid
      * @reason Simplify and inline

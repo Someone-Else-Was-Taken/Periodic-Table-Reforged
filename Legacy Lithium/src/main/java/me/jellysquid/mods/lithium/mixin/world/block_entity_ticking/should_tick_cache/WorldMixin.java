@@ -3,7 +3,8 @@ package me.jellysquid.mods.lithium.mixin.world.block_entity_ticking.should_tick_
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkManager;
+//import net.minecraft.world.chunk.ChunkManager;
+import net.minecraft.world.chunk.AbstractChunkProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,13 +31,13 @@ public class WorldMixin {
                     target = "Lnet/minecraft/world/chunk/ChunkManager;shouldTickBlock(Lnet/minecraft/util/math/BlockPos;)Z"
             )
     )
-    private boolean shouldTick(ChunkManager chunkManager, BlockPos pos) {
-        long l = ChunkPos.toLong(pos.getX() >> 4, pos.getZ() >> 4);
+    private boolean shouldTick(AbstractChunkProvider chunkManager, BlockPos pos) {
+        long l = ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
         if (this.lastBlockEntityChunkPos == l) {
             return this.lastShouldTick;
         } else {
             this.lastBlockEntityChunkPos = l;
-            return this.lastShouldTick = chunkManager.shouldTickBlock(pos);
+            return this.lastShouldTick = chunkManager.canTick(pos);
         }
     }
 

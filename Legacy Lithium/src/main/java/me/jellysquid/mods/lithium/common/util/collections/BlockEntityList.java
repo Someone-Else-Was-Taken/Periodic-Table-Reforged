@@ -2,26 +2,29 @@ package me.jellysquid.mods.lithium.common.util.collections;
 
 import it.unimi.dsi.fastutil.longs.Long2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.CommandBlockBlockEntity;
-import net.minecraft.nbt.CompoundTag;
+//import net.minecraft.block.entity.BlockEntity;
+//import net.minecraft.block.entity.CommandBlockBlockEntity;
+import net.minecraft.nbt.CompoundNBT;
+//import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tileentity.CommandBlockTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
 
 @SuppressWarnings("NullableProblems")
-public class BlockEntityList implements List<BlockEntity> {
+public class BlockEntityList implements List<TileEntity> {
     //BlockEntityList does not support double-add of the same object. But it does support multiple at the same position.
     //This collection behaves like a set with insertion order. It also provides a position->blockEntity lookup.
 
-    private final ReferenceLinkedOpenHashSet<BlockEntity> allBlockEntities;
+    private final ReferenceLinkedOpenHashSet<TileEntity> allBlockEntities;
 
     //When there is only 1 BlockEntity at a position, it is stored in posMap.
     //When there are multiple at a position, the first added is stored in posMap
     //and all of them are stored in posMapMulti using a List (in the order they were added)
-    private final Long2ReferenceOpenHashMap<BlockEntity> posMap;
-    private final Long2ReferenceOpenHashMap<List<BlockEntity>> posMapMulti;
-    public BlockEntityList(List<BlockEntity> list, boolean hasPositionLookup) {
+    private final Long2ReferenceOpenHashMap<TileEntity> posMap;
+    private final Long2ReferenceOpenHashMap<List<TileEntity>> posMapMulti;
+    public BlockEntityList(List<TileEntity> list, boolean hasPositionLookup) {
         this.posMap = hasPositionLookup ? new Long2ReferenceOpenHashMap<>() : null;
         this.posMapMulti = hasPositionLookup ? new Long2ReferenceOpenHashMap<>() : null;
 
@@ -50,7 +53,7 @@ public class BlockEntityList implements List<BlockEntity> {
     }
 
     @Override
-    public Iterator<BlockEntity> iterator() {
+    public Iterator<TileEntity> iterator() {
         return this.allBlockEntities.iterator();
     }
 
@@ -66,24 +69,24 @@ public class BlockEntityList implements List<BlockEntity> {
     }
 
     @Override
-    public boolean add(BlockEntity blockEntity) {
+    public boolean add(TileEntity blockEntity) {
         return this.addNoDoubleAdd(blockEntity, true);
     }
 
-    private boolean addNoDoubleAdd(BlockEntity blockEntity, boolean exceptionOnDoubleAdd) {
+    private boolean addNoDoubleAdd(TileEntity blockEntity, boolean exceptionOnDoubleAdd) {
         boolean added = this.allBlockEntities.add(blockEntity);
         if (!added && exceptionOnDoubleAdd
                 //Ignore double add when we encounter vanilla's command block double add bug
-                && !( blockEntity instanceof CommandBlockBlockEntity)) {
+                && !( blockEntity instanceof CommandBlockTileEntity)) {
             this.throwException(blockEntity);
         }
 
         if (added && this.posMap != null) {
             long pos = getEntityPos(blockEntity);
 
-            BlockEntity prev = this.posMap.putIfAbsent(pos, blockEntity);
+            TileEntity prev = this.posMap.putIfAbsent(pos, blockEntity);
             if (prev != null) {
-                List<BlockEntity> multiEntry = this.posMapMulti.computeIfAbsent(pos, (long l) -> new ArrayList<>());
+                List<TileEntity> multiEntry = this.posMapMulti.computeIfAbsent(pos, (long l) -> new ArrayList<>());
                 if (multiEntry.size() == 0) {
                     //newly created multi entry: make sure it contains all elements
                     multiEntry.add(prev);
@@ -94,18 +97,18 @@ public class BlockEntityList implements List<BlockEntity> {
         return added;
     }
 
-    private void throwException(BlockEntity blockEntity) {
-        throw new IllegalStateException("Lithium BlockEntityList" + (this.posMap != null ? " with posMap" : "") + ": Adding the same BlockEntity object twice: " + blockEntity.toTag(new CompoundTag()));
+    private void throwException(TileEntity blockEntity) {
+        throw new IllegalStateException("Lithium BlockEntityList" + (this.posMap != null ? " with posMap" : "") + ": Adding the same BlockEntity object twice: " + blockEntity.write(new CompoundNBT()));
     }
 
     @Override
     public boolean remove(Object o) {
-        if (o instanceof BlockEntity) {
-            BlockEntity blockEntity = (BlockEntity) o;
+        if (o instanceof TileEntity) {
+            TileEntity blockEntity = (TileEntity) o;
             if (this.allBlockEntities.remove(o)) {
                 if (this.posMap != null) {
                     long pos = getEntityPos(blockEntity);
-                    List<BlockEntity> multiEntry = this.posMapMulti.get(pos);
+                    List<TileEntity> multiEntry = this.posMapMulti.get(pos);
                     if (multiEntry != null) {
                         multiEntry.remove(blockEntity);
                         if (multiEntry.size() <= 1) {
@@ -131,8 +134,8 @@ public class BlockEntityList implements List<BlockEntity> {
     }
 
     @Override
-    public boolean addAll(Collection<? extends BlockEntity> c) {
-        for (BlockEntity blockEntity : c) {
+    public boolean addAll(Collection<? extends TileEntity> c) {
+        for (TileEntity blockEntity : c) {
             this.add(blockEntity);
         }
 
@@ -140,7 +143,7 @@ public class BlockEntityList implements List<BlockEntity> {
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends BlockEntity> c) {
+    public boolean addAll(int index, Collection<? extends TileEntity> c) {
         throw new UnsupportedOperationException();
     }
 
@@ -158,7 +161,7 @@ public class BlockEntityList implements List<BlockEntity> {
     @Override
     public boolean retainAll(Collection<?> c) {
         boolean modified = false;
-        for (BlockEntity blockEntity : this.allBlockEntities) {
+        for (TileEntity blockEntity : this.allBlockEntities) {
             if (!c.contains(blockEntity)) {
                 modified |= this.remove(blockEntity);
             }
@@ -176,22 +179,22 @@ public class BlockEntityList implements List<BlockEntity> {
     }
 
     @Override
-    public BlockEntity get(int index) {
+    public TileEntity get(int index) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public BlockEntity set(int index, BlockEntity element) {
+    public TileEntity set(int index, TileEntity element) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void add(int index, BlockEntity element) {
+    public void add(int index, TileEntity element) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public BlockEntity remove(int index) {
+    public TileEntity remove(int index) {
         throw new UnsupportedOperationException();
     }
 
@@ -206,26 +209,26 @@ public class BlockEntityList implements List<BlockEntity> {
     }
 
     @Override
-    public ListIterator<BlockEntity> listIterator() {
+    public ListIterator<TileEntity> listIterator() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ListIterator<BlockEntity> listIterator(int index) {
+    public ListIterator<TileEntity> listIterator(int index) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<BlockEntity> subList(int fromIndex, int toIndex) {
+    public List<TileEntity> subList(int fromIndex, int toIndex) {
         throw new UnsupportedOperationException();
     }
 
-    private static long getEntityPos(BlockEntity e) {
-        return e.getPos().asLong();
+    private static long getEntityPos(TileEntity e) {
+        return e.getPos().toLong();
     }
 
 
-    public boolean addIfAbsent(BlockEntity blockEntity) {
+    public boolean addIfAbsent(TileEntity blockEntity) {
         //we are not checking position equality but object/reference equality (like vanilla)
         //the hashset prevents double add of the same object
         return this.addNoDoubleAdd(blockEntity, false);
@@ -238,36 +241,36 @@ public class BlockEntityList implements List<BlockEntity> {
 
     //Methods only supported when posMap is present!
     public void markRemovedAndRemoveAllAtPosition(BlockPos blockPos) {
-        long pos = blockPos.asLong();
-        BlockEntity blockEntity = this.posMap.remove(pos);
+        long pos = blockPos.toLong();
+        TileEntity blockEntity = this.posMap.remove(pos);
         if (blockEntity != null) {
-            List<BlockEntity> multiEntry = this.posMapMulti.remove(pos);
+            List<TileEntity> multiEntry = this.posMapMulti.remove(pos);
             if (multiEntry != null) {
-                for (BlockEntity blockEntity1 : multiEntry) {
-                    blockEntity1.markRemoved();
+                for (TileEntity blockEntity1 : multiEntry) {
+                    blockEntity1.remove();
                     this.allBlockEntities.remove(blockEntity1);
                 }
             } else {
-                blockEntity.markRemoved();
+                blockEntity.remove();
                 this.allBlockEntities.remove(blockEntity);
             }
         }
     }
 
-    public BlockEntity getFirstNonRemovedBlockEntityAtPosition(long pos) {
+    public TileEntity getFirstNonRemovedBlockEntityAtPosition(long pos) {
         if (this.isEmpty()) {
             return null;
         }
-        BlockEntity blockEntity = this.posMap.get(pos);
+        TileEntity blockEntity = this.posMap.get(pos);
         //usual case: we find no BlockEntity or only one that also is not removed
         if (blockEntity == null || !blockEntity.isRemoved()) {
             return blockEntity;
         }
         //vanilla edge case: two BlockEntities at the same position
         //Look up in the posMultiMap to find the first non-removed BlockEntity
-        List<BlockEntity> multiEntry = this.posMapMulti.get(pos);
+        List<TileEntity> multiEntry = this.posMapMulti.get(pos);
         if (multiEntry != null) {
-            for (BlockEntity blockEntity1 : multiEntry) {
+            for (TileEntity blockEntity1 : multiEntry) {
                 if (!blockEntity1.isRemoved()) {
                     return blockEntity1;
                 }

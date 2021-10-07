@@ -2,13 +2,19 @@ package me.jellysquid.mods.lithium.mixin.chunk.serialization;
 
 import me.jellysquid.mods.lithium.common.world.chunk.CompactingPackedIntegerArray;
 import me.jellysquid.mods.lithium.common.world.chunk.LithiumHashPalette;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.util.collection.IdList;
-import net.minecraft.util.collection.PackedIntegerArray;
+//import net.minecraft.nbt.CompoundTag;
+//import net.minecraft.nbt.ListTag;
+//import net.minecraft.util.collection.IdList;
+//import net.minecraft.util.collection.PackedIntegerArray;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.BitArray;
+import net.minecraft.util.ObjectIntIdentityMap;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.chunk.Palette;
-import net.minecraft.world.chunk.PalettedContainer;
+import net.minecraft.util.palette.IPalette;
+import net.minecraft.util.palette.PalettedContainer;
+//import net.minecraft.world.chunk.Palette;
+//import net.minecraft.world.chunk.PalettedContainer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -39,28 +45,28 @@ public abstract class PalettedContainerMixin<T> {
 
     @Shadow
     @Final
-    private T defaultValue;
+    private T defaultState;
 
     @Shadow
     @Final
-    private IdList<T> idList;
+    private ObjectIntIdentityMap<T> registry;
 
     @Shadow
-    private int paletteSize;
-
-    @Shadow
-    @Final
-    private Function<CompoundTag, T> elementDeserializer;
+    private int bits;
 
     @Shadow
     @Final
-    private Function<T, CompoundTag> elementSerializer;
+    private Function<CompoundNBT, T> deserializer;
 
     @Shadow
-    protected PackedIntegerArray data;
+    @Final
+    private Function<T, CompoundNBT> serializer;
 
     @Shadow
-    private Palette<T> palette;
+    protected BitArray storage;
+
+    @Shadow
+    private IPalette<T> palette;
 
     /**
      * This patch incorporates a number of changes to significantly reduce the time needed to serialize.
@@ -74,7 +80,7 @@ public abstract class PalettedContainerMixin<T> {
      * @author JellySquid
      */
     @Overwrite
-    public void write(CompoundTag rootTag, String paletteKey, String dataKey) {
+    public void writeChunkPalette(CompoundNBT rootTag, String paletteKey, String dataKey) {
         this.lock();
 
         // The palette that will be serialized
@@ -85,37 +91,37 @@ public abstract class PalettedContainerMixin<T> {
             palette = ((LithiumHashPalette<T>) this.palette);
 
             // The palette only contains the default block, so don't re-pack
-            if (palette.getSize() == 1 && palette.getByIndex(0) == this.defaultValue) {
+            if (palette.getSize() == 1 && palette.get(0) == this.defaultState) {
                 dataArray = EMPTY_PALETTE_DATA;
             }
         }
 
         // If we aren't going to use an empty data array, start a compaction
         if (dataArray == null) {
-            LithiumHashPalette<T> compactedPalette = new LithiumHashPalette<>(this.idList, this.paletteSize, null, this.elementDeserializer, this.elementSerializer);
+            LithiumHashPalette<T> compactedPalette = new LithiumHashPalette<>(this.registry, this.bits, null, this.deserializer, this.serializer);
 
             short[] array = cachedCompactionArrays.get();
-            ((CompactingPackedIntegerArray) this.data).compact(this.palette, compactedPalette, array);
+            ((CompactingPackedIntegerArray) this.storage).compact(this.palette, compactedPalette, array);
 
             // If the palette didn't change during compaction, do a simple copy of the data array
             if (palette != null && palette.getSize() == compactedPalette.getSize()) {
-                dataArray = this.data.getStorage().clone();
+                dataArray = this.storage.getBackingLongArray().clone();
             } else {
                 // Re-pack the integer array as the palette has changed size
                 int size = Math.max(4, MathHelper.log2DeBruijn(compactedPalette.getSize()));
-                PackedIntegerArray copy = new PackedIntegerArray(size, 4096);
+                BitArray copy = new BitArray(size, 4096);
 
                 for (int i = 0; i < array.length; ++i) {
-                    copy.set(i, array[i]);
+                    copy.setAt(i, array[i]);
                 }
 
                 // We don't need to clone the data array as we are the sole owner of it
-                dataArray = copy.getStorage();
+                dataArray = copy.getBackingLongArray();
                 palette = compactedPalette;
             }
         }
 
-        ListTag paletteTag = new ListTag();
+        ListNBT paletteTag = new ListNBT();
         palette.toTag(paletteTag);
 
         rootTag.put(paletteKey, paletteTag);
@@ -132,8 +138,8 @@ public abstract class PalettedContainerMixin<T> {
      * @author JellySquid
      */
     @Inject(method = "count", at = @At("HEAD"), cancellable = true)
-    public void count(PalettedContainer.CountConsumer<T> consumer, CallbackInfo ci) {
-        int len = (1 << this.paletteSize);
+    public void count(PalettedContainer.ICountConsumer<T> consumer, CallbackInfo ci) {
+        int len = (1 << this.bits);
 
         // Do not allocate huge arrays if we're using a large palette
         if (len > 4096) {
@@ -142,10 +148,10 @@ public abstract class PalettedContainerMixin<T> {
 
         short[] counts = new short[len];
 
-        this.data.forEach(i -> counts[i]++);
+        this.storage.getAll(i -> counts[i]++);
 
         for (int i = 0; i < counts.length; i++) {
-            T obj = this.palette.getByIndex(i);
+            T obj = this.palette.get(i);
 
             if (obj != null) {
                 consumer.accept(obj, counts[i]);

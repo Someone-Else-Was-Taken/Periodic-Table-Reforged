@@ -4,15 +4,21 @@ import me.jellysquid.mods.lithium.common.entity.LithiumEntityCollisions;
 import me.jellysquid.mods.lithium.common.shapes.VoxelShapeCaster;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
+//import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.function.BooleanBiFunction;
+//import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
+//import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.CollisionView;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+//import net.minecraft.util.shape.VoxelShape;
+//import net.minecraft.util.shape.VoxelShapes;
+//import net.minecraft.world.CollisionView;
+import net.minecraft.world.ICollisionReader;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 
@@ -30,16 +36,16 @@ public class ChunkAwareBlockCollisionSweeper {
     /**
      * The collision box being swept through the world.
      */
-    private final Box box;
+    private final AxisAlignedBB box;
 
     /**
      * The VoxelShape of the collision box being swept through the world.
      */
     private final VoxelShape shape;
 
-    private final CollisionView view;
+    private final ICollisionReader view;
 
-    private final ShapeContext context;
+    private final ISelectionContext context;
 
     private final BlockCollisionPredicate collisionPredicate;
 
@@ -62,10 +68,10 @@ public class ChunkAwareBlockCollisionSweeper {
     private ChunkSection cachedChunkSection;
     private boolean needEntityCollisionCheck;
 
-    public ChunkAwareBlockCollisionSweeper(CollisionView view, Entity entity, Box box, BlockCollisionPredicate collisionPredicate) {
+    public ChunkAwareBlockCollisionSweeper(ICollisionReader view, Entity entity, AxisAlignedBB box, BlockCollisionPredicate collisionPredicate) {
         this.box = box;
-        this.shape = VoxelShapes.cuboid(box);
-        this.context = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
+        this.shape = VoxelShapes.create(box);
+        this.context = entity == null ? ISelectionContext.dummy() : ISelectionContext.forEntity(entity);
         this.view = view;
         this.entity = entity;
         this.needEntityCollisionCheck = entity != null;
@@ -95,7 +101,7 @@ public class ChunkAwareBlockCollisionSweeper {
                 //note: this.minX, maxX etc are not expanded, so there are lots of +1 and -1 around.
                 if (this.cachedChunk != null && this.chunkY < 15 && this.chunkY < ((this.maxY + 1) >> 4)) {
                     this.chunkY++;
-                    this.cachedChunkSection = this.cachedChunk.getSectionArray()[this.chunkY];
+                    this.cachedChunkSection = this.cachedChunk.getSections()[this.chunkY];
                 } else {
                     this.chunkY = MathHelper.clamp((this.minY - 1) >> 4, 0, 15);
 
@@ -112,9 +118,9 @@ public class ChunkAwareBlockCollisionSweeper {
                         }
                     }
                     //Casting to Chunk is not checked, together with other mods this could cause a ClassCastException
-                    this.cachedChunk = (Chunk) this.view.getExistingChunk(this.chunkX, this.chunkZ);
+                    this.cachedChunk = (Chunk) this.view.getBlockReader(this.chunkX, this.chunkZ);
                     if (this.cachedChunk != null) {
-                        this.cachedChunkSection = this.cachedChunk.getSectionArray()[this.chunkY];
+                        this.cachedChunkSection = this.cachedChunk.getSections()[this.chunkY];
                     }
                 }
                 //skip empty chunks and empty chunk sections
@@ -212,7 +218,7 @@ public class ChunkAwareBlockCollisionSweeper {
                 continue;
             }
 
-            this.pos.set(x, y, z);
+            this.pos.setPos(x, y, z);
 
             if (!this.collisionPredicate.test(this.view, this.pos, state)) {
                 continue;
@@ -233,7 +239,7 @@ public class ChunkAwareBlockCollisionSweeper {
 
     private VoxelShape getNextEntityCollision() {
         if (LithiumEntityCollisions.canEntityCollideWithWorldBorder(this.view, this.entity)) {
-            return this.view.getWorldBorder().asVoxelShape();
+            return this.view.getWorldBorder().getShape();
         }
 
         return null;
@@ -246,7 +252,7 @@ public class ChunkAwareBlockCollisionSweeper {
      * @return True if the shape can be interacted with at the given edge boundary
      */
     private static boolean canInteractWithBlock(BlockState state, int edgesHit) {
-        return (edgesHit != 1 || state.exceedsCube()) && (edgesHit != 2 || state.getBlock() == Blocks.MOVING_PISTON);
+        return (edgesHit != 1 || state.isCollisionShapeLargerThanFullBlock()) && (edgesHit != 2 || state.getBlock() == Blocks.MOVING_PISTON);
     }
 
     /**
@@ -256,18 +262,18 @@ public class ChunkAwareBlockCollisionSweeper {
      *
      * @return A {@link VoxelShape} which contains the shape representing that which was collided with, otherwise null
      */
-    private static VoxelShape getCollidedShape(Box entityBox, VoxelShape entityShape, VoxelShape shape, int x, int y, int z) {
+    private static VoxelShape getCollidedShape(AxisAlignedBB entityBox, VoxelShape entityShape, VoxelShape shape, int x, int y, int z) {
         if (shape instanceof VoxelShapeCaster) {
             if (((VoxelShapeCaster) shape).intersects(entityBox, x, y, z)) {
-                return shape.offset(x, y, z);
+                return shape.withOffset(x, y, z);
             } else {
                 return null;
             }
         }
 
-        shape = shape.offset(x, y, z);
+        shape = shape.withOffset(x, y, z);
 
-        if (VoxelShapes.matchesAnywhere(shape, entityShape, BooleanBiFunction.AND)) {
+        if (VoxelShapes.compare(shape, entityShape, IBooleanFunction.AND)) {
             return shape;
         }
 
@@ -281,7 +287,7 @@ public class ChunkAwareBlockCollisionSweeper {
      */
     private static boolean hasChunkSectionOversizedBlocks(Chunk chunk, int chunkY) {
         if (OVERSIZED_BLOCK_COUNTING_ENABLED) {
-            ChunkSection section = chunk.getSectionArray()[chunkY];
+            ChunkSection section = chunk.getSections()[chunkY];
             return section != null && ((OversizedBlocksCounter) section).hasOversizedBlocks();
         }
         return true; //like vanilla, assume that a chunk section has oversized blocks, when the section mixin isn't loaded

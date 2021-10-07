@@ -1,10 +1,14 @@
 package me.jellysquid.mods.lithium.mixin.world.chunk_task_system;
 
 import me.jellysquid.mods.lithium.common.util.thread.ArrayPrioritizedTaskQueue;
-import net.minecraft.server.world.ChunkTaskPrioritySystem;
-import net.minecraft.util.thread.MessageListener;
-import net.minecraft.util.thread.TaskExecutor;
-import net.minecraft.util.thread.TaskQueue;
+//import net.minecraft.server.world.ChunkTaskPrioritySystem;
+//import net.minecraft.util.thread.MessageListener;
+//import net.minecraft.util.thread.TaskExecutor;
+//import net.minecraft.util.thread.TaskQueue;
+import net.minecraft.util.concurrent.DelegatedTaskExecutor;
+import net.minecraft.util.concurrent.ITaskExecutor;
+import net.minecraft.util.concurrent.ITaskQueue;
+import net.minecraft.world.chunk.ChunkTaskPriorityQueueSorter;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -19,12 +23,12 @@ import java.util.concurrent.Executor;
 /**
  * This replaces the queue used by the chunk job executor to a much quicker variant.
  */
-@Mixin(ChunkTaskPrioritySystem.class)
+@Mixin(ChunkTaskPriorityQueueSorter.class)
 public class ChunkTaskPrioritySystemMixin {
     @Mutable
     @Shadow
     @Final
-    private TaskExecutor<TaskQueue.PrioritizedTask> controlActor;
+    private DelegatedTaskExecutor<ITaskQueue.RunnableWithPriority> sorter;
 
     /**
      * Re-initialize the task executor with our optimized task queue type. This is a safe operation that happens only
@@ -32,7 +36,7 @@ public class ChunkTaskPrioritySystemMixin {
      * about copying them.
      */
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(List<MessageListener<?>> listeners, Executor executor, int maxQueues, CallbackInfo ci) {
-        this.controlActor = new TaskExecutor<>(new ArrayPrioritizedTaskQueue(4), executor, "sorter");
+    private void init(List<ITaskExecutor<?>> listeners, Executor executor, int maxQueues, CallbackInfo ci) {
+        this.sorter = new DelegatedTaskExecutor<>(new ArrayPrioritizedTaskQueue(4), executor, "sorter");
     }
 }

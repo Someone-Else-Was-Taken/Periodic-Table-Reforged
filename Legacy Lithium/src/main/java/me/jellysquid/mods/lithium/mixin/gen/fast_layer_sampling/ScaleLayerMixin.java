@@ -1,33 +1,36 @@
 package me.jellysquid.mods.lithium.mixin.gen.fast_layer_sampling;
 
 import me.jellysquid.mods.lithium.common.world.layer.CachingLayerContextExtended;
-import net.minecraft.world.biome.layer.ScaleLayer;
-import net.minecraft.world.biome.layer.util.LayerSampleContext;
-import net.minecraft.world.biome.layer.util.LayerSampler;
+//import net.minecraft.world.biome.layer.ScaleLayer;
+//import net.minecraft.world.biome.layer.util.LayerSampleContext;
+//import net.minecraft.world.biome.layer.util.LayerSampler;
+import net.minecraft.world.gen.IExtendedNoiseRandom;
+import net.minecraft.world.gen.area.IArea;
+import net.minecraft.world.gen.layer.ZoomLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ScaleLayer.class)
+@Mixin(ZoomLayer.class)
 public abstract class ScaleLayerMixin {
     @Shadow
-    public abstract int transformX(int x);
+    public abstract int getOffsetX(int x);
 
     @Shadow
-    public abstract int transformZ(int y);
+    public abstract int getOffsetZ(int y);
 
     @Shadow
-    protected abstract int sample(LayerSampleContext<?> ctx, int tl, int tr, int bl, int br);
+    protected abstract int pickZoomed(IExtendedNoiseRandom<?> ctx, int tl, int tr, int bl, int br);
 
     /**
      * @reason Replace with faster implementation.
      * @author gegy1000
      */
     @Overwrite
-    public int sample(LayerSampleContext<?> ctx, LayerSampler parent, int x, int z) {
+    public int apply(IExtendedNoiseRandom<?> ctx, IArea parent, int x, int z) {
         // [VanillaCopy] ScaleLayer#sample
 
-        int tl = parent.sample(this.transformX(x), this.transformZ(z));
+        int tl = parent.getValue(this.getOffsetX(x), this.getOffsetZ(z));
         int ix = x & 1;
         int iz = z & 1;
 
@@ -35,28 +38,28 @@ public abstract class ScaleLayerMixin {
             return tl;
         }
 
-        ctx.initSeed(x & ~1, z & ~1);
+        ctx.setPosition(x & ~1, z & ~1);
 
         if (ix == 0) {
-            int bl = parent.sample(this.transformX(x), this.transformZ(z + 1));
-            return ctx.choose(tl, bl);
+            int bl = parent.getValue(this.getOffsetX(x), this.getOffsetZ(z + 1));
+            return ctx.pickRandom(tl, bl);
         }
 
         // Move `choose` into above if-statement: maintain rng parity
         ((CachingLayerContextExtended) ctx).skipInt();
 
         if (iz == 0) {
-            int tr = parent.sample(this.transformX(x + 1), this.transformZ(z));
-            return ctx.choose(tl, tr);
+            int tr = parent.getValue(this.getOffsetX(x + 1), this.getOffsetZ(z));
+            return ctx.pickRandom(tl, tr);
         }
 
         // Move `choose` into above if-statement: maintain rng parity
         ((CachingLayerContextExtended) ctx).skipInt();
 
-        int bl = parent.sample(this.transformX(x), this.transformZ(z + 1));
-        int tr = parent.sample(this.transformX(x + 1), this.transformZ(z));
-        int br = parent.sample(this.transformX(x + 1), this.transformZ(z + 1));
+        int bl = parent.getValue(this.getOffsetX(x), this.getOffsetZ(z + 1));
+        int tr = parent.getValue(this.getOffsetX(x + 1), this.getOffsetZ(z));
+        int br = parent.getValue(this.getOffsetX(x + 1), this.getOffsetZ(z + 1));
 
-        return this.sample(ctx, tl, tr, bl, br);
+        return this.pickZoomed(ctx, tl, tr, bl, br);
     }
 }
