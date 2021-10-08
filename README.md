@@ -1,22 +1,32 @@
 # CaffeineMC Reforged
 
-This is an unnoficial port of all the CaffeineMC Mods from Fabric to Forge
-
-Currently it consists of Sodium, Phosphor and Hydrogen. Later I will add Lithium and Iris.
-
-For more in depth info on the features look at the Reforged CF Pages or the Official Mod Pages.
+This is an Unofficial port of the core CaffeineMC Mods, alongside Iris.
+This is in no way related to the original mod teams, Code credit goes out to each mod's respective developers.
 
 
-Progress:
+CaffeineMC:
 
-Sodium: 100%
+Sodium - https://www.curseforge.com/minecraft/mc-mods/sodium
 
-Phosphor: 100%
+Lithium - https://www.curseforge.com/minecraft/mc-mods/lithium
 
-Hydrogen 99%
+Phosphor - https://www.curseforge.com/minecraft/mc-mods/phosphor
 
-Iris: 75%
+Hydrogen - https://modrinth.com/mod/hydrogen
 
-Lithium: 0%
 
-In the future, these mods may be packaged into one Mod of an undecided name, however this isn't final.
+Iris Team:
+
+Iris - https://www.curseforge.com/minecraft/mc-mods/irisshaders
+
+
+
+Currently the only finished ports are Sodium, Hydrogen and Phosphor, you can find them on my CF Page.
+
+https://www.curseforge.com/members/someoneelsewastaken/projects
+
+
+Remaining Mod Progress:
+
+Lithium: 99% - All that remains is a few critical fixes.
+Iris: 50% - Very Incomplete, Porting is a relatively big task.
