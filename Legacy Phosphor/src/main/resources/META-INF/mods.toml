@@ -27,9 +27,9 @@ displayURL="" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="icon.png" #optional
 # A text field displayed in the mod UI
-credits="SomeoneElse, BlueZeppelin, CaffeineMC" #optional
+credits="SomeoneElse, CaffeineMC" #optional
 # A text field displayed in the mod UI
-authors="SomeoneElse, BlueZeppelin" #optional
+authors="SomeoneElse" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
 Something Something Phosphor Make Light go speedy
