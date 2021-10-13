@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.SeparatePerspectiveModel;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -94,22 +95,28 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                     buffers.setRenderOffset(pos.getX() - renderOffset.getX(), pos.getY() - renderOffset.getY(), pos.getZ() - renderOffset.getZ());
 
                     if (blockState.getRenderType() == BlockRenderType.MODEL) {
-                        RenderType layer = RenderTypeLookup.getChunkRenderType(blockState);
+                        for (RenderType layer : RenderType.getBlockRenderTypes()) {
+                            if (!RenderTypeLookup.canRenderInLayer(blockState, layer)) {
+                                continue;
+                            }
 
-                        IModelData modelData = ModelDataManager.getModelData(Objects.requireNonNull(Minecraft.getInstance().world), pos);
-                        if (modelData == null) {
-                            modelData = EmptyModelData.INSTANCE;
-                        }
-                        IBakedModel model = cache.getBlockModels()
-                                .getModel(blockState);
+                            ForgeHooksClient.setRenderLayer(layer);
 
-                        long seed = blockState.getPositionRandom(pos);
+                            IModelData modelData = ModelDataManager.getModelData(Objects.requireNonNull(Minecraft.getInstance().world), pos);
+                            if (modelData == null) {
+                                modelData = EmptyModelData.INSTANCE;
+                            }
+                            IBakedModel model = cache.getBlockModels()
+                                    .getModel(blockState);
 
-                        if (cache.getBlockRenderer().renderModel(slice, blockState, pos, model, buffers.get(layer), true, seed, modelData)) {
-                            bounds.addBlock(relX, relY, relZ);
+                            long seed = blockState.getPositionRandom(pos);
+
+                            if (cache.getBlockRenderer().renderModel(slice, blockState, pos, model, buffers.get(layer), true, seed, modelData)) {
+                                bounds.addBlock(relX, relY, relZ);
+                            }
+                            ForgeHooksClient.setRenderLayer(null);
                         }
                     }
-
                     FluidState fluidState = blockState.getFluidState();
 
                     if (!fluidState.isEmpty()) {
