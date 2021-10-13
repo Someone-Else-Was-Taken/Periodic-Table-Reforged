@@ -7,10 +7,13 @@ import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
 import me.jellysquid.mods.sodium.client.render.texture.SpriteUtil;
 import me.jellysquid.mods.sodium.client.util.math.FrustumExtended;
 import me.jellysquid.mods.sodium.common.util.DirectionUtil;
-import net.minecraft.client.texture.Sprite;
+//import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.SectionPos;
+//import net.minecraft.util.math.ChunkSectionPos;
+//import net.minecraft.util.math.Direction;
 
 import java.lang.reflect.Array;
 import java.util.concurrent.CompletableFuture;
@@ -208,8 +211,8 @@ public class ChunkRenderContainer<T extends ChunkGraphicsState> {
     /**
      * Returns the chunk section position which this render refers to in the world.
      */
-    public ChunkSectionPos getChunkPos() {
-        return ChunkSectionPos.from(this.chunkX, this.chunkY, this.chunkZ);
+    public SectionPos getChunkPos() {
+        return SectionPos.of(this.chunkX, this.chunkY, this.chunkZ);
     }
 
     /**
@@ -230,7 +233,7 @@ public class ChunkRenderContainer<T extends ChunkGraphicsState> {
      * time before this render is drawn if {@link ChunkRenderContainer#isTickable()} is true.
      */
     public void tick() {
-        for (Sprite sprite : this.data.getAnimatedSprites()) {
+        for (TextureAtlasSprite sprite : this.data.getAnimatedSprites()) {
             SpriteUtil.markSpriteActive(sprite);
         }
     }

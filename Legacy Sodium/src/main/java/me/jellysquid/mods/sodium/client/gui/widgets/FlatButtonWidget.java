@@ -2,9 +2,7 @@ package me.jellysquid.mods.sodium.client.gui.widgets;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.jellysquid.mods.sodium.client.util.Dim2i;
-//import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.IRenderable;
-//import net.minecraft.client.util.math.MatrixStack;
 
 public class FlatButtonWidget extends AbstractWidget implements IRenderable {
     private final Dim2i dim;

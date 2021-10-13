@@ -1,8 +1,9 @@
 package me.jellysquid.mods.sodium.client.model.light.smooth;
 
 import me.jellysquid.mods.sodium.client.model.light.data.LightDataAccess;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+//import net.minecraft.util.math.Direction;
 
 import static me.jellysquid.mods.sodium.client.model.light.cache.ArrayLightDataCache.*;
 
@@ -25,9 +26,9 @@ class AoFaceData {
         final int adjZ;
 
         if (offset) {
-            adjX = x + direction.getOffsetX();
-            adjY = y + direction.getOffsetY();
-            adjZ = z + direction.getOffsetZ();
+            adjX = x + direction.getXOffset();
+            adjY = y + direction.getYOffset();
+            adjZ = z + direction.getZOffset();
         } else {
             adjX = x;
             adjY = y;

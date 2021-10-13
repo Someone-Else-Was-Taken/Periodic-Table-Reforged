@@ -1,6 +1,7 @@
 package me.jellysquid.mods.sodium.client.render.chunk.data;
 
-import net.minecraft.util.math.ChunkSectionPos;
+//import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.SectionPos;
 
 public class ChunkRenderBounds {
     public final float x1, y1, z1;
@@ -16,14 +17,14 @@ public class ChunkRenderBounds {
         this.z2 = z2;
     }
 
-    public ChunkRenderBounds(ChunkSectionPos origin) {
-        this.x1 = origin.getMinX();
-        this.y1 = origin.getMinY();
-        this.z1 = origin.getMinZ();
+    public ChunkRenderBounds(SectionPos origin) {
+        this.x1 = origin.getWorldStartX();
+        this.y1 = origin.getWorldStartY();
+        this.z1 = origin.getWorldStartZ();
 
-        this.x2 = origin.getMaxX() + 1;
-        this.y2 = origin.getMaxY() + 1;
-        this.z2 = origin.getMaxZ() + 1;
+        this.x2 = origin.getWorldEndX() + 1;
+        this.y2 = origin.getWorldEndY() + 1;
+        this.z2 = origin.getWorldEndZ() + 1;
     }
 
     public static class Builder {
@@ -60,20 +61,20 @@ public class ChunkRenderBounds {
             this.empty = false;
         }
 
-        public ChunkRenderBounds build(ChunkSectionPos origin) {
+        public ChunkRenderBounds build(SectionPos origin) {
             if (this.empty) {
                 return new ChunkRenderBounds(origin);
             }
 
             // Expand the bounding box by 8 blocks (half a chunk) in order to deal with diagonal surfaces
             return new ChunkRenderBounds(
-                    Math.max(this.x1, origin.getMinX()) - 8.0f,
-                    Math.max(this.y1, origin.getMinY()) - 8.0f,
-                    Math.max(this.z1, origin.getMinZ()) - 8.0f,
+                    Math.max(this.x1, origin.getWorldStartX()) - 8.0f,
+                    Math.max(this.y1, origin.getWorldStartY()) - 8.0f,
+                    Math.max(this.z1, origin.getWorldStartZ()) - 8.0f,
 
-                    Math.min(this.x2 + 1, origin.getMaxX()) + 8.0f,
-                    Math.min(this.y2 + 1, origin.getMaxY()) + 8.0f,
-                    Math.min(this.z2 + 1, origin.getMaxZ()) + 8.0f
+                    Math.min(this.x2 + 1, origin.getWorldEndX()) + 8.0f,
+                    Math.min(this.y2 + 1, origin.getWorldEndY()) + 8.0f,
+                    Math.min(this.z2 + 1, origin.getWorldEndZ()) + 8.0f
             );
         }
     }

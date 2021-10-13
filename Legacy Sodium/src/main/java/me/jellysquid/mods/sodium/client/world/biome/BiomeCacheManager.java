@@ -3,8 +3,10 @@ package me.jellysquid.mods.sodium.client.world.biome;
 import it.unimi.dsi.fastutil.longs.Long2ReferenceLinkedOpenHashMap;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import me.jellysquid.mods.sodium.common.util.pool.ObjectPool;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.biome.source.BiomeAccessType;
+//import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.SectionPos;
+import net.minecraft.world.biome.IBiomeMagnifier;
+//import net.minecraft.world.biome.source.BiomeAccessType;
 
 public class BiomeCacheManager {
     private static final int CACHE_SIZE = 256;
@@ -13,7 +15,7 @@ public class BiomeCacheManager {
     private final ObjectPool<BiomeCache> pool;
     private final Long2ReferenceLinkedOpenHashMap<BiomeCache> caches = new Long2ReferenceLinkedOpenHashMap<>(CACHE_SIZE, 0.5f);
 
-    public BiomeCacheManager(BiomeAccessType type, long seed) {
+    public BiomeCacheManager(IBiomeMagnifier type, long seed) {
         this.pool = new ObjectPool<>(ARENA_SIZE, () -> new BiomeCache(type, seed));
     }
 
@@ -26,7 +28,7 @@ public class BiomeCacheManager {
 
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
-                long key = ChunkSectionPos.asLong(x, centerY, z);
+                long key = SectionPos.asLong(x, centerY, z);
 
                 BiomeCache cache = this.caches.getAndMoveToFirst(key);
 
@@ -49,7 +51,7 @@ public class BiomeCacheManager {
         for (int x = centerX - 1; x <= centerX; x++) {
             for (int z = centerZ - 1; z <= centerZ; z++) {
                 for (int y = 0; y <= 16; y++) {
-                    BiomeCache column = this.caches.remove(ChunkSectionPos.asLong(x, y, z));
+                    BiomeCache column = this.caches.remove(SectionPos.asLong(x, y, z));
 
                     if (column != null) {
                         this.release(column);

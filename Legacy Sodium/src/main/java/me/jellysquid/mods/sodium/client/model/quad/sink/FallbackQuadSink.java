@@ -15,13 +15,14 @@ import me.jellysquid.mods.sodium.client.util.color.ColorU8;
 //import net.minecraft.client.util.math.Vector4f;
 //import net.minecraft.util.math.Matrix3f;
 //import net.minecraft.util.math.Matrix4f;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.math.vector.Matrix3f;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.math.vector.Vector4f;
 
 /**
- * A fallback implementation of {@link ModelQuadSink} for when we're writing into an arbitrary {@link BufferBuilder}.
+ * A fallback implementation of {@link ModelQuadSink} for when we're writing into an arbitrary {@link ModelQuadSink}.
  * This implementation is considerably slower than other sinks as it must perform many matrix transformations for every
  * vertex and unpack values as assumptions can't be made about what the backing buffer type is.
  */
@@ -77,7 +78,7 @@ public class FallbackQuadSink implements ModelQuadSink, ModelQuadSinkDelegate {
             normVec.set(normX, normY, normZ);
             normVec.transform(this.normalMatrix);
 
-            this.consumer.part(posVec.getX(), posVec.getY(), posVec.getZ(), r, g, b, a, u, v, OverlayTexture.DEFAULT_UV, light, normVec.getX(), normVec.getY(), normVec.getZ());
+            this.consumer.addVertex(posVec.getX(), posVec.getY(), posVec.getZ(), r, g, b, a, u, v, OverlayTexture.NO_OVERLAY, light, normVec.getX(), normVec.getY(), normVec.getZ());
         }
     }
 

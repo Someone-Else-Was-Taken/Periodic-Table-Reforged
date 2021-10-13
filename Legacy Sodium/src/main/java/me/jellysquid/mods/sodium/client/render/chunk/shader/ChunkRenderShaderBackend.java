@@ -1,13 +1,15 @@
 package me.jellysquid.mods.sodium.client.render.chunk.shader;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.jellysquid.mods.sodium.client.gl.SodiumVertexFormats.ChunkMeshAttribute;
 import me.jellysquid.mods.sodium.client.gl.attribute.GlVertexFormat;
 import me.jellysquid.mods.sodium.client.gl.shader.*;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkGraphicsState;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkRenderBackend;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+//import net.minecraft.client.util.math.MatrixStack;
+//import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.EnumMap;
 
@@ -38,7 +40,7 @@ public abstract class ChunkRenderShaderBackend<T extends ChunkGraphicsState, P e
         components.fog = fogMode.getFactory();
 
         try {
-            GlProgram.Builder builder = GlProgram.builder(new Identifier("sodium", "chunk_shader"));
+            GlProgram.Builder builder = GlProgram.builder(new ResourceLocation("sodium", "chunk_shader"));
             builder.attachShader(vertShader);
             builder.attachShader(fragShader);
 
@@ -60,12 +62,12 @@ public abstract class ChunkRenderShaderBackend<T extends ChunkGraphicsState, P e
                                           GlVertexFormat<ChunkMeshAttribute> format);
 
     private GlShader createVertexShader(ChunkFogMode fogMode) {
-        return ShaderLoader.loadShader(ShaderType.VERTEX, new Identifier("sodium", "chunk_glsl110.v.glsl"),
+        return ShaderLoader.loadShader(ShaderType.VERTEX, new ResourceLocation("sodium", "chunk_glsl110.v.glsl"),
                 this.createShaderConstants(fogMode));
     }
 
     private GlShader createFragmentShader(ChunkFogMode fogMode) {
-        return ShaderLoader.loadShader(ShaderType.FRAGMENT, new Identifier("sodium", "chunk_glsl110.f.glsl"),
+        return ShaderLoader.loadShader(ShaderType.FRAGMENT, new ResourceLocation("sodium", "chunk_glsl110.f.glsl"),
                 this.createShaderConstants(fogMode));
     }
 
@@ -80,7 +82,7 @@ public abstract class ChunkRenderShaderBackend<T extends ChunkGraphicsState, P e
 
     protected abstract void addShaderConstants(ShaderConstants.Builder builder);
 
-    protected abstract P createShaderProgram(Identifier name, int handle, ChunkProgramComponentBuilder components);
+    protected abstract P createShaderProgram(ResourceLocation name, int handle, ChunkProgramComponentBuilder components);
 
     protected void beginRender(MatrixStack matrixStack, BlockRenderPass pass) {
         this.activeProgram = this.programs.get(ChunkFogMode.getActiveMode());

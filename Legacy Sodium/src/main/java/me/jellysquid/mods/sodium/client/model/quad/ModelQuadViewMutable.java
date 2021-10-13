@@ -55,6 +55,7 @@ public interface ModelQuadViewMutable extends ModelQuadView {
 
     /**
      * Sets the sprite used by this quad
+     * @param sprite
      */
     void setSprite(TextureAtlasSprite sprite);
 

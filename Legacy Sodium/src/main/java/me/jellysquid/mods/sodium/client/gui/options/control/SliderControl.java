@@ -4,8 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import me.jellysquid.mods.sodium.client.gui.options.Option;
 import me.jellysquid.mods.sodium.client.util.Dim2i;
 import net.minecraft.client.renderer.Rectangle2d;
-//import net.minecraft.client.util.Rect2i;
-//import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
 

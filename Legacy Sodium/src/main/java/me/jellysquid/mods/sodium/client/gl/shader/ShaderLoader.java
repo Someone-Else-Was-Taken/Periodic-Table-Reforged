@@ -25,7 +25,7 @@ public class ShaderLoader {
     }
 
     /**
-     * Use {@link ShaderLoader#loadShader(ShaderType, ResourceLocation, ShaderConstants)} instead. This will be removed.
+     * Use {@link ShaderLoader#loadShader(ShaderType, Identifier, ShaderConstants)} instead. This will be removed.
      */
     @Deprecated
     public static GlShader loadShader(ShaderType type, ResourceLocation name, List<String> constants) {

@@ -1,5 +1,6 @@
 package me.jellysquid.mods.sodium.client.render.chunk.backends.gl33;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.jellysquid.mods.sodium.client.gl.SodiumVertexFormats;
 import me.jellysquid.mods.sodium.client.gl.attribute.GlVertexFormat;
 import me.jellysquid.mods.sodium.client.gl.func.GlFunctions;
@@ -13,8 +14,9 @@ import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPassManag
 import me.jellysquid.mods.sodium.client.render.chunk.passes.impl.MultiTextureRenderPipeline;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgramComponentBuilder;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.texture.ChunkProgramMultiTexture;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+//import net.minecraft.client.util.math.MatrixStack;
+//import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * Shader-based render backend for chunks which uses VAOs to avoid the overhead in setting up vertex attribute pointers
@@ -36,7 +38,7 @@ public class GL33ChunkRenderBackend extends ChunkRenderBackendOneshot<GL33Graphi
     }
 
     @Override
-    protected ChunkProgramOneshot createShaderProgram(Identifier name, int handle, ChunkProgramComponentBuilder components) {
+    protected ChunkProgramOneshot createShaderProgram(ResourceLocation name, int handle, ChunkProgramComponentBuilder components) {
         return new ChunkProgramOneshot(name, handle, components);
     }
 

@@ -2,18 +2,10 @@ package me.jellysquid.mods.sodium.client.gui.widgets;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-//import net.minecraft.client.MinecraftClient;
-//import net.minecraft.client.font.TextRenderer;
-//import net.minecraft.client.gui.Drawable;
-//import net.minecraft.client.gui.Element;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.gui.FontRenderer;
-//import net.minecraft.client.render.*;
-//import net.minecraft.client.sound.PositionedSoundInstance;
-//import net.minecraft.client.util.math.MatrixStack;
-//import net.minecraft.sound.SoundEvents;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.IRenderable;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -22,7 +14,6 @@ import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.SoundEvents;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20C;
 
 import java.util.function.Consumer;
 
@@ -52,7 +43,7 @@ public abstract class AbstractWidget implements IRenderable, IGuiEventListener {
         RenderSystem.defaultBlendFunc();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(GL20C.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
         consumer.accept(bufferBuilder);
 
@@ -63,7 +54,7 @@ public abstract class AbstractWidget implements IRenderable, IGuiEventListener {
         RenderSystem.disableBlend();
     }
 
-    protected static void addQuad(IVertexBuilder consumer, double x1, double y1, double x2, double y2, float a, float r, float g, float b) {
+    protected static void addQuad(IVertexBuilder consumer, int x1, int y1, int x2, int y2, float a, float r, float g, float b) {
         consumer.pos(x2, y1, 0.0D).color(r, g, b, a).endVertex();
         consumer.pos(x1, y1, 0.0D).color(r, g, b, a).endVertex();
         consumer.pos(x1, y2, 0.0D).color(r, g, b, a).endVertex();

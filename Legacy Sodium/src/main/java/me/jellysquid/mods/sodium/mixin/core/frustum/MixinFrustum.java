@@ -1,16 +1,19 @@
 package me.jellysquid.mods.sodium.mixin.core.frustum;
 
 import me.jellysquid.mods.sodium.client.util.math.FrustumExtended;
-import net.minecraft.client.render.Frustum;
-import net.minecraft.client.util.math.Vector4f;
-import net.minecraft.util.math.Matrix4f;
+//import net.minecraft.client.render.Frustum;
+import net.minecraft.client.renderer.culling.ClippingHelper;
+//import net.minecraft.client.util.math.Vector4f;
+//import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Frustum.class)
+@Mixin(ClippingHelper.class)
 public class MixinFrustum implements FrustumExtended {
     private float xF, yF, zF;
 
@@ -21,14 +24,14 @@ public class MixinFrustum implements FrustumExtended {
     private float nzX, nzY, nzZ, nzW;
     private float pzX, pzY, pzZ, pzW;
 
-    @Inject(method = "setPosition", at = @At("HEAD"))
+    @Inject(method = "setCameraPosition", at = @At("HEAD"))
     private void prePositionUpdate(double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
         this.xF = (float) cameraX;
         this.yF = (float) cameraY;
         this.zF = (float) cameraZ;
     }
 
-    @Inject(method = "transform", at = @At("HEAD"))
+    @Inject(method = "setFrustumPlane", at = @At("HEAD"))
     private void transform(Matrix4f mat, int x, int y, int z, int index, CallbackInfo ci) {
         Vector4f vec = new Vector4f((float) x, (float) y, (float) z, 1.0F);
         vec.transform(mat);
@@ -78,7 +81,7 @@ public class MixinFrustum implements FrustumExtended {
 
     @Override
     public boolean fastAabbTest(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
-        return this.isAnyCornerVisible(minX - this.xF, minY - this.yF, minZ - this.zF,
+        return this.isBoxInFrustumRaw(minX - this.xF, minY - this.yF, minZ - this.zF,
                 maxX - this.xF, maxY - this.yF, maxZ - this.zF);
     }
 
@@ -87,7 +90,7 @@ public class MixinFrustum implements FrustumExtended {
      * @reason Optimize away object allocations and for-loop
      */
     @Overwrite
-    private boolean isAnyCornerVisible(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+    private boolean isBoxInFrustumRaw(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
         return this.nxX * (this.nxX < 0 ? minX : maxX) + this.nxY * (this.nxY < 0 ? minY : maxY) + this.nxZ * (this.nxZ < 0 ? minZ : maxZ) >= -this.nxW &&
                 this.pxX * (this.pxX < 0 ? minX : maxX) + this.pxY * (this.pxY < 0 ? minY : maxY) + this.pxZ * (this.pxZ < 0 ? minZ : maxZ) >= -this.pxW &&
                 this.nyX * (this.nyX < 0 ? minX : maxX) + this.nyY * (this.nyY < 0 ? minY : maxY) + this.nyZ * (this.nyZ < 0 ? minZ : maxZ) >= -this.nyW &&

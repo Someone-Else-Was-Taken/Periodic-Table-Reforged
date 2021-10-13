@@ -1,5 +1,6 @@
 package me.jellysquid.mods.sodium.client.render.chunk.backends.gl20;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.jellysquid.mods.sodium.client.gl.SodiumVertexFormats;
 import me.jellysquid.mods.sodium.client.gl.attribute.GlVertexFormat;
 import me.jellysquid.mods.sodium.client.gl.shader.GlProgram;
@@ -13,8 +14,9 @@ import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPassManag
 import me.jellysquid.mods.sodium.client.render.chunk.passes.impl.SingleTextureRenderPipeline;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgramComponentBuilder;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.texture.ChunkProgramSingleTexture;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+//import net.minecraft.client.util.math.MatrixStack;
+//import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
@@ -35,7 +37,7 @@ public class GL20ChunkRenderBackend extends ChunkRenderBackendOneshot<GL20Graphi
     }
 
     @Override
-    protected ChunkProgramOneshot createShaderProgram(Identifier name, int handle, ChunkProgramComponentBuilder components) {
+    protected ChunkProgramOneshot createShaderProgram(ResourceLocation name, int handle, ChunkProgramComponentBuilder components) {
         return new ChunkProgramOneshot(name, handle, components);
     }
 

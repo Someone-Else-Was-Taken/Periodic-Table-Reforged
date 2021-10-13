@@ -9,8 +9,10 @@ import me.jellysquid.mods.sodium.client.render.chunk.data.ChunkMeshData;
 import me.jellysquid.mods.sodium.client.render.chunk.data.ChunkRenderData;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockLayer;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.GlAllocationUtils;
+//import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.client.util.GlAllocationUtils;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -49,7 +51,7 @@ public class ChunkBuildBuffers {
                 .collect(Collectors.toList());
     }
 
-    public ChunkBuildBufferDelegate get(RenderLayer layer) {
+    public ChunkBuildBufferDelegate get(RenderType layer) {
         return this.delegates[BlockLayer.fromRenderLayer(layer)];
     }
 
@@ -79,7 +81,7 @@ public class ChunkBuildBuffers {
             return null;
         }
 
-        ByteBuffer buffer = GlAllocationUtils.allocateByteBuffer(meshSize);
+        ByteBuffer buffer = GLAllocation.createDirectByteBuffer(meshSize);
 
         for (Map.Entry<ModelQuadFacing, BufferSlice> entry : meshData.getSlices()) {
             ModelQuadFacing key = entry.getKey();

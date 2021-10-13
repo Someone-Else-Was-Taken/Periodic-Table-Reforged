@@ -1,12 +1,15 @@
 package me.jellysquid.mods.sodium.client.model.light.data;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.WorldRenderer;
+//import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockRenderView;
+//import net.minecraft.util.math.Direction;
+//import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.IBlockDisplayReader;
 
 /**
  * The light data cache is used to make accessing the light data and occlusion properties of blocks cheaper. The data
@@ -27,18 +30,18 @@ public abstract class LightDataAccess {
     protected static final FluidState EMPTY_FLUID_STATE = Fluids.EMPTY.getDefaultState();
 
     private final BlockPos.Mutable pos = new BlockPos.Mutable();
-    protected BlockRenderView world;
+    protected IBlockDisplayReader world;
 
     public long get(int x, int y, int z, Direction d1, Direction d2) {
-        return this.get(x + d1.getOffsetX() + d2.getOffsetX(),
-                y + d1.getOffsetY() + d2.getOffsetY(),
-                z + d1.getOffsetZ() + d2.getOffsetZ());
+        return this.get(x + d1.getXOffset() + d2.getXOffset(),
+                y + d1.getYOffset() + d2.getYOffset(),
+                z + d1.getZOffset() + d2.getZOffset());
     }
 
     public long get(int x, int y, int z, Direction dir) {
-        return this.get(x + dir.getOffsetX(),
-                y + dir.getOffsetY(),
-                z + dir.getOffsetZ());
+        return this.get(x + dir.getXOffset(),
+                y + dir.getYOffset(),
+                z + dir.getZOffset());
     }
 
     public long get(BlockPos pos, Direction dir) {
@@ -56,15 +59,15 @@ public abstract class LightDataAccess {
     public abstract long get(int x, int y, int z);
 
     protected long compute(int x, int y, int z) {
-        BlockPos pos = this.pos.set(x, y, z);
-        BlockRenderView world = this.world;
+        BlockPos pos = this.pos.setPos(x, y, z);
+        IBlockDisplayReader world = this.world;
 
         BlockState state = world.getBlockState(pos);
 
         float ao;
 
-        if (state.getLuminance() == 0) {
-            ao = state.getAmbientOcclusionLightLevel(world, pos);
+        if (state.getLightValue() == 0) {
+            ao = state.getAmbientOcclusionLightValue(world, pos);
         } else {
             ao = 1.0f;
         }
@@ -72,10 +75,10 @@ public abstract class LightDataAccess {
         // FIX: Fluids are always non-translucent despite blocking light, so we need a special check here in order to
         // solve lighting issues underwater.
         boolean op = state.getFluidState() != EMPTY_FLUID_STATE || state.getOpacity(world, pos) == 0;
-        boolean fo = state.isOpaqueFullCube(world, pos);
+        boolean fo = state.isOpaqueCube(world, pos);
 
         // OPTIMIZE: Do not calculate lightmap data if the block is full and opaque
-        int lm = fo ? 0 : WorldRenderer.getLightmapCoordinates(world, state, pos);
+        int lm = fo ? 0 : WorldRenderer.getPackedLightmapCoords(world, state, pos);
 
         return packAO(ao) | packLM(lm) | packOP(op) | packFO(fo) | (1L << 60);
     }
@@ -114,7 +117,7 @@ public abstract class LightDataAccess {
         return aoi / 4096.0f;
     }
 
-    public BlockRenderView getWorld() {
+    public IBlockDisplayReader getWorld() {
         return this.world;
     }
 }

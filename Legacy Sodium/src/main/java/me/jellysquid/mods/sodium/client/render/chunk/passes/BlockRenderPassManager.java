@@ -1,6 +1,7 @@
 package me.jellysquid.mods.sodium.client.render.chunk.passes;
 
-import net.minecraft.util.Identifier;
+//import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -16,7 +17,7 @@ public class BlockRenderPassManager {
         }
     }
 
-    public <R extends BlockRenderPass> void add(WorldRenderPhase phase, Identifier id, Factory<R> factory, BlockLayer... layers) {
+    public <R extends BlockRenderPass> void add(WorldRenderPhase phase, ResourceLocation id, Factory<R> factory, BlockLayer... layers) {
         R pass = factory.create(this.all.size(), id, layers);
 
         this.byPhase.get(phase).add(pass);
@@ -36,6 +37,6 @@ public class BlockRenderPassManager {
     }
 
     public interface Factory<R> {
-        R create(int ordinal, Identifier id, BlockLayer[] layers);
+        R create(int ordinal, ResourceLocation id, BlockLayer[] layers);
     }
 }

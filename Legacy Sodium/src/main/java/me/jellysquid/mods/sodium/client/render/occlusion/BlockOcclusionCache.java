@@ -2,12 +2,17 @@ package me.jellysquid.mods.sodium.client.render.occlusion;
 
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.Direction;
+//import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
+//import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.shapes.IBooleanFunction;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+//import net.minecraft.util.shape.VoxelShape;
+//import net.minecraft.util.shape.VoxelShapes;
+//import net.minecraft.world.BlockView;
+import net.minecraft.world.IBlockReader;
 
 public class BlockOcclusionCache {
     private static final byte UNCACHED_VALUE = (byte) 127;
@@ -28,17 +33,17 @@ public class BlockOcclusionCache {
      * @param facing The facing direction of the side to check
      * @return True if the block side facing {@param dir} is not occluded, otherwise false
      */
-    public boolean shouldDrawSide(BlockState selfState, BlockView view, BlockPos pos, Direction facing) {
+    public boolean shouldDrawSide(BlockState selfState, IBlockReader view, BlockPos pos, Direction facing) {
         BlockPos.Mutable adjPos = this.cpos;
-        adjPos.set(pos.getX() + facing.getOffsetX(), pos.getY() + facing.getOffsetY(), pos.getZ() + facing.getOffsetZ());
+        adjPos.setPos(pos.getX() + facing.getXOffset(), pos.getY() + facing.getYOffset(), pos.getZ() + facing.getZOffset());
 
         BlockState adjState = view.getBlockState(adjPos);
 
         if (selfState.isSideInvisible(adjState, facing)) {
             return false;
-        } else if (adjState.isOpaque()) {
-            VoxelShape selfShape = selfState.getCullingFace(view, pos, facing);
-            VoxelShape adjShape = adjState.getCullingFace(view, adjPos, facing.getOpposite());
+        } else if (adjState.isSolid()) {
+            VoxelShape selfShape = selfState.getFaceOcclusionShape(view, pos, facing);
+            VoxelShape adjShape = adjState.getFaceOcclusionShape(view, adjPos, facing.getOpposite());
 
             if (selfShape == VoxelShapes.fullCube() && adjShape == VoxelShapes.fullCube()) {
                 return false;
@@ -62,7 +67,7 @@ public class BlockOcclusionCache {
             return cached == 1;
         }
 
-        boolean ret = VoxelShapes.matchesAnywhere(selfShape, adjShape, BooleanBiFunction.ONLY_FIRST);
+        boolean ret = VoxelShapes.compare(selfShape, adjShape, IBooleanFunction.ONLY_FIRST);
 
         this.map.put(cache.copy(), (byte) (ret ? 1 : 0));
 

@@ -1,7 +1,8 @@
 package me.jellysquid.mods.sodium.client.model.light.cache;
 
 import me.jellysquid.mods.sodium.client.model.light.data.LightDataAccess;
-import net.minecraft.world.BlockRenderView;
+//import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.IBlockDisplayReader;
 
 import java.util.Arrays;
 
@@ -29,7 +30,7 @@ public class ArrayLightDataCache extends LightDataAccess {
         this.light = new long[len];
     }
 
-    public void init(BlockRenderView world, int x, int y, int z) {
+    public void init(IBlockDisplayReader world, int x, int y, int z) {
         this.world = world;
         this.xOffset = x;
         this.yOffset = y;

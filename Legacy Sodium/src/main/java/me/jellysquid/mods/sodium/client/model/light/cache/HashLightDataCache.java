@@ -3,7 +3,9 @@ package me.jellysquid.mods.sodium.client.model.light.cache;
 import it.unimi.dsi.fastutil.longs.Long2LongLinkedOpenHashMap;
 import me.jellysquid.mods.sodium.client.model.light.data.LightDataAccess;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockRenderView;
+//import net.minecraft.world.BlockRenderView;
+//import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.IBlockDisplayReader;
 
 /**
  * A light data cache which uses a hash table to store previously accessed values.
@@ -11,13 +13,13 @@ import net.minecraft.world.BlockRenderView;
 public class HashLightDataCache extends LightDataAccess {
     private final Long2LongLinkedOpenHashMap map = new Long2LongLinkedOpenHashMap(1024, 0.50f);
 
-    public HashLightDataCache(BlockRenderView world) {
+    public HashLightDataCache(IBlockDisplayReader world) {
         this.world = world;
     }
 
     @Override
     public long get(int x, int y, int z) {
-        long key = BlockPos.asLong(x, y, z);
+        long key = BlockPos.pack(x, y, z);
         long word = this.map.getAndMoveToFirst(key);
 
         if (word == 0) {

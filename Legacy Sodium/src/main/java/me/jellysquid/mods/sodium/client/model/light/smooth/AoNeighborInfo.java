@@ -1,6 +1,7 @@
 package me.jellysquid.mods.sodium.client.model.light.smooth;
 
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.Direction;
+//import net.minecraft.util.math.Direction;
 
 /**
  * The neighbor information for each face of a block, used when performing smooth lighting in order to calculate
@@ -245,6 +246,6 @@ enum AoNeighborInfo {
      * @return Returns the {@link AoNeighborInfo} which corresponds with the specified direction
      */
     public static AoNeighborInfo get(Direction direction) {
-        return VALUES[direction.getId()];
+        return VALUES[direction.getIndex()];
     }
 }

@@ -1,7 +1,8 @@
 package me.jellysquid.mods.sodium.client.render.chunk.passes;
 
 import it.unimi.dsi.fastutil.objects.Reference2IntArrayMap;
-import net.minecraft.client.render.RenderLayer;
+//import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.renderer.RenderType;
 
 // TODO: Move away from using an enum, make this extensible
 public enum BlockLayer {
@@ -26,20 +27,20 @@ public enum BlockLayer {
         return 2097152; // TODO: tweak this
     }
 
-    private static final Reference2IntArrayMap<RenderLayer> layerMappings;
+    private static final Reference2IntArrayMap<RenderType> layerMappings;
 
     static {
         layerMappings = new Reference2IntArrayMap<>();
         layerMappings.defaultReturnValue(-1);
 
-        layerMappings.put(RenderLayer.getSolid(), BlockLayer.SOLID_MIPPED.ordinal());
-        layerMappings.put(RenderLayer.getCutoutMipped(), BlockLayer.SOLID_MIPPED.ordinal());
-        layerMappings.put(RenderLayer.getCutout(), BlockLayer.SOLID.ordinal());
-        layerMappings.put(RenderLayer.getTripwire(), BlockLayer.SOLID.ordinal());
-        layerMappings.put(RenderLayer.getTranslucent(), BlockLayer.TRANSLUCENT_MIPPED.ordinal());
+        layerMappings.put(RenderType.getSolid(), BlockLayer.SOLID_MIPPED.ordinal());
+        layerMappings.put(RenderType.getCutoutMipped(), BlockLayer.SOLID_MIPPED.ordinal());
+        layerMappings.put(RenderType.getCutout(), BlockLayer.SOLID.ordinal());
+        layerMappings.put(RenderType.getTripwire(), BlockLayer.SOLID.ordinal());
+        layerMappings.put(RenderType.getTranslucent(), BlockLayer.TRANSLUCENT_MIPPED.ordinal());
     }
 
-    public static int fromRenderLayer(RenderLayer layer) {
+    public static int fromRenderLayer(RenderType layer) {
         int pass = layerMappings.getInt(layer);
 
         if (pass < 0) {

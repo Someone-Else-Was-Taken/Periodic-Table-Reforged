@@ -6,7 +6,8 @@ import me.jellysquid.mods.sodium.client.gl.shader.ShaderConstants;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkGraphicsState;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgramComponentBuilder;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkRenderShaderBackend;
-import net.minecraft.util.Identifier;
+//import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 public abstract class ChunkRenderBackendMultiDraw<T extends ChunkGraphicsState> extends ChunkRenderShaderBackend<T, ChunkProgramMultiDraw> {
     public ChunkRenderBackendMultiDraw(GlVertexFormat<SodiumVertexFormats.ChunkMeshAttribute> format) {
@@ -14,7 +15,7 @@ public abstract class ChunkRenderBackendMultiDraw<T extends ChunkGraphicsState> 
     }
 
     @Override
-    protected ChunkProgramMultiDraw createShaderProgram(Identifier name, int handle, ChunkProgramComponentBuilder components) {
+    protected ChunkProgramMultiDraw createShaderProgram(ResourceLocation name, int handle, ChunkProgramComponentBuilder components) {
         return new ChunkProgramMultiDraw(name, handle, components);
     }
 

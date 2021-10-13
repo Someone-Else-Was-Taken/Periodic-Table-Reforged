@@ -1,8 +1,10 @@
 package me.jellysquid.mods.sodium.client.render.chunk.shader.texture;
 
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgram;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.Minecraft;
+//import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+//import net.minecraft.client.texture.SpriteAtlasTexture;
 import org.lwjgl.opengl.GL20;
 
 public class ChunkProgramSingleTexture extends ChunkProgramTextureComponent {
@@ -32,8 +34,8 @@ public class ChunkProgramSingleTexture extends ChunkProgramTextureComponent {
 
     @Override
     public void setMipmapping(boolean mipped) {
-        MinecraftClient.getInstance().getTextureManager()
-                .getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX)
-                .setFilter(false, mipped);
+        Minecraft.getInstance().getTextureManager()
+                .getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
+                .setBlurMipmapDirect(false, mipped);
     }
 }

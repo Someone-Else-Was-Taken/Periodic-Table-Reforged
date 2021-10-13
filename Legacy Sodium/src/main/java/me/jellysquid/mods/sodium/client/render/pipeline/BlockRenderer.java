@@ -18,14 +18,21 @@ import me.jellysquid.mods.sodium.client.util.rand.XoRoShiRoRandom;
 import me.jellysquid.mods.sodium.client.world.biome.BlockColorsExtended;
 import me.jellysquid.mods.sodium.common.util.DirectionUtil;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.color.block.BlockColorProvider;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.Minecraft;
+//import net.minecraft.client.MinecraftClient;
+//import net.minecraft.client.color.block.BlockColorProvider;
+//import net.minecraft.client.render.model.BakedModel;
+//import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BlockRenderView;
+//import net.minecraft.util.math.Direction;
+//import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
+//import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.IBlockDisplayReader;
 
 import java.util.List;
 import java.util.Random;
@@ -44,19 +51,19 @@ public class BlockRenderer {
 
     private final boolean useAmbientOcclusion;
 
-    public BlockRenderer(MinecraftClient client, LightPipelineProvider lighters, BiomeColorBlender biomeColorBlender) {
+    public BlockRenderer(Minecraft client, LightPipelineProvider lighters, BiomeColorBlender biomeColorBlender) {
         this.blockColors = (BlockColorsExtended) client.getBlockColors();
         this.biomeColorBlender = biomeColorBlender;
 
         this.lighters = lighters;
 
         this.occlusionCache = new BlockOcclusionCache();
-        this.useAmbientOcclusion = MinecraftClient.isAmbientOcclusionEnabled();
+        this.useAmbientOcclusion = Minecraft.isAmbientOcclusionEnabled();
     }
 
-    public boolean renderModel(BlockRenderView world, BlockState state, BlockPos pos, BakedModel model, ModelQuadSinkDelegate builder, boolean cull, long seed) {
+    public boolean renderModel(IBlockDisplayReader world, BlockState state, BlockPos pos, IBakedModel model, ModelQuadSinkDelegate builder, boolean cull, long seed) {
         LightPipeline lighter = this.lighters.getLighter(this.getLightingMode(state, model));
-        Vec3d offset = state.getModelOffset(world, pos);
+        Vector3d offset = state.getOffset(world, pos);
 
         boolean rendered = false;
 
@@ -89,9 +96,9 @@ public class BlockRenderer {
         return rendered;
     }
 
-    private void renderQuadList(BlockRenderView world, BlockState state, BlockPos pos, LightPipeline lighter, Vec3d offset,
+    private void renderQuadList(IBlockDisplayReader world, BlockState state, BlockPos pos, LightPipeline lighter, Vector3d offset,
                                 ModelQuadSinkDelegate builder, List<BakedQuad> quads, ModelQuadFacing facing) {
-        BlockColorProvider colorizer = null;
+        IBlockColor colorizer = null;
 
         // This is a very hot allocation, iterate over it manually
         // noinspection ForLoopReplaceableByForEach
@@ -99,9 +106,9 @@ public class BlockRenderer {
             BakedQuad quad = quads.get(i);
 
             QuadLightData light = this.cachedQuadLightData;
-            lighter.calculate((ModelQuadView) quad, pos, light, quad.getFace(), quad.hasShade());
+            lighter.calculate((ModelQuadView) quad, pos, light, quad.getFace(), quad.applyDiffuseLighting());
 
-            if (quad.hasColor() && colorizer == null) {
+            if (quad.hasTintIndex() && colorizer == null) {
                 colorizer = this.blockColors.getColorProvider(state);
             }
 
@@ -109,8 +116,8 @@ public class BlockRenderer {
         }
     }
 
-    private void renderQuad(BlockRenderView world, BlockState state, BlockPos pos, ModelQuadSinkDelegate consumer, Vec3d offset,
-                            BlockColorProvider colorProvider, BakedQuad bakedQuad, QuadLightData light, ModelQuadFacing facing) {
+    private void renderQuad(IBlockDisplayReader world, BlockState state, BlockPos pos, ModelQuadSinkDelegate consumer, Vector3d offset,
+                            IBlockColor colorProvider, BakedQuad bakedQuad, QuadLightData light, ModelQuadFacing facing) {
         ModelQuadView src = (ModelQuadView) bakedQuad;
 
         ModelQuadOrientation order = ModelQuadOrientation.orient(light.br);
@@ -119,7 +126,7 @@ public class BlockRenderer {
         int norm = ModelQuadUtil.getFacingNormal(bakedQuad.getFace());
         int[] colors = null;
 
-        if (bakedQuad.hasColor()) {
+        if (bakedQuad.hasTintIndex()) {
             colors = this.biomeColorBlender.getColors(colorProvider, world, state, pos, src);
         }
 
@@ -141,8 +148,8 @@ public class BlockRenderer {
                 .write(copy);
     }
 
-    private LightMode getLightingMode(BlockState state, BakedModel model) {
-        if (this.useAmbientOcclusion && model.useAmbientOcclusion() && state.getLuminance() == 0) {
+    private LightMode getLightingMode(BlockState state, IBakedModel model) {
+        if (this.useAmbientOcclusion && model.isAmbientOcclusion() && state.getLightValue() == 0) {
             return LightMode.SMOOTH;
         } else {
             return LightMode.FLAT;

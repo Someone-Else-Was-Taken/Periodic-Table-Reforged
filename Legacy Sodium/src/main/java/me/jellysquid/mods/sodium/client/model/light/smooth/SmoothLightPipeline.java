@@ -5,8 +5,9 @@ import me.jellysquid.mods.sodium.client.model.light.data.LightDataAccess;
 import me.jellysquid.mods.sodium.client.model.light.data.QuadLightData;
 import me.jellysquid.mods.sodium.client.model.quad.ModelQuadView;
 import me.jellysquid.mods.sodium.client.model.quad.properties.ModelQuadFlags;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+//import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -66,7 +67,7 @@ public class SmoothLightPipeline implements LightPipeline {
 
     @Override
     public void calculate(ModelQuadView quad, BlockPos pos, QuadLightData out, Direction face, boolean shade) {
-        this.updateCachedData(pos.asLong());
+        this.updateCachedData(pos.toLong());
 
         int flags = quad.getFlags();
 
@@ -85,7 +86,7 @@ public class SmoothLightPipeline implements LightPipeline {
     }
 
     private void applySidedBrightness(QuadLightData out, Direction face, boolean shade) {
-        float brightness = this.lightCache.getWorld().getBrightness(face, shade);
+        float brightness = this.lightCache.getWorld().func_230487_a_(face, shade);
         float[] br = out.br;
 
         for (int i = 0; i < br.length; i++) {
@@ -110,9 +111,9 @@ public class SmoothLightPipeline implements LightPipeline {
             float depth = neighborInfo.getDepth(cx, cy, cz);
 
             // If the quad is approximately grid-aligned (not inset), avoid unnecessary computation by treating it is as aligned
-            if (MathHelper.approximatelyEquals(depth, 0.0F)) {
+            if (MathHelper.epsilonEquals(depth, 0.0F)) {
                 this.applyAlignedPartialFace(pos, dir, weights, i, out, offset);
-            } else if (MathHelper.approximatelyEquals(depth, 1.0F)) {
+            } else if (MathHelper.epsilonEquals(depth, 1.0F)) {
                 this.applyAlignedPartialFace(pos, dir, weights, i, out, offset);
             } else {
                 // Blend the occlusion factor between the blocks directly beside this face and the blocks above it

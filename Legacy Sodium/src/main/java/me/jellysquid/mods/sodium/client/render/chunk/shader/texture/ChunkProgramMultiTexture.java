@@ -2,10 +2,14 @@ package me.jellysquid.mods.sodium.client.render.chunk.shader.texture;
 
 import me.jellysquid.mods.sodium.client.gl.sampler.GlSampler;
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkProgram;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.Minecraft;
+//import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.Texture;
+import net.minecraft.client.renderer.texture.TextureManager;
+//import net.minecraft.client.texture.AbstractTexture;
+//import net.minecraft.client.texture.SpriteAtlasTexture;
+//import net.minecraft.client.texture.TextureManager;
 import org.lwjgl.opengl.GL11;
 
 public class ChunkProgramMultiTexture extends ChunkProgramTextureComponent {
@@ -36,15 +40,15 @@ public class ChunkProgramMultiTexture extends ChunkProgramTextureComponent {
 
     @Override
     public void bind() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
 
         TextureManager textureManager = client.getTextureManager();
 
         LightmapTextureManagerAccessor lightmapTextureManager =
-                ((LightmapTextureManagerAccessor) client.gameRenderer.getLightmapTextureManager());
+                ((LightmapTextureManagerAccessor) client.gameRenderer.getLightTexture());
 
-        AbstractTexture blockAtlasTex = textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-        AbstractTexture lightTex = lightmapTextureManager.getTexture();
+        Texture blockAtlasTex = textureManager.getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+        Texture lightTex = lightmapTextureManager.getTexture();
 
         this.bindTexture(blockAtlasTex, ChunkProgramTextureUnit.BLOCK_ATLAS);
         this.bindTexture(blockAtlasTex, ChunkProgramTextureUnit.BLOCK_ATLAS_MIPPED);

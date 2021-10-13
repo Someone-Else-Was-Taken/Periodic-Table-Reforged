@@ -9,12 +9,16 @@ import me.jellysquid.mods.sodium.client.render.pipeline.FluidRenderer;
 import me.jellysquid.mods.sodium.client.render.pipeline.RenderContextCommon;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.block.BlockModels;
-import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.Minecraft;
+//import net.minecraft.client.MinecraftClient;
+//import net.minecraft.client.render.block.BlockModels;
+//import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.renderer.BlockModelShapes;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockRenderView;
+//import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.IBlockDisplayReader;
 
 public class ChunkRenderContext {
     private final ArrayLightDataCache lightDataCache;
@@ -22,9 +26,9 @@ public class ChunkRenderContext {
     private final BlockRenderer blockRenderer;
     private final FluidRenderer fluidRenderer;
 
-    private final BlockModels models;
+    private final BlockModelShapes models;
 
-    public ChunkRenderContext(MinecraftClient client) {
+    public ChunkRenderContext(Minecraft client) {
         this.lightDataCache = new ArrayLightDataCache(WorldSlice.BLOCK_LENGTH);
 
         LightPipelineProvider lightPipelineProvider = new LightPipelineProvider(this.lightDataCache);
@@ -33,21 +37,21 @@ public class ChunkRenderContext {
         this.blockRenderer = new BlockRenderer(client, lightPipelineProvider, biomeColorBlender);
         this.fluidRenderer = new FluidRenderer(client, lightPipelineProvider, biomeColorBlender);
 
-        this.models = client.getBakedModelManager().getBlockModels();
+        this.models = client.getModelManager().getBlockModelShapes();
     }
 
-    public boolean renderBlock(BlockRenderView world, BlockState state, BlockPos pos, ModelQuadSinkDelegate consumer, boolean cull) {
-        BakedModel model = this.models.getModel(state);
-        long seed = state.getRenderingSeed(pos);
+    public boolean renderBlock(IBlockDisplayReader world, BlockState state, BlockPos pos, ModelQuadSinkDelegate consumer, boolean cull) {
+        IBakedModel model = this.models.getModel(state);
+        long seed = state.getPositionRandom(pos);
 
         return this.blockRenderer.renderModel(world, state, pos, model, consumer, cull, seed);
     }
 
-    public boolean renderFluid(BlockRenderView world, FluidState fluidState, BlockPos.Mutable pos, ModelQuadSinkDelegate consumer) {
+    public boolean renderFluid(IBlockDisplayReader world, FluidState fluidState, BlockPos.Mutable pos, ModelQuadSinkDelegate consumer) {
         return this.fluidRenderer.render(world, fluidState, pos, consumer);
     }
 
-    public void init(BlockRenderView world, int x, int y, int z) {
+    public void init(IBlockDisplayReader world, int x, int y, int z) {
         this.lightDataCache.init(world, x, y, z);
     }
 }

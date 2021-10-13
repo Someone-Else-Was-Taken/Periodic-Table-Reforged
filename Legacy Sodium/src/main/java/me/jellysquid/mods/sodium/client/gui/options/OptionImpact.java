@@ -1,8 +1,6 @@
 package me.jellysquid.mods.sodium.client.gui.options;
 
-//import net.minecraft.client.resource.language.I18n;
-//import net.minecraft.util.Formatting;
-import com.sun.org.apache.xml.internal.security.utils.I18n;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
 
 public enum OptionImpact {
@@ -21,6 +19,6 @@ public enum OptionImpact {
     }
 
     public String toDisplayString() {
-        return this.color + I18n.translate(this.text);
+        return this.color + I18n.format(this.text);
     }
 }

@@ -1,14 +1,15 @@
 package me.jellysquid.mods.sodium.client.render.chunk.passes;
 
-import net.minecraft.util.Identifier;
+//import net.minecraft.util.Identifier;
+import net.minecraft.util.ResourceLocation;
 
 public abstract class BlockRenderPass {
-    private final Identifier id;
+    private final ResourceLocation id;
     private final BlockLayer[] layers;
     private final boolean forward;
     private final int ordinal;
 
-    public BlockRenderPass(int ordinal, Identifier id, boolean forward, BlockLayer... layers) {
+    public BlockRenderPass(int ordinal, ResourceLocation id, boolean forward, BlockLayer... layers) {
         this.ordinal = ordinal;
         this.id = id;
         this.layers = layers;
@@ -31,7 +32,7 @@ public abstract class BlockRenderPass {
         return this.layers;
     }
 
-    public final Identifier getId() {
+    public final ResourceLocation getId() {
         return this.id;
     }
 }
