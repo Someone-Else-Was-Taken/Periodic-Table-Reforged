@@ -21,6 +21,7 @@ import net.minecraft.block.BlockState;
 //import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 //import net.minecraft.client.render.chunk.ChunkOcclusionDataBuilder;
 //import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.chunk.VisGraph;
@@ -30,6 +31,12 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.model.ModelDataManager;
+import net.minecraftforge.client.model.SeparatePerspectiveModel;
+import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.data.IModelData;
+
+import java.util.Objects;
 
 /**
  * Rebuilds all the meshes of a chunk for each given render pass with non-occluded blocks. The result is then uploaded
@@ -87,18 +94,19 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                     buffers.setRenderOffset(pos.getX() - renderOffset.getX(), pos.getY() - renderOffset.getY(), pos.getZ() - renderOffset.getZ());
 
                     if (blockState.getRenderType() == BlockRenderType.MODEL) {
-                        for (RenderType layer : RenderType.getBlockRenderTypes()) {
-                            if (!RenderTypeLookup.canRenderInLayer(blockState, layer)) {
-                                continue;
-                            }
-                            IBakedModel model = cache.getBlockModels()
-                                    .getModel(blockState);
+                        RenderType layer = RenderTypeLookup.getChunkRenderType(blockState);
 
-                            long seed = blockState.getPositionRandom(pos);
+                        IModelData modelData = ModelDataManager.getModelData(Objects.requireNonNull(Minecraft.getInstance().world), pos);
+                        if (modelData == null) {
+                            modelData = EmptyModelData.INSTANCE;
+                        }
+                        IBakedModel model = cache.getBlockModels()
+                                .getModel(blockState);
 
-                            if (cache.getBlockRenderer().renderModel(slice, blockState, pos, model, buffers.get(layer), true, seed)) {
-                                bounds.addBlock(relX, relY, relZ);
-                            }
+                        long seed = blockState.getPositionRandom(pos);
+
+                        if (cache.getBlockRenderer().renderModel(slice, blockState, pos, model, buffers.get(layer), true, seed, modelData)) {
+                            bounds.addBlock(relX, relY, relZ);
                         }
                     }
 

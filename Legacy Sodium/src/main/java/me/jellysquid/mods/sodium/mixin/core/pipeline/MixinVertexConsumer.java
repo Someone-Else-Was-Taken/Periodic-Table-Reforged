@@ -14,3 +14,4 @@ public interface MixinVertexConsumer extends VertexDrain {
         return factory.createFallbackWriter((IVertexBuilder) this);
     }
 }
+

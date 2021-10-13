@@ -94,5 +94,4 @@ public class EntityLighter {
 
         return ((sli & 0xFFFF) << 16) | (bli & 0xFFFF);
     }
-
 }

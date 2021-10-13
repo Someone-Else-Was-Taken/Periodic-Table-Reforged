@@ -28,4 +28,3 @@ public interface VertexDrain {
      */
     <T extends VertexSink> T createSink(VertexType<T> factory);
 }
-

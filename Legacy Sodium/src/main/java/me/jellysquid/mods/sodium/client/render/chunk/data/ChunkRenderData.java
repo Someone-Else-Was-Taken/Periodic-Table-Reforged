@@ -8,9 +8,8 @@ import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
 //import net.minecraft.block.entity.BlockEntity;
 //import net.minecraft.client.render.chunk.ChunkOcclusionData;
 import net.minecraft.client.renderer.chunk.SetVisibility;
-import net.minecraft.client.renderer.texture.Texture;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 //import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 //import net.minecraft.util.math.Direction;
@@ -22,7 +21,7 @@ import java.util.*;
  * block entities contained by it, and any data used for occlusion testing.
  */
 public class ChunkRenderData {
-    public static final ChunkRenderData ABSENT = new Builder()
+    public static final ChunkRenderData ABSENT = new ChunkRenderData.Builder()
             .build();
     public static final ChunkRenderData EMPTY = createEmptyData();
 
@@ -169,7 +168,7 @@ public class ChunkRenderData {
         SetVisibility occlusionData = new SetVisibility();
         occlusionData.setManyVisible(EnumSet.allOf(Direction.class));
 
-        Builder meshInfo = new Builder();
+        ChunkRenderData.Builder meshInfo = new ChunkRenderData.Builder();
         meshInfo.setOcclusionData(occlusionData);
 
         return meshInfo.build();

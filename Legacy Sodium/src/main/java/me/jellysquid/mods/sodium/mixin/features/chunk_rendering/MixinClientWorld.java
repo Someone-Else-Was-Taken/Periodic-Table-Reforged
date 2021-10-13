@@ -1,16 +1,24 @@
 package me.jellysquid.mods.sodium.mixin.features.chunk_rendering;
 
 import me.jellysquid.mods.sodium.client.world.ClientWorldExtended;
+//import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.play.ClientPlayNetHandler;
+//import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.renderer.WorldRenderer;
+//import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.util.RegistryKey;
+//import net.minecraft.util.profiler.Profiler;
+//import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
+//import net.minecraft.world.dimension.DimensionType;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.Supplier;
@@ -24,7 +32,7 @@ public abstract class MixinClientWorld implements ClientWorldExtended {
      */
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(ClientPlayNetHandler netHandler, ClientWorld.ClientWorldInfo properties, RegistryKey<World> worldKey,
-                       DimensionType dimensionType, int loadDistance,
+                      DimensionType dimensionType, int loadDistance,
                       Supplier<IProfiler> profiler, WorldRenderer renderer, boolean debugWorld, long seed,
                       CallbackInfo ci) {
         this.biomeSeed = seed;

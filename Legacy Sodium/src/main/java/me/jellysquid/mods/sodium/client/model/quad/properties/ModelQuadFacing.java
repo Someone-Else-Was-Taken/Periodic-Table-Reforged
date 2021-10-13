@@ -1,8 +1,7 @@
 package me.jellysquid.mods.sodium.client.model.quad.properties;
 
-//import net.minecraft.util.math.Direction;
-
 import net.minecraft.util.Direction;
+//import net.minecraft.util.math.Direction;
 
 public enum ModelQuadFacing {
     UP,

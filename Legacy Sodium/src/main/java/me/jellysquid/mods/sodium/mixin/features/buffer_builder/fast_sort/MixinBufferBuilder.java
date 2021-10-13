@@ -1,6 +1,8 @@
 package me.jellysquid.mods.sodium.mixin.features.buffer_builder.fast_sort;
 
 import com.google.common.primitives.Floats;
+//import net.minecraft.client.render.BufferBuilder;
+//import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import org.lwjgl.system.MemoryStack;
@@ -64,7 +66,7 @@ public class MixinBufferBuilder {
 
                 if (m != l) {
                     sliceQuad(floatBuffer, m, quadStride, quadStart);
-                    ((Buffer)tmp).clear();
+                    tmp.clear();
                     tmp.put(floatBuffer);
 
                     int n = m;
@@ -81,7 +83,7 @@ public class MixinBufferBuilder {
                     }
 
                     sliceQuad(floatBuffer, l, quadStride, quadStart);
-                    ((Buffer)tmp).flip();
+                    tmp.flip();
 
                     floatBuffer.put(tmp);
                 }
@@ -98,8 +100,8 @@ public class MixinBufferBuilder {
     private static void sliceQuad(FloatBuffer floatBuffer, int quadIdx, int quadStride, int quadStart) {
         int base = quadStart + (quadIdx * quadStride);
 
-        ((Buffer)floatBuffer).limit(base + quadStride);
-        ((Buffer)floatBuffer).position(base);
+        floatBuffer.limit(base + quadStride);
+        floatBuffer.position(base);
     }
 
     private static float getDistanceSq(FloatBuffer buffer, float xCenter, float yCenter, float zCenter, int stride, int start) {

@@ -9,8 +9,15 @@ import me.jellysquid.mods.sodium.client.model.vertex.formats.quad.QuadVertexSink
 import me.jellysquid.mods.sodium.client.util.color.ColorABGR;
 import me.jellysquid.mods.sodium.client.util.color.ColorU8;
 import me.jellysquid.mods.sodium.client.util.math.MatrixUtil;
+//import net.minecraft.client.render.BufferBuilder;
+//import net.minecraft.client.render.FixedColorVertexConsumer;
+//import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.model.BakedQuad;
+//import net.minecraft.client.util.math.MatrixStack;
+//import net.minecraft.client.util.math.Vector4f;
+//import net.minecraft.util.math.Matrix3f;
+//import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.vector.Matrix3f;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector4f;

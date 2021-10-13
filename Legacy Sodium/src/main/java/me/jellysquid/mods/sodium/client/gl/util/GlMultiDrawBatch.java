@@ -1,5 +1,6 @@
 package me.jellysquid.mods.sodium.client.gl.util;
 
+import org.lwjgl.opengl.GL20C;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;

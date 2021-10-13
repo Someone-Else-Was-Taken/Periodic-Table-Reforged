@@ -5,7 +5,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 //import net.minecraft.util.math.Direction;
 
-import static me.jellysquid.mods.sodium.client.model.light.data.LightDataAccess.*;
+import static me.jellysquid.mods.sodium.client.model.light.cache.ArrayLightDataCache.*;
 
 class AoFaceData {
     public final int[] lm = new int[4];

@@ -1,7 +1,6 @@
 package me.jellysquid.mods.sodium.client.render.chunk.data;
 
 //import net.minecraft.util.math.ChunkSectionPos;
-
 import net.minecraft.util.math.SectionPos;
 
 public class ChunkRenderBounds {

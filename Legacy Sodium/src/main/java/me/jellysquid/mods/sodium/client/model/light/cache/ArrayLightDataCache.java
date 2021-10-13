@@ -3,9 +3,10 @@ package me.jellysquid.mods.sodium.client.model.light.cache;
 import me.jellysquid.mods.sodium.client.model.light.data.LightDataAccess;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 //import net.minecraft.util.math.ChunkSectionPos;
-//import net.minecraft.world.BlockRenderView;
 import net.minecraft.util.math.SectionPos;
+//import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.IBlockDisplayReader;
+import net.minecraft.world.World;
 
 import java.util.Arrays;
 

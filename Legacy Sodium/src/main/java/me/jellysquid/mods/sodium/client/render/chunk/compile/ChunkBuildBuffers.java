@@ -68,7 +68,7 @@ public class ChunkBuildBuffers {
     }
 
     /**
-     * Return the {@link ChunkModelVertexTransformer} for the given {@link RenderType} as mapped by the
+     * Return the {@link ChunkModelVertexTransformer} for the given {@link RenderLayer} as mapped by the
      * {@link BlockRenderPassManager} for this render context.
      */
     public ChunkModelBuffers get(RenderType layer) {

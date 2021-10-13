@@ -4,9 +4,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import me.jellysquid.mods.sodium.client.gui.options.Option;
 import me.jellysquid.mods.sodium.client.gui.widgets.AbstractWidget;
 import me.jellysquid.mods.sodium.client.util.Dim2i;
-import net.minecraft.util.text.TextFormatting;
 //import net.minecraft.client.util.math.MatrixStack;
 //import net.minecraft.util.Formatting;
+import net.minecraft.util.text.TextFormatting;
 
 public class ControlElement<T> extends AbstractWidget {
     protected final Option<T> option;
