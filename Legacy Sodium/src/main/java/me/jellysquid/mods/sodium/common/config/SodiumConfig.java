@@ -4,6 +4,10 @@ package me.jellysquid.mods.sodium.common.config;
 //import net.fabricmc.loader.api.ModContainer;
 //import net.fabricmc.loader.api.metadata.CustomValue;
 //import net.fabricmc.loader.api.metadata.ModMetadata;
+<<<<<<< HEAD
+=======
+import net.minecraftforge.fml.ModContainer;
+>>>>>>> parent of 782849f (Migrated to 1.16.x/next)
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +56,8 @@ public class SodiumConfig {
         this.addMixinRule("features.render_layer", true);
         this.addMixinRule("features.texture_tracking", true);
         this.addMixinRule("features.world_ticking", true);
+
+        this.applyModOverrides();
     }
 
     /**
@@ -95,6 +101,7 @@ public class SodiumConfig {
         }
     }
 
+<<<<<<< HEAD
 
     private void applyModOverrides() {
         if(FMLLoader.getLoadingModList().getModFileById("quark") != null)
@@ -108,6 +115,28 @@ public class SodiumConfig {
         }
     }
 
+=======
+    private void applyModOverrides() {
+
+        if(FMLLoader.getLoadingModList().getModFileById("quark") != null)
+        {
+            this.options.get("mixin.features.item").addModOverride(false, "quark");
+        }
+
+        if(FMLLoader.getLoadingModList().getModFileById("tetra") != null)
+        {
+            this.options.get("mixin.features.item").addModOverride(false, "tetra");
+        }
+
+        if(FMLLoader.getLoadingModList().getModFileById("abnormals_core") != null)
+        {
+            this.options.get("mixin.features.world_ticking").addModOverride(false, "quark");
+        }
+
+    }
+
+
+>>>>>>> parent of 782849f (Migrated to 1.16.x/next)
 
     /**
      * Returns the effective option for the specified class name. This traverses the package path of the given mixin
@@ -167,7 +196,10 @@ public class SodiumConfig {
 
         SodiumConfig config = new SodiumConfig();
         config.readProperties(props);
+<<<<<<< HEAD
         config.applyModOverrides();
+=======
+>>>>>>> parent of 782849f (Migrated to 1.16.x/next)
 
         return config;
     }

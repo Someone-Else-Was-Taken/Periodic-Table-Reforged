@@ -7,8 +7,8 @@ import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.gl.tessellation.GlTessellation;
 import me.jellysquid.mods.sodium.client.model.quad.properties.ModelQuadFacing;
 import me.jellysquid.mods.sodium.client.render.chunk.ChunkGraphicsState;
-import me.jellysquid.mods.sodium.client.render.chunk.compile.ChunkBuildResult;
 import me.jellysquid.mods.sodium.client.render.chunk.backends.multidraw.ChunkDrawCallBatcher;
+import me.jellysquid.mods.sodium.client.render.chunk.compile.ChunkBuildResult;
 
 public class ChunkRegion<T extends ChunkGraphicsState> {
     private static final int EXPECTED_CHUNK_SIZE = 4 * 1024;

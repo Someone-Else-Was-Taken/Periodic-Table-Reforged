@@ -3,7 +3,6 @@ package me.jellysquid.mods.sodium.mixin.features.buffer_builder.fast_advance;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.DefaultColorVertexBuilder;
 import com.mojang.blaze3d.vertex.IVertexConsumer;
-//import net.minecraft.client.render.*;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;

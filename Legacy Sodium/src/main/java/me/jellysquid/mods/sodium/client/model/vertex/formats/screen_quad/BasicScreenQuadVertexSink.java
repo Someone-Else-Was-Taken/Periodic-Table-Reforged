@@ -7,8 +7,8 @@ import me.jellysquid.mods.sodium.client.util.math.MatrixUtil;
 //import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
-//import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.vector.Matrix4f;
+//import net.minecraft.util.math.Matrix4f;
 
 public interface BasicScreenQuadVertexSink extends VertexSink {
     VertexFormat VERTEX_FORMAT = DefaultVertexFormats.POSITION_COLOR;

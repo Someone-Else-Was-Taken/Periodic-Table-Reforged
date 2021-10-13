@@ -14,7 +14,7 @@ import net.minecraft.world.IBlockDisplayReader;
 import java.util.Map;
 
 public class ChunkRenderCacheShared extends ChunkRenderCache {
-    private static final Map<IBlockDisplayReader, ChunkRenderCacheShared> INSTANCES = new Reference2ObjectOpenHashMap<net.minecraft.world.IBlockDisplayReader, ChunkRenderCacheShared>();
+    private static final Map<IBlockDisplayReader, ChunkRenderCacheShared> INSTANCES = new Reference2ObjectOpenHashMap<>();
 
     private final BlockRenderer blockRenderer;
     private final HashLightDataCache lightCache;

@@ -37,11 +37,13 @@ public abstract class MixinClientWorld extends World {
     @Shadow
     protected abstract void spawnFluidParticle(BlockPos pos, BlockState state, IParticleData parameters, boolean bl);
 
+
     protected MixinClientWorld(ISpawnWorldInfo mutableWorldProperties, RegistryKey<World> registryKey,
                                DimensionType dimensionType,
                                Supplier<IProfiler> profiler, boolean bl, boolean bl2, long l) {
         super(mutableWorldProperties, registryKey, dimensionType, profiler, bl, bl2, l);
     }
+
 
     @Redirect(method = "animateTick(III)V", at = @At(value = "NEW", target = "java/util/Random"))
     private Random redirectRandomTickRandom() {
@@ -52,6 +54,8 @@ public abstract class MixinClientWorld extends World {
      * @reason Avoid allocations, branch code out, early-skip some code
      * @author JellySquid
      */
+
+
     @Overwrite
     public void animateTick(int xCenter, int yCenter, int zCenter, int radius, Random random, boolean spawnBarrierParticles, BlockPos.Mutable pos) {
         int x = xCenter + (random.nextInt(radius) - random.nextInt(radius));
@@ -76,6 +80,8 @@ public abstract class MixinClientWorld extends World {
             this.performFluidDisplayTick(blockState, fluidState, pos, random);
         }
     }
+
+
 
     private void performBlockDisplayTick(BlockState blockState, BlockPos pos, Random random, boolean spawnBarrierParticles) {
         blockState.getBlock().animateTick(blockState, this, pos, random);
@@ -117,4 +123,8 @@ public abstract class MixinClientWorld extends World {
             this.spawnFluidParticle(blockPos, this.getBlockState(blockPos), particleEffect, solid);
         }
     }
+
+
+
+
 }

@@ -5,19 +5,13 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import me.jellysquid.mods.sodium.client.world.ChunkStatusListener;
 import me.jellysquid.mods.sodium.client.world.ChunkStatusListenerManager;
 import net.minecraft.client.multiplayer.ClientChunkProvider;
-//import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.nbt.CompoundNBT;
-//import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketBuffer;
-//import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.BiomeContainer;
-//import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-//import net.minecraft.world.chunk.WorldChunk;
-//import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -93,7 +87,6 @@ public abstract class MixinClientChunkManager implements ChunkStatusListenerMana
     private void afterLoadDistanceChanged(int loadDistance, CallbackInfo ci) {
         this.needsTrackingUpdate = true;
     }
-
 
     @Override
     public void setListener(ChunkStatusListener listener) {

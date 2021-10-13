@@ -1,12 +1,9 @@
 package me.jellysquid.mods.sodium.client.gl.compat;
 
 import me.jellysquid.mods.sodium.client.render.chunk.shader.ChunkFogMode;
-//import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
-//import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL20C;
-import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
 
@@ -16,6 +13,7 @@ import java.nio.FloatBuffer;
  */
 @Deprecated
 public class LegacyFogHelper {
+
     private static final float FAR_PLANE_THRESHOLD_EXP = (float) Math.log(1.0f / 0.0019f);
     private static final float FAR_PLANE_THRESHOLD_EXP2 = MathHelper.sqrt(FAR_PLANE_THRESHOLD_EXP);
 
@@ -34,6 +32,7 @@ public class LegacyFogHelper {
     /**
      * Retrieves the current fog mode from the fixed-function pipeline.
      */
+
     public static ChunkFogMode getFogMode() {
         if (!GL20C.glGetBoolean(GL20.GL_FOG)) {
             return ChunkFogMode.NONE;
@@ -70,4 +69,6 @@ public class LegacyFogHelper {
     public static void getFogColor(FloatBuffer buf) {
         GL20C.glGetFloatv(GL20.GL_FOG_COLOR, buf);
     }
+
+
 }

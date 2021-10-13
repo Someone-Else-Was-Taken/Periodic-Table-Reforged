@@ -31,4 +31,3 @@ public class MixinWorldRenderer {
         ChunkRenderCacheShared.resetCaches();
     }
 }
-

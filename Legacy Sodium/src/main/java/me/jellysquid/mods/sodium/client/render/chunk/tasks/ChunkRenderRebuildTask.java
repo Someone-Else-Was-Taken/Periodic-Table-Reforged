@@ -21,7 +21,6 @@ import net.minecraft.block.BlockState;
 //import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 //import net.minecraft.client.render.chunk.ChunkOcclusionDataBuilder;
 //import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.chunk.VisGraph;
@@ -31,6 +30,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+<<<<<<< HEAD
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.SeparatePerspectiveModel;
@@ -38,6 +38,8 @@ import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
 import java.util.Objects;
+=======
+>>>>>>> parent of 782849f (Migrated to 1.16.x/next)
 
 /**
  * Rebuilds all the meshes of a chunk for each given render pass with non-occluded blocks. The result is then uploaded
@@ -99,6 +101,7 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                             if (!RenderTypeLookup.canRenderInLayer(blockState, layer)) {
                                 continue;
                             }
+<<<<<<< HEAD
 
                             ForgeHooksClient.setRenderLayer(layer);
 
@@ -115,6 +118,16 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                                 bounds.addBlock(relX, relY, relZ);
                             }
                             ForgeHooksClient.setRenderLayer(null);
+=======
+                            IBakedModel model = cache.getBlockModels()
+                                    .getModel(blockState);
+
+                            long seed = blockState.getPositionRandom(pos);
+
+                            if (cache.getBlockRenderer().renderModel(slice, blockState, pos, model, buffers.get(layer), true, seed)) {
+                                bounds.addBlock(relX, relY, relZ);
+                            }
+>>>>>>> parent of 782849f (Migrated to 1.16.x/next)
                         }
                     }
                     FluidState fluidState = blockState.getFluidState();

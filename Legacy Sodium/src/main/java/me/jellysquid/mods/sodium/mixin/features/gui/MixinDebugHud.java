@@ -6,20 +6,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 //import net.minecraft.client.MinecraftClient;
 //import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.FontRenderer;
 //import net.minecraft.client.gui.hud.DebugHud;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.overlay.DebugOverlayGui;
 //import net.minecraft.client.render.*;
+//import net.minecraft.client.util.math.MatrixStack;
+//import net.minecraft.util.math.Matrix4f;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-//import net.minecraft.client.util.math.MatrixStack;
-//import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.vector.Matrix4f;
 import org.apache.commons.lang3.Validate;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20C;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -106,7 +105,7 @@ public abstract class MixinDebugHud {
         float k = (float) (color & 255) / 255.0F;
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(GL20C.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
         Matrix4f matrix = matrixStack.getLast()
                 .getMatrix();

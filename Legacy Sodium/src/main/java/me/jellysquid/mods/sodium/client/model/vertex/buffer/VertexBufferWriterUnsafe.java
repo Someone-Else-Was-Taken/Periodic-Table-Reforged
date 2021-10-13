@@ -7,7 +7,7 @@ import sun.misc.Unsafe;
 
 /**
  * An unsafe {@link VertexBufferWriter} implementation which uses direct memory operations to enable fast blitting of
- * data into memory buffers. Only available on JVMs which support {@link sun.misc.Unsafe}, but generally produces much
+ * data into memory buffers. Only available on JVMs which support {@link Unsafe}, but generally produces much
  * better optimized code than other implementations. The implementation does not check for invalid memory accesses,
  * meaning that errors can corrupt process memory.
  */

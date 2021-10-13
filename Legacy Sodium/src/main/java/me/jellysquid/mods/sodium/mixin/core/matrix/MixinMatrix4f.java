@@ -92,6 +92,7 @@ public class MixinMatrix4f implements Matrix4fExtended {
         return (this.m20 * x) + (this.m21 * y) + (this.m22 * z) + (this.m23 * 1.0f);
     }
 
+
     @Override
     public void rotate(Quaternion quaternion) {
         boolean x = quaternion.getX() != 0.0F;

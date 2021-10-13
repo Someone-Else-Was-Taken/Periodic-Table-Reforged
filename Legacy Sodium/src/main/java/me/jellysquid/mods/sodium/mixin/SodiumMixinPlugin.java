@@ -1,16 +1,18 @@
 package me.jellysquid.mods.sodium.mixin;
 
+import java.io.File;
+import java.util.List;
+import java.util.Set;
 import me.jellysquid.mods.sodium.common.config.Option;
 import me.jellysquid.mods.sodium.common.config.SodiumConfig;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
+
 
 @SuppressWarnings("unused")
 public class SodiumMixinPlugin implements IMixinConfigPlugin {
@@ -53,7 +55,6 @@ public class SodiumMixinPlugin implements IMixinConfigPlugin {
 
             return false;
         }
-
         if (option.isOverridden()) {
             String source = "[unknown]";
 
@@ -92,5 +93,14 @@ public class SodiumMixinPlugin implements IMixinConfigPlugin {
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
 
+    }
+
+    public boolean classExists(String classPath) {
+        try {
+            Class.forName(classPath, false, SodiumMixinPlugin.class.getClassLoader());
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 }

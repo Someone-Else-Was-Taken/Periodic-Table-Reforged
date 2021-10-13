@@ -1,8 +1,8 @@
 package me.jellysquid.mods.sodium.client.gl.array;
 
 import me.jellysquid.mods.sodium.client.gl.GlObject;
-import me.jellysquid.mods.sodium.client.gl.func.GlFunctions;
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
+import me.jellysquid.mods.sodium.client.gl.func.GlFunctions;
 
 /**
  * Provides Vertex Array functionality on supported platforms.

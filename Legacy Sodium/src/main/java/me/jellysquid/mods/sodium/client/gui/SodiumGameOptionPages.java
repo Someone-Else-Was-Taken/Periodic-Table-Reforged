@@ -1,6 +1,7 @@
 package me.jellysquid.mods.sodium.client.gui;
 
 import com.google.common.collect.ImmutableList;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import me.jellysquid.mods.sodium.client.gui.options.*;
 import me.jellysquid.mods.sodium.client.gui.options.binding.compat.VanillaBooleanOptionBinding;
 import me.jellysquid.mods.sodium.client.gui.options.control.ControlValueFormatter;
@@ -9,21 +10,22 @@ import me.jellysquid.mods.sodium.client.gui.options.control.SliderControl;
 import me.jellysquid.mods.sodium.client.gui.options.control.TickBoxControl;
 import me.jellysquid.mods.sodium.client.gui.options.storage.MinecraftOptionsStorage;
 import me.jellysquid.mods.sodium.client.gui.options.storage.SodiumOptionsStorage;
-import me.jellysquid.mods.sodium.client.render.chunk.backends.multidraw.MultidrawChunkRenderBackend;
+//import me.jellysquid.mods.sodium.client.render.chunk.backends.multidraw.MultidrawChunkRenderBackend;
+//import me.jellysquid.mods.sodium.client.render.chunk.backends.multidraw.MultidrawChunkRenderBackend;
 import me.jellysquid.mods.sodium.client.util.UnsafeUtil;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.AttackIndicatorStatus;
+import net.minecraft.client.settings.BooleanOption;
+import net.minecraft.client.settings.GraphicsFanciness;
+import net.minecraft.client.settings.ParticleStatus;
+import net.minecraft.client.shader.Framebuffer;
 //import net.minecraft.client.MinecraftClient;
 //import net.minecraft.client.gl.Framebuffer;
 //import net.minecraft.client.options.AttackIndicator;
 //import net.minecraft.client.options.GraphicsMode;
 //import net.minecraft.client.options.Option;
 //import net.minecraft.client.options.ParticlesMode;
-import net.minecraft.client.settings.AttackIndicatorStatus;
-import net.minecraft.client.settings.BooleanOption;
-import net.minecraft.client.settings.GraphicsFanciness;
-import net.minecraft.client.settings.ParticleStatus;
-import net.minecraft.client.shader.Framebuffer;
 //import net.minecraft.client.util.Window;
 
 import java.util.ArrayList;
@@ -255,7 +257,7 @@ public class SodiumGameOptionPages {
                         .setBinding((opts, value) -> opts.advanced.useChunkMultidraw = value, opts -> opts.advanced.useChunkMultidraw)
                         .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD)
                         .setImpact(OptionImpact.EXTREME)
-                        .setEnabled(MultidrawChunkRenderBackend.isSupported(sodiumOpts.getData().advanced.ignoreDriverBlacklist))
+                        //.setEnabled(MultidrawChunkRenderBackend.isSupported(sodiumOpts.getData().advanced.ignoreDriverBlacklist))
                         .build())
                 .add(OptionImpl.createBuilder(boolean.class, sodiumOpts)
                         .setName("Use Vertex Array Objects")
