@@ -61,5 +61,5 @@
     "features.world_ticking.MixinClientWorld"
 
   ],
-  "refmap": "sodium.refmap.json"
+  "refmap": "oxygen.refmap.json"
 }

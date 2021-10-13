@@ -4,16 +4,18 @@ package me.jellysquid.mods.sodium.client;
 //import me.jellysquid.mods.sodium.client.util.UnsafeUtil;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptions;
 import me.jellysquid.mods.sodium.client.util.UnsafeUtil;
+import net.minecraftforge.fml.LoadingFailedException;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Paths;
 
-@Mod("sodium")
+@Mod("oxygen")
 public class SodiumClientMod {
 
     public SodiumClientMod() {
@@ -28,8 +30,10 @@ public class SodiumClientMod {
 
 
 
+
     public void setup(final FMLCommonSetupEvent event) {
-        MOD_VERSION = ModList.get().getModContainerById("sodium").get().getModInfo().getVersion().toString();
+        MOD_VERSION = ModList.get().getModContainerById("oxygen").get().getModInfo().getVersion().toString();
+
     }
 
     /*
@@ -57,7 +61,7 @@ public class SodiumClientMod {
 
     public static Logger logger() {
         if (LOGGER == null) {
-            LOGGER = LogManager.getLogger("Sodium");
+            LOGGER = LogManager.getLogger("Oxygen");
         }
 
         return LOGGER;
@@ -83,5 +87,7 @@ public class SodiumClientMod {
 
         return MOD_VERSION;
     }
+
+
 
 }
