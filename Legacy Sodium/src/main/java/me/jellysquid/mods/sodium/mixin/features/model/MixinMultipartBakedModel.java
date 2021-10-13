@@ -67,7 +67,7 @@ public class MixinMultipartBakedModel {
         for (IBakedModel model : models) {
             random.setSeed(seed);
 
-            list.addAll(model.getQuads(state, face, random));
+            list.addAll(model.getQuads(state, face, random, modelData));
         }
 
         return list;
