@@ -19,7 +19,7 @@ modId="sodium" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 version="1.0" #mandatory
  # A display name for the mod
-displayName="Sodium Reforged" #mandatory
+displayName="Oxygen" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -32,5 +32,5 @@ credits="SomeoneElse, CaffeineMC" #optional
 authors="SomeoneElse" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Something Something Sodium make game Fast
+Something Something Oxygen make game Fast
 '''
