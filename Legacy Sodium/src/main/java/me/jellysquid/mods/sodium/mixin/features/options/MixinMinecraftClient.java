@@ -2,11 +2,12 @@ package me.jellysquid.mods.sodium.mixin.features.options;
 
 import me.jellysquid.mods.sodium.client.SodiumClientMod;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptions;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
+//import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public class MixinMinecraftClient {
     /**
      * @author JellySquid

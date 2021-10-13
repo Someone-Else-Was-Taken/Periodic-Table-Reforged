@@ -1,22 +1,37 @@
 package me.jellysquid.mods.sodium.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.jellysquid.mods.sodium.client.SodiumClientMod;
 import me.jellysquid.mods.sodium.client.gui.options.*;
 import me.jellysquid.mods.sodium.client.gui.options.control.Control;
 import me.jellysquid.mods.sodium.client.gui.options.control.ControlElement;
 import me.jellysquid.mods.sodium.client.gui.options.storage.OptionStorage;
 import me.jellysquid.mods.sodium.client.gui.widgets.FlatButtonWidget;
 import me.jellysquid.mods.sodium.client.util.Dim2i;
+//import net.minecraft.client.MinecraftClient;
+//import net.minecraft.client.gui.Drawable;
+//import net.minecraft.client.gui.Element;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.IRenderable;
 import net.minecraft.client.gui.screen.Screen;
+//import net.minecraft.client.gui.screen.VideoOptionsScreen;
+//import net.minecraft.client.util.math.MatrixStack;
+//import net.minecraft.text.LiteralText;
+//import net.minecraft.text.OrderedText;
+//import net.minecraft.text.TranslatableText;
+//import net.minecraft.util.Formatting;
+//import net.minecraft.util.Language;
 import net.minecraft.client.gui.screen.VideoSettingsScreen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.text.*;
+import net.minecraft.util.Util;
+import net.minecraft.util.text.LanguageMap;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -27,13 +42,15 @@ public class SodiumOptionsGUI extends Screen {
     private final List<OptionPage> pages = new ArrayList<>();
 
     private final List<ControlElement<?>> controls = new ArrayList<>();
-    private final List<IRenderable> IRenderable = new ArrayList<>();
+    private final List<IRenderable> drawable = new ArrayList<>();
 
     private final Screen prevScreen;
 
     private OptionPage currentPage;
 
     private FlatButtonWidget applyButton, closeButton, undoButton;
+    private FlatButtonWidget donateButton, hideDonateButton;
+
     private boolean hasPendingChanges;
     private ControlElement<?> hoveredElement;
 
@@ -63,7 +80,7 @@ public class SodiumOptionsGUI extends Screen {
     private void rebuildGUI() {
         this.controls.clear();
         this.children.clear();
-        this.IRenderable.clear();
+        this.drawable.clear();
 
         if (this.currentPage == null) {
             if (this.pages.isEmpty()) {
@@ -77,32 +94,55 @@ public class SodiumOptionsGUI extends Screen {
         this.rebuildGUIPages();
         this.rebuildGUIOptions();
 
-        this.undoButton = new FlatButtonWidget(new Dim2i(this.width - 211, this.height - 30, 65, 20),
-                I18n.format("sodium.options.buttons.undo"), this::undoChanges);
-        this.applyButton = new FlatButtonWidget(new Dim2i(this.width - 142, this.height - 30, 65, 20),
-                I18n.format("sodium.options.buttons.apply"), this::applyChanges);
-        this.closeButton = new FlatButtonWidget(new Dim2i(this.width - 73, this.height - 30, 65, 20),
-                I18n.format("sodium.options.buttons.close"), this::closeScreen);
+        this.undoButton = new FlatButtonWidget(new Dim2i(this.width - 211, this.height - 26, 65, 20), "Undo", this::undoChanges);
+        this.applyButton = new FlatButtonWidget(new Dim2i(this.width - 142, this.height - 26, 65, 20), "Apply", this::applyChanges);
+        this.closeButton = new FlatButtonWidget(new Dim2i(this.width - 73, this.height - 26, 65, 20), "Close", this::closeScreen);
+        this.donateButton = new FlatButtonWidget(new Dim2i(this.width - 128, 6, 100, 20), "Buy us a coffee!", this::openDonationPage);
+        this.hideDonateButton = new FlatButtonWidget(new Dim2i(this.width - 26, 6, 20, 20), "x", this::hideDonationButton);
+
+        if (SodiumClientMod.options().notifications.hideDonationButton) {
+            this.setDonationButtonVisibility(false);
+        }
 
         this.children.add(this.undoButton);
         this.children.add(this.applyButton);
         this.children.add(this.closeButton);
+        this.children.add(this.donateButton);
+        this.children.add(this.hideDonateButton);
 
         for (IGuiEventListener element : this.children) {
             if (element instanceof IRenderable) {
-                this.IRenderable.add((IRenderable) element);
+                this.drawable.add((IRenderable) element);
             }
         }
     }
 
+    private void setDonationButtonVisibility(boolean value) {
+        this.donateButton.setVisible(value);
+        this.hideDonateButton.setVisible(value);
+    }
+
+    private void hideDonationButton() {
+        SodiumGameOptions options = SodiumClientMod.options();
+        options.notifications.hideDonationButton = true;
+
+        try {
+            options.writeChanges();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save configuration", e);
+        }
+
+        this.setDonationButtonVisibility(false);
+    }
+
     private void rebuildGUIPages() {
-        int x = 10;
+        int x = 6;
         int y = 6;
 
         for (OptionPage page : this.pages) {
-            int width = 10 + this.font.getStringWidth(page.getName());
+            int width = 12 + this.font.getStringWidth(page.getName());
 
-            FlatButtonWidget button = new FlatButtonWidget(new Dim2i(x, y, width, 16), page.getName(), () -> this.setPage(page));
+            FlatButtonWidget button = new FlatButtonWidget(new Dim2i(x, y, width, 18), page.getName(), () -> this.setPage(page));
             button.setSelected(this.currentPage == page);
 
             x += width + 6;
@@ -112,7 +152,7 @@ public class SodiumOptionsGUI extends Screen {
     }
 
     private void rebuildGUIOptions() {
-        int x = 10;
+        int x = 6;
         int y = 28;
 
         for (OptionGroup group : this.currentPage.getGroups()) {
@@ -139,8 +179,8 @@ public class SodiumOptionsGUI extends Screen {
 
         this.updateControls();
 
-        for (IRenderable IRenderable : this.IRenderable) {
-            IRenderable.render(matrixStack, mouseX, mouseY, delta);
+        for (IRenderable drawable : this.drawable) {
+            drawable.render(matrixStack, mouseX, mouseY, delta);
         }
 
         if (this.hoveredElement != null) {
@@ -189,28 +229,28 @@ public class SodiumOptionsGUI extends Screen {
         int boxPadding = 3;
 
         int boxWidth = 200;
-        int textWidth = boxWidth - (textPadding * 2);
 
         int boxY = dim.getOriginY();
         int boxX = dim.getLimitX() + boxPadding;
 
         Option<?> option = element.getOption();
-
-        ITextProperties title = new StringTextComponent(option.getName()).mergeStyle(TextFormatting.GRAY);
-
         List<IReorderingProcessor> tooltip = new ArrayList<>(this.font.trimStringToWidth(option.getTooltip(), boxWidth - (textPadding * 2)));
+
         OptionImpact impact = option.getImpact();
 
         if (impact != null) {
             tooltip.add(LanguageMap.getInstance().func_241870_a(new StringTextComponent(TextFormatting.GRAY + "Performance Impact: " + impact.toDisplayString())));
         }
+
         int boxHeight = (tooltip.size() * 12) + boxPadding;
         int boxYLimit = boxY + boxHeight;
         int boxYCutoff = this.height - 40;
+
         // If the box is going to be cutoff on the Y-axis, move it back up the difference
         if (boxYLimit > boxYCutoff) {
             boxY -= boxYLimit - boxYCutoff;
         }
+
         this.fillGradient(matrixStack, boxX, boxY, boxX + boxWidth, boxY + boxHeight, 0xE0000000, 0xE0000000);
 
         for (int i = 0; i < tooltip.size(); i++) {
@@ -252,6 +292,11 @@ public class SodiumOptionsGUI extends Screen {
     private void undoChanges() {
         this.getAllOptions()
                 .forEach(Option::reset);
+    }
+
+    private void openDonationPage() {
+        Util.getOSType()
+                .openURI("https://caffeinemc.net/donate");
     }
 
     @Override

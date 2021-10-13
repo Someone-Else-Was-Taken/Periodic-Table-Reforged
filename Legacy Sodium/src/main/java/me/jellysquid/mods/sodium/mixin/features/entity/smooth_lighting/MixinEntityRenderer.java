@@ -5,8 +5,6 @@ import me.jellysquid.mods.sodium.client.gui.SodiumGameOptions;
 import me.jellysquid.mods.sodium.client.model.light.EntityLighter;
 import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
 import me.jellysquid.mods.sodium.client.render.entity.EntityLightSampler;
-//import net.minecraft.client.render.Frustum;
-//import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.entity.Entity;

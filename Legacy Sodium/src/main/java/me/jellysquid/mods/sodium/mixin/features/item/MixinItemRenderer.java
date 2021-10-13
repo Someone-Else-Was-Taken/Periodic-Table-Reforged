@@ -2,8 +2,10 @@ package me.jellysquid.mods.sodium.mixin.features.item;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import me.jellysquid.mods.sodium.client.model.consumer.QuadVertexConsumer;
 import me.jellysquid.mods.sodium.client.model.quad.ModelQuadView;
+import me.jellysquid.mods.sodium.client.model.vertex.VanillaVertexTypes;
+import me.jellysquid.mods.sodium.client.model.vertex.VertexDrain;
+import me.jellysquid.mods.sodium.client.model.vertex.formats.quad.QuadVertexSink;
 import me.jellysquid.mods.sodium.client.render.texture.SpriteUtil;
 import me.jellysquid.mods.sodium.client.util.ModelQuadUtil;
 import me.jellysquid.mods.sodium.client.util.color.ColorARGB;
@@ -18,13 +20,13 @@ import me.jellysquid.mods.sodium.common.util.DirectionUtil;
 //import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.color.IItemColor;
+//import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
-//import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
 //import net.minecraft.util.math.Direction;
+import net.minecraft.util.Direction;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -44,6 +46,7 @@ public class MixinItemRenderer {
      * @reason Avoid allocations
      * @author JellySquid
      */
+
     @Overwrite
     public void renderModel(IBakedModel model, ItemStack stack, int light, int overlay, MatrixStack matrices, IVertexBuilder vertices) {
         XoRoShiRoRandom random = this.random;
@@ -67,12 +70,17 @@ public class MixinItemRenderer {
      * @reason Use vertex building intrinsics
      * @author JellySquid
      */
-    @Overwrite
-    public void renderQuads(MatrixStack matrices, IVertexBuilder vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay) {
-        MatrixStack.Entry entry = matrices.getLast();
 
-        QuadVertexConsumer consumer = (QuadVertexConsumer) vertices;
+    @Overwrite
+    public void renderQuads(MatrixStack ms, IVertexBuilder builder, List<BakedQuad> quads, ItemStack stack, int lightmap, int overlay) {
+
+        MatrixStack.Entry entry = ms.getLast();
+
         IItemColor colorProvider = null;
+
+        QuadVertexSink drain = VertexDrain.of(builder)
+                .createSink(VanillaVertexTypes.QUADS);
+        drain.ensureCapacity(quads.size() * 4);
 
         for (BakedQuad bakedQuad : quads) {
             int color = 0xFFFFFFFF;
@@ -88,11 +96,14 @@ public class MixinItemRenderer {
             ModelQuadView quad = ((ModelQuadView) bakedQuad);
 
             for (int i = 0; i < 4; i++) {
-                consumer.vertexQuad(entry, quad.getX(i), quad.getY(i), quad.getZ(i), color, quad.getTexU(i), quad.getTexV(i),
-                        light, overlay, ModelQuadUtil.getFacingNormal(bakedQuad.getFace()));
+                drain.writeQuad(entry, quad.getX(i), quad.getY(i), quad.getZ(i), color, quad.getTexU(i), quad.getTexV(i),
+                        lightmap, overlay, ModelQuadUtil.getFacingNormal(bakedQuad.getFace()));
             }
 
             SpriteUtil.markSpriteActive(quad.getSprite());
         }
+
+        drain.flush();
     }
+
 }

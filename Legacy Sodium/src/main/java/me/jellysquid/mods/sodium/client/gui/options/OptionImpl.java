@@ -4,6 +4,8 @@ import me.jellysquid.mods.sodium.client.gui.options.binding.GenericBinding;
 import me.jellysquid.mods.sodium.client.gui.options.binding.OptionBinding;
 import me.jellysquid.mods.sodium.client.gui.options.control.Control;
 import me.jellysquid.mods.sodium.client.gui.options.storage.OptionStorage;
+//import net.minecraft.text.LiteralText;
+//import net.minecraft.text.Text;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.Validate;
@@ -24,6 +26,7 @@ public class OptionImpl<S, T> implements Option<T> {
 
     private final String name;
     private final ITextComponent tooltip;
+
     private final OptionImpact impact;
 
     private T value;
@@ -99,7 +102,7 @@ public class OptionImpl<S, T> implements Option<T> {
 
     @Override
     public boolean hasChanged() {
-        return this.value != this.modifiedValue;
+        return !this.value.equals(this.modifiedValue);
     }
 
     @Override
@@ -113,7 +116,7 @@ public class OptionImpl<S, T> implements Option<T> {
         return this.flags;
     }
 
-    public static <S, T> Builder<S, T> createBuilder(Class<T> type, OptionStorage<S> storage) {
+    public static <S, T> OptionImpl.Builder<S, T> createBuilder(Class<T> type, OptionStorage<S> storage) {
         return new Builder<>(storage);
     }
 

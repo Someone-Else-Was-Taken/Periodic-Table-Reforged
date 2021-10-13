@@ -1,7 +1,8 @@
 package me.jellysquid.mods.sodium.client.model.quad.properties;
 
-import net.minecraft.util.Direction;
 //import net.minecraft.util.math.Direction;
+
+import net.minecraft.util.Direction;
 
 public enum ModelQuadFacing {
     UP,
@@ -10,7 +11,7 @@ public enum ModelQuadFacing {
     WEST,
     SOUTH,
     NORTH,
-    NONE;
+    UNASSIGNED;
 
     public static final ModelQuadFacing[] VALUES = ModelQuadFacing.values();
     public static final int COUNT = VALUES.length;
@@ -30,7 +31,7 @@ public enum ModelQuadFacing {
             case EAST:
                 return EAST;
             default:
-                return NONE;
+                return UNASSIGNED;
         }
     }
 }

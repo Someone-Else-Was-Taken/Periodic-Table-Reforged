@@ -3,6 +3,8 @@ package me.jellysquid.mods.sodium.client.gui.options.binding.compat;
 import me.jellysquid.mods.sodium.client.gui.options.binding.OptionBinding;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.settings.BooleanOption;
+//import net.minecraft.client.options.BooleanOption;
+//import net.minecraft.client.options.GameOptions;
 
 public class VanillaBooleanOptionBinding implements OptionBinding<GameSettings, Boolean> {
     private final BooleanOption option;

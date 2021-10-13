@@ -2,7 +2,9 @@ package me.jellysquid.mods.sodium.client.gui.widgets;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.jellysquid.mods.sodium.client.util.Dim2i;
+//import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.IRenderable;
+//import net.minecraft.client.util.math.MatrixStack;
 
 public class FlatButtonWidget extends AbstractWidget implements IRenderable {
     private final Dim2i dim;
@@ -46,7 +48,7 @@ public class FlatButtonWidget extends AbstractWidget implements IRenderable {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!this.enabled) {
+        if (!this.enabled || !this.visible) {
             return false;
         }
 
@@ -64,7 +66,7 @@ public class FlatButtonWidget extends AbstractWidget implements IRenderable {
         this.enabled = enabled;
     }
 
-    public void setVisible(boolean visibel) {
-        this.visible = visibel;
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

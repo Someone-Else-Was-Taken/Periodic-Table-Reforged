@@ -14,7 +14,7 @@ public class ShaderConstants {
     }
 
     public static ShaderConstants fromStringList(List<String> defines) {
-        ShaderConstants.Builder builder = new ShaderConstants.Builder();
+        Builder builder = new Builder();
 
         for (String define : defines) {
             builder.define(define);
@@ -23,7 +23,7 @@ public class ShaderConstants {
         return builder.build();
     }
 
-    public static ShaderConstants.Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 

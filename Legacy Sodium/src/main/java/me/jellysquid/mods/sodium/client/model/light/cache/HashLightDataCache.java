@@ -3,9 +3,8 @@ package me.jellysquid.mods.sodium.client.model.light.cache;
 import it.unimi.dsi.fastutil.longs.Long2LongLinkedOpenHashMap;
 import me.jellysquid.mods.sodium.client.model.light.data.LightDataAccess;
 import net.minecraft.util.math.BlockPos;
-//import net.minecraft.world.BlockRenderView;
-//import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.IBlockDisplayReader;
+//import net.minecraft.world.BlockRenderView;
 
 /**
  * A light data cache which uses a hash table to store previously accessed values.
@@ -33,7 +32,7 @@ public class HashLightDataCache extends LightDataAccess {
         return word;
     }
 
-    public void clear() {
+    public void clearCache() {
         this.map.clear();
     }
 }

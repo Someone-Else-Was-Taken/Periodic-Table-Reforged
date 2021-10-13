@@ -24,4 +24,3 @@ public interface BiomeColorBlender {
     int[] getColors(IBlockColor colorizer, IBlockDisplayReader world, BlockState state, BlockPos origin,
                     ModelQuadView quad);
 }
-

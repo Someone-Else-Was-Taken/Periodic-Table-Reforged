@@ -4,17 +4,15 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import me.jellysquid.mods.sodium.client.model.ModelCuboidAccessor;
-import me.jellysquid.mods.sodium.client.model.consumer.QuadVertexConsumer;
+import me.jellysquid.mods.sodium.client.model.vertex.VanillaVertexTypes;
+import me.jellysquid.mods.sodium.client.model.vertex.VertexDrain;
+import me.jellysquid.mods.sodium.client.model.vertex.formats.quad.QuadVertexSink;
 import me.jellysquid.mods.sodium.client.util.Norm3b;
 import me.jellysquid.mods.sodium.client.util.color.ColorABGR;
 import me.jellysquid.mods.sodium.client.util.math.Matrix3fExtended;
 import me.jellysquid.mods.sodium.client.util.math.Matrix4fExtended;
 import me.jellysquid.mods.sodium.client.util.math.MatrixUtil;
-//import net.minecraft.client.model.ModelPart;
-//import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.renderer.model.ModelRenderer;
-//import net.minecraft.client.util.math.MatrixStack;
-//import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.vector.Vector3f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,7 +36,8 @@ public class MixinModelPart {
         Matrix3fExtended normalExt = MatrixUtil.getExtendedMatrix(matrices.getNormal());
         Matrix4fExtended modelExt = MatrixUtil.getExtendedMatrix(matrices.getMatrix());
 
-        QuadVertexConsumer quadConsumer = (QuadVertexConsumer) vertexConsumer;
+        QuadVertexSink drain = VertexDrain.of(vertexConsumer).createSink(VanillaVertexTypes.QUADS);
+        drain.ensureCapacity(this.cubeList.size() * 6 * 4);
 
         int color = ColorABGR.pack(red, green, blue, alpha);
 
@@ -61,9 +60,11 @@ public class MixinModelPart {
                     float y2 = modelExt.transformVecY(x1, y1, z1);
                     float z2 = modelExt.transformVecZ(x1, y1, z1);
 
-                    quadConsumer.vertexQuad(x2, y2, z2, color, vertex.u, vertex.v, light, overlay, norm);
+                    drain.writeQuad(x2, y2, z2, color, vertex.textureU, vertex.textureV, light, overlay, norm);
                 }
             }
         }
+
+        drain.flush();
     }
 }

@@ -1,38 +1,36 @@
 package me.jellysquid.mods.sodium.client.render.chunk.passes;
 
-//import net.minecraft.util.Identifier;
-import net.minecraft.util.ResourceLocation;
+//import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.renderer.RenderType;
 
-public abstract class BlockRenderPass {
-    private final ResourceLocation id;
-    private final BlockLayer[] layers;
-    private final boolean forward;
-    private final int ordinal;
+// TODO: Move away from using an enum, make this extensible
+public enum BlockRenderPass {
+    SOLID(RenderType.getSolid(), false),
+    CUTOUT(RenderType.getCutout(), false),
+    CUTOUT_MIPPED(RenderType.getCutoutMipped(), false),
+    TRANSLUCENT(RenderType.getTranslucent(), true),
+    TRIPWIRE(RenderType.getTripwire(), true);
 
-    public BlockRenderPass(int ordinal, ResourceLocation id, boolean forward, BlockLayer... layers) {
-        this.ordinal = ordinal;
-        this.id = id;
-        this.layers = layers;
-        this.forward = forward;
+    public static final BlockRenderPass[] VALUES = BlockRenderPass.values();
+    public static final int COUNT = VALUES.length;
+
+    private final RenderType layer;
+    private final boolean translucent;
+
+    BlockRenderPass(RenderType layer, boolean translucent) {
+        this.layer = layer;
+        this.translucent = translucent;
     }
 
-    public abstract void beginRender();
-
-    public abstract void endRender();
-
-    public final boolean isForwardRendering() {
-        return this.forward;
+    public boolean isTranslucent() {
+        return this.translucent;
     }
 
-    public final int ordinal() {
-        return this.ordinal;
+    public void endDrawing() {
+        this.layer.clearRenderState();
     }
 
-    public final BlockLayer[] getLayers() {
-        return this.layers;
-    }
-
-    public final ResourceLocation getId() {
-        return this.id;
+    public void startDrawing() {
+        this.layer.setupRenderState();
     }
 }

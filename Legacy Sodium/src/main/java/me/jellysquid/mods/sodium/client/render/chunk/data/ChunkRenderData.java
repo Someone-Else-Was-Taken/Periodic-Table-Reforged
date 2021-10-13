@@ -2,13 +2,13 @@ package me.jellysquid.mods.sodium.client.render.chunk.data;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.Reference2ReferenceArrayMap;
 import me.jellysquid.mods.sodium.client.gl.util.BufferSlice;
 import me.jellysquid.mods.sodium.client.model.quad.properties.ModelQuadFacing;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
 //import net.minecraft.block.entity.BlockEntity;
 //import net.minecraft.client.render.chunk.ChunkOcclusionData;
 import net.minecraft.client.renderer.chunk.SetVisibility;
+import net.minecraft.client.renderer.texture.Texture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 //import net.minecraft.client.texture.Sprite;
 import net.minecraft.tileentity.TileEntity;
@@ -22,14 +22,14 @@ import java.util.*;
  * block entities contained by it, and any data used for occlusion testing.
  */
 public class ChunkRenderData {
-    public static final ChunkRenderData ABSENT = new ChunkRenderData.Builder()
+    public static final ChunkRenderData ABSENT = new Builder()
             .build();
     public static final ChunkRenderData EMPTY = createEmptyData();
 
     private List<TileEntity> globalBlockEntities;
     private List<TileEntity> blockEntities;
 
-    private Map<BlockRenderPass, ChunkMeshData> meshes;
+    private EnumMap<BlockRenderPass, ChunkMeshData> meshes;
 
     private SetVisibility occlusionData;
     private ChunkRenderBounds bounds;
@@ -51,13 +51,8 @@ public class ChunkRenderData {
         return this.bounds;
     }
 
-    /**
-     * @param from The direction from which this node is being traversed through on the graph
-     * @param to The direction from this node into the adjacent to be tested
-     * @return True if this chunk can cull the neighbor given the incoming direction
-     */
-    public boolean isVisibleThrough(Direction from, Direction to) {
-        return this.occlusionData != null && this.occlusionData.isVisible(from, to);
+    public SetVisibility getOcclusionData() {
+        return this.occlusionData;
     }
 
     public List<TextureAtlasSprite> getAnimatedSprites() {
@@ -99,10 +94,16 @@ public class ChunkRenderData {
         private final List<TileEntity> blockEntities = new ArrayList<>();
         private final Set<TextureAtlasSprite> animatedSprites = new ObjectOpenHashSet<>();
 
-        private final Map<BlockRenderPass, ChunkMeshData> meshes = new Reference2ReferenceArrayMap<>();
+        private final EnumMap<BlockRenderPass, ChunkMeshData> meshes = new EnumMap<>(BlockRenderPass.class);
 
         private SetVisibility occlusionData;
-        private ChunkRenderBounds bounds;
+        private ChunkRenderBounds bounds = ChunkRenderBounds.ALWAYS_FALSE;
+
+        public Builder() {
+            for (BlockRenderPass pass : BlockRenderPass.VALUES) {
+                this.setMesh(pass, ChunkMeshData.EMPTY);
+            }
+        }
 
         public void setBounds(ChunkRenderBounds bounds) {
             this.bounds = bounds;
@@ -168,7 +169,7 @@ public class ChunkRenderData {
         SetVisibility occlusionData = new SetVisibility();
         occlusionData.setManyVisible(EnumSet.allOf(Direction.class));
 
-        ChunkRenderData.Builder meshInfo = new ChunkRenderData.Builder();
+        Builder meshInfo = new Builder();
         meshInfo.setOcclusionData(occlusionData);
 
         return meshInfo.build();
