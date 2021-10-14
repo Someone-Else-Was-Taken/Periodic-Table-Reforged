@@ -21,9 +21,21 @@ Iris - https://www.curseforge.com/minecraft/mc-mods/irisshaders
 
 
 
-Currently the only finished ports are Sodium, Hydrogen and Phosphor, you can find them on my CF Page.
+Currently the only finished ports are Sodium, Hydrogen and Phosphor, (Feel free to build lithium) you can find them on my CF Page or you can use the direct links..
 
 https://www.curseforge.com/members/someoneelsewastaken/projects
+
+Magnesium(Sodium):
+https://www.curseforge.com/minecraft/mc-mods/sodium-reforged
+
+Sulfuric(Phosphor):
+https://www.curseforge.com/minecraft/mc-mods/phosphor-reforged
+
+Hydrogen Reforged:
+https://www.curseforge.com/minecraft/mc-mods/phosphor-reforged
+
+
+
 
 
 Remaining Mod Progress:
