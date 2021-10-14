@@ -41,4 +41,5 @@ https://www.curseforge.com/minecraft/mc-mods/hydrogen-reforged
 Remaining Mod Progress:
 
 Lithium: 99% - All that remains is a few critical fixes.
-Iris: 100%??? - Finished port locally. Needs testing still.
+
+Iris: Maybe 100% - Finished port locally. Needs testing still.
