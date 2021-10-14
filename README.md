@@ -29,4 +29,4 @@ https://www.curseforge.com/members/someoneelsewastaken/projects
 Remaining Mod Progress:
 
 Lithium: 99% - All that remains is a few critical fixes.
-Iris: 50% - Very Incomplete, Porting is a relatively big task.
+Iris: 100%??? - Finished port locally. Needs testing still.
