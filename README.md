@@ -32,7 +32,7 @@ Sulfuric(Phosphor):
 https://www.curseforge.com/minecraft/mc-mods/phosphor-reforged
 
 Hydrogen Reforged:
-https://www.curseforge.com/minecraft/mc-mods/phosphor-reforged
+https://www.curseforge.com/minecraft/mc-mods/hydrogen-reforged
 
 
 
