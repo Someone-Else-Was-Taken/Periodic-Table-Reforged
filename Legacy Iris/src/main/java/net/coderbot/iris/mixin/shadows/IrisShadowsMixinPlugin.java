@@ -1,6 +1,7 @@
 package net.coderbot.iris.mixin.shadows;
 
-import net.fabricmc.loader.api.FabricLoader;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -21,12 +22,7 @@ public class IrisShadowsMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		if (mixinClassName.contains("PreventRebuildNearInShadowPass")
-				&& FabricLoader.getInstance().isModLoaded("sodium")) {
-			return false;
-		}
-
-		return true;
+		return mixinClassName.contains("PreventRebuildNearInShadowPass") == !(FMLLoader.getLoadingModList().getModFileById("oxygen") != null); //(Forge doesn't like this for some reason, not sure why.)
 	}
 
 	@Override

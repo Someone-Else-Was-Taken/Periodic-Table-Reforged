@@ -1,10 +1,12 @@
 package net.coderbot.iris.shaderpack;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
+// TODO: Don't reference vanilla Minecraft classes, so that the shaderpack loader can be properly isolated from
+//       Minecraft.
 public class LegacyIdMap {
 
 	public static void addLegacyValues(Object2IntMap<BlockState> blockIdMap) {
@@ -80,7 +82,7 @@ public class LegacyIdMap {
 
 	private static void add(Object2IntMap<BlockState> blockIdMap, int id, Block... leaves) {
 		for (Block leaf : leaves) {
-			leaf.getStateManager().getStates().forEach(state -> blockIdMap.put(state, id));
+			leaf.getStateDefinition().getPossibleStates().forEach(state -> blockIdMap.put(state, id));
 		}
 	}
 }

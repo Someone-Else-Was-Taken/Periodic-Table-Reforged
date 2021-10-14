@@ -5,14 +5,12 @@ import org.lwjgl.opengl.GL15;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
-
-import net.minecraft.client.render.OverlayTexture;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 
 @Mixin(OverlayTexture.class)
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class MixinOverlayTexture {
 	@ModifyConstant(method = "<init>()V", constant = @Constant(intValue = GL15.GL_TEXTURE1), require = 1)
 	private int iris$fixOverlayTextureUnit(int texUnit) {

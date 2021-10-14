@@ -10,10 +10,10 @@ import org.lwjgl.opengl.GL30C;
 import java.util.Arrays;
 
 public class GlFramebuffer extends GlResource {
-	private Int2IntMap attachments;
+	private final Int2IntMap attachments;
 
 	public GlFramebuffer() {
-		super(GlStateManager.genFramebuffers());
+		super(GlStateManager.glGenFramebuffers());
 
 		this.attachments = new Int2IntArrayMap();
 
@@ -46,7 +46,7 @@ public class GlFramebuffer extends GlResource {
 			if (buffer >= 8) {
 				// TODO: this shouldn't be permitted.
 				Iris.logger.warn("Ignoring draw buffer " + buffer + " from draw buffers array " +
-						Arrays.toString(buffers) + " since Iris doesn't support extended color buffers yet.");
+						Arrays.toString(buffers) + " since Retina doesn't support extended color buffers yet.");
 
 				// Don't write anything here.
 				glBuffers[index++] = GL30C.GL_NONE;
@@ -71,24 +71,24 @@ public class GlFramebuffer extends GlResource {
 	}
 
 	public void bind() {
-		GlStateManager.bindFramebuffer(GL30C.GL_FRAMEBUFFER, getGlId());
+		GlStateManager._glBindFramebuffer(GL30C.GL_FRAMEBUFFER, getGlId());
 	}
 
 	public void bindAsReadBuffer() {
-		GlStateManager.bindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, getGlId());
+		GlStateManager._glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, getGlId());
 	}
 
 	public void bindAsDrawBuffer() {
-		GlStateManager.bindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, getGlId());
+		GlStateManager._glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, getGlId());
 	}
 
 	protected void destroyInternal() {
-		GlStateManager.deleteFramebuffers(getGlId());
+		GlStateManager._glDeleteFramebuffers(getGlId());
 	}
 
 	public boolean isComplete() {
 		bind();
-		int status = GlStateManager.checkFramebufferStatus(GL30C.GL_FRAMEBUFFER);
+		int status = GlStateManager.glCheckFramebufferStatus(GL30C.GL_FRAMEBUFFER);
 
 		return status == GL30C.GL_FRAMEBUFFER_COMPLETE;
 	}

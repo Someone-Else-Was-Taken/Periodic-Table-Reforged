@@ -7,11 +7,11 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 @Mixin(GlStateManager.class)
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class MixinGlStateManager {
 	@ModifyConstant(method = "setupOverlayColor(II)V", constant = @Constant(intValue = GL15.GL_TEXTURE1), require = 1)
 	private static int iris$fixOverlayTextureUnit(int texUnit) {

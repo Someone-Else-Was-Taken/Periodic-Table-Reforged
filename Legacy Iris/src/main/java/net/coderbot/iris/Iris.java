@@ -6,42 +6,42 @@ import java.util.Optional;
 import java.util.zip.ZipException;
 
 import com.google.common.base.Throwables;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.coderbot.iris.config.IrisConfig;
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
 import net.coderbot.iris.pipeline.*;
 import net.coderbot.iris.shaderpack.DimensionId;
 import net.coderbot.iris.shaderpack.ProgramSet;
 import net.coderbot.iris.shaderpack.ShaderPack;
-import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceKey;
+import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
-
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.loader.api.FabricLoader;
-
-@Environment(EnvType.CLIENT)
-public class Iris implements ClientModInitializer {
-	public static final String MODID = "iris";
+@Mod("retina")
+public class Iris {
+	public static final String MODID = "retina";
 	public static final Logger logger = LogManager.getLogger(MODID);
-	// The recommended version of Sodium for use with Iris
-	private static final String SODIUM_VERSION = "0.2.0+IRIS4";
+	// The recommended version of Sodium/Oxygen for use with Retina
+	private static final String SODIUM_VERSION = "0.2.0+RETINA4";
 
-	public static final Path SHADERPACKS_DIRECTORY = FabricLoader.getInstance().getGameDir().resolve("shaderpacks");
+	private static Path shaderpacksDirectory;
 
 	private static ShaderPack currentPack;
 	private static String currentPackName;
@@ -53,105 +53,122 @@ public class Iris implements ClientModInitializer {
 	private static PipelineManager pipelineManager;
 	private static IrisConfig irisConfig;
 	private static FileSystem zipFileSystem;
-	private static KeyBinding reloadKeybind;
-	private static KeyBinding toggleShadersKeybind;
-	private static KeyBinding shaderpackScreenKeybind;
+	private static KeyMapping reloadKeybind;
+	private static KeyMapping toggleShadersKeybind;
+	private static KeyMapping shaderpackScreenKeybind;
 
 	private static String IRIS_VERSION;
 
-	@Override
-	public void onInitializeClient() {
-		FabricLoader.getInstance().getModContainer("sodium").ifPresent(
-				modContainer -> {
-					sodiumInstalled = true;
-					String versionString = modContainer.getMetadata().getVersion().getFriendlyString();
+	public Iris() {
+		// This is our mod's event bus, used for things like registry or lifecycle events
+		IEventBus MOD_BUS = FMLJavaModLoadingContext.get().getModEventBus();
 
-					// A lot of people are reporting visual bugs with Iris + Sodium. This makes it so that if we don't have
-					// the right fork of Sodium, it will show the user a nice warning, and prevent them from playing the
-					// game with a wrong version of Sodium.
-					if (!versionString.startsWith(SODIUM_VERSION)) {
-						sodiumInvalid = true;
-					}
-				}
-		);
+		// This listener is fired on both client and server during setup.
+		// This listener is only fired during client setup, so we can use client-side methods here.
+		MOD_BUS.addListener(this::onInitializeClient);
+		MinecraftForge.EVENT_BUS.addListener(this::handleKeybinds);
+		// Most other events are fired on Forge's bus.
+		// If we want to use annotations to register event listeners,
+		// we need to register our object like this!
+		MinecraftForge.EVENT_BUS.register(this);
+	}
 
-		ModContainer iris = FabricLoader.getInstance().getModContainer(MODID)
-				.orElseThrow(() -> new IllegalStateException("Couldn't find the mod container for Iris"));
+	public void onInitializeClient(final FMLClientSetupEvent event) {
+		if (ModList.get().isLoaded("oxygen")) {
+			ModContainer modContainer = ModList.get().getModContainerById("oxygen").get();
+						sodiumInstalled = true;
+						String versionString = modContainer.getModInfo().getVersion().toString();
 
-		IRIS_VERSION = iris.getMetadata().getVersion().getFriendlyString();
+						// A lot of people are reporting visual bugs with Iris + Sodium. This makes it so that if we don't have
+						// the right fork of Sodium, it will show the user a nice warning, and prevent them from playing the
+						// game with a wrong version of Sodium.
+						if (!versionString.contains(SODIUM_VERSION)) {
+							logger.warn("Expected sodium version containing " + SODIUM_VERSION + " but found " + versionString + "!");
+							sodiumInvalid = true;
+						}
+		}
 
-		physicsModInstalled = FabricLoader.getInstance().isModLoaded("physicsmod");
+		ModContainer retina = ModList.get().getModContainerById("retina")
+				.orElseThrow(() -> new IllegalStateException("Couldn't find the mod container for Retina"));
+
+		IRIS_VERSION = retina.getModInfo().getVersion().toString();
+
+		physicsModInstalled = ModList.get().isLoaded("physicsmod");
 
 		try {
-			Files.createDirectories(SHADERPACKS_DIRECTORY);
+			Files.createDirectories(getShaderpacksDirectory());
 		} catch (IOException e) {
 			logger.warn("Failed to create the shaderpacks directory!");
 			logger.catching(Level.WARN, e);
 		}
 
-		irisConfig = new IrisConfig();
+		irisConfig = new IrisConfig(FMLPaths.CONFIGDIR.get().resolve("retina.properties"));
 
 		try {
 			irisConfig.initialize();
 		} catch (IOException e) {
-			logger.error("Failed to initialize Iris configuration, default values will be used instead");
+			logger.error("Failed to initialize Retina configuration, default values will be used instead");
 			logger.catching(Level.ERROR, e);
 		}
 
 
 		loadShaderpack();
 
-		reloadKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding("iris.keybind.reload", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "iris.keybinds"));
-		toggleShadersKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding("iris.keybind.toggleShaders", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_K, "iris.keybinds"));
-		shaderpackScreenKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding("iris.keybind.shaderPackSelection", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_O, "iris.keybinds"));
-
-		ClientTickEvents.END_CLIENT_TICK.register(minecraftClient -> {
-			if (reloadKeybind.wasPressed()) {
-				try {
-					reload();
-
-					if (minecraftClient.player != null) {
-						minecraftClient.player.sendMessage(new TranslatableText("iris.shaders.reloaded"), false);
-					}
-
-				} catch (Exception e) {
-					logger.error("Error while reloading Shaders for Iris!", e);
-
-					if (minecraftClient.player != null) {
-						minecraftClient.player.sendMessage(new TranslatableText("iris.shaders.reloaded.failure", Throwables.getRootCause(e).getMessage()).formatted(Formatting.RED), false);
-					}
-				}
-			} else if (toggleShadersKeybind.wasPressed()) {
-				IrisConfig config = getIrisConfig();
-				try {
-					config.setShadersEnabled(!config.areShadersEnabled());
-					config.save();
-
-					reload();
-					if (minecraftClient.player != null) {
-						minecraftClient.player.sendMessage(new TranslatableText("iris.shaders.toggled", config.areShadersEnabled() ? currentPackName : "off"), false);
-					}
-				} catch (Exception e) {
-					logger.error("Error while toggling shaders!", e);
-
-					if (minecraftClient.player != null) {
-						minecraftClient.player.sendMessage(new TranslatableText("iris.shaders.toggled.failure", Throwables.getRootCause(e).getMessage()).formatted(Formatting.RED), false);
-					}
-
-					setShadersDisabled();
-					currentPackName = "(off) [fallback, check your logs for errors]";
-				}
-			} else if (shaderpackScreenKeybind.wasPressed()) {
-				minecraftClient.openScreen(new ShaderPackScreen(null));
-			}
-		});
+		reloadKeybind = new KeyMapping("iris.keybind.reload", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "iris.keybinds");
+		toggleShadersKeybind = new KeyMapping("iris.keybind.toggleShaders", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "iris.keybinds");
+		shaderpackScreenKeybind = new KeyMapping("iris.keybind.shaderPackSelection", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "iris.keybinds");
+		ClientRegistry.registerKeyBinding(reloadKeybind);
+		ClientRegistry.registerKeyBinding(toggleShadersKeybind);
+		ClientRegistry.registerKeyBinding(shaderpackScreenKeybind);
 
 		pipelineManager = new PipelineManager(Iris::createPipeline);
 	}
 
+	public void handleKeybinds(InputEvent.KeyInputEvent event) {
+		Minecraft minecraft = Minecraft.getInstance();
+		if (reloadKeybind.consumeClick()) {
+			try {
+				reload();
+
+				if (minecraft.player != null) {
+					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.reloaded"), false);
+				}
+
+			} catch (Exception e) {
+				logger.error("Error while reloading Shaders for Retina!", e);
+
+				if (minecraft.player != null) {
+					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.reloaded.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED), false);
+				}
+			}
+		} else if (toggleShadersKeybind.consumeClick()) {
+			IrisConfig config = getIrisConfig();
+			try {
+				config.setShadersEnabled(!config.areShadersEnabled());
+				config.save();
+
+				reload();
+				if (minecraft.player != null) {
+					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.toggled", config.areShadersEnabled() ? currentPackName : "off"), false);
+				}
+			} catch (Exception e) {
+				logger.error("Error while toggling shaders!", e);
+
+				if (minecraft.player != null) {
+					minecraft.player.displayClientMessage(new TranslatableComponent("iris.shaders.toggled.failure", Throwables.getRootCause(e).getMessage()).withStyle(ChatFormatting.RED), false);
+				}
+
+				setShadersDisabled();
+				currentPackName = "(off) [fallback, check your logs for errors]";
+			}
+		} else if (shaderpackScreenKeybind.consumeClick()) {
+			minecraft.setScreen(new ShaderPackScreen(null));
+		}
+	}
+
 	public static void loadShaderpack() {
 		if (!irisConfig.areShadersEnabled()) {
-			logger.info("Shaders are disabled because enableShaders is set to false in iris.properties");
+			logger.info("Shaders are disabled because enableShaders is set to false in retina.properties");
 
 			setShadersDisabled();
 
@@ -179,7 +196,7 @@ public class Iris implements ClientModInitializer {
 			try {
 				loadInternalShaderpack();
 			} catch (Exception e) {
-				logger.error("Something went terribly wrong, Iris was unable to load the internal shaderpack!");
+				logger.error("Something went terribly wrong, Retina was unable to load the internal shaderpack!");
 				logger.catching(Level.ERROR, e);
 
 				logger.warn("Falling back to normal rendering without shaders because the internal shaderpack could not be loaded");
@@ -193,7 +210,7 @@ public class Iris implements ClientModInitializer {
 		Path shaderPackRoot;
 
 		try {
-			shaderPackRoot = SHADERPACKS_DIRECTORY.resolve(name);
+			shaderPackRoot = getShaderpacksDirectory().resolve(name);
 		} catch (InvalidPathException e) {
 			logger.error("Failed to load the shaderpack \"{}\" because it contains invalid characters in its path", name);
 
@@ -286,19 +303,6 @@ public class Iris implements ClientModInitializer {
 	}
 
 	private static void loadInternalShaderpack() {
-		Path root = FabricLoader.getInstance().getModContainer("iris")
-				.orElseThrow(() -> new RuntimeException("Failed to get the mod container for Iris!")).getRootPath();
-
-		try {
-			currentPack = new ShaderPack(root.resolve("shaders"));
-		} catch (IOException e) {
-			logger.error("Failed to load internal shaderpack!");
-			throw new RuntimeException("Failed to load internal shaderpack!", e);
-		}
-
-		logger.info("Using internal shaders");
-		currentPackName = "(internal)";
-		internal = true;
 	}
 
 	private static void setShadersDisabled() {
@@ -315,7 +319,7 @@ public class Iris implements ClientModInitializer {
 			// identified as a shader pack due to it containing
 			// folders which contain "shaders" folders, this is
 			// necessary to check against that
-			if (pack.equals(SHADERPACKS_DIRECTORY)) {
+			if (pack.equals(getShaderpacksDirectory())) {
 				return false;
 			}
 			try {
@@ -381,21 +385,21 @@ public class Iris implements ClientModInitializer {
 	public static DimensionId lastDimension = DimensionId.OVERWORLD;
 
 	public static DimensionId getCurrentDimension() {
-		ClientWorld world = MinecraftClient.getInstance().world;
+		ClientLevel level = Minecraft.getInstance().level;
 
-		if (world != null) {
-			RegistryKey<World> worldRegistryKey = world.getRegistryKey();
+		if (level != null) {
+			ResourceKey<net.minecraft.world.level.Level> levelRegistryKey = level.dimension();
 
-			if (worldRegistryKey.equals(World.END)) {
+			if (levelRegistryKey.equals(net.minecraft.world.level.Level.END)) {
 				return DimensionId.END;
-			} else if (worldRegistryKey.equals(World.NETHER)) {
+			} else if (levelRegistryKey.equals(net.minecraft.world.level.Level.NETHER)) {
 				return DimensionId.NETHER;
 			} else {
 				return DimensionId.OVERWORLD;
 			}
 		} else {
 			// This prevents us from reloading the shaderpack unless we need to. Otherwise, if the player is in the
-			// nether and quits the game, we might end up reloading the shaders on exit and on entry to the world
+			// nether and quits the game, we might end up reloading the shaders on exit and on entry to the level
 			// because the code thinks that the dimension changed.
 			return lastDimension;
 		}
@@ -449,15 +453,15 @@ public class Iris implements ClientModInitializer {
 	}
 
 	public static String getFormattedVersion() {
-		Formatting color;
+		ChatFormatting color;
 		String version = getVersion();
 
 		if (version.endsWith("-dirty") || version.contains("unknown")) {
-			color = Formatting.RED;
+			color = ChatFormatting.RED;
 		} else if (version.contains("+rev.")) {
-			color = Formatting.LIGHT_PURPLE;
+			color = ChatFormatting.LIGHT_PURPLE;
 		} else {
-			color = Formatting.GREEN;
+			color = ChatFormatting.GREEN;
 		}
 
 		return color + version;
@@ -473,5 +477,13 @@ public class Iris implements ClientModInitializer {
 
 	public static boolean isPhysicsModInstalled() {
 		return physicsModInstalled;
+	}
+
+	public static Path getShaderpacksDirectory() {
+		if (shaderpacksDirectory == null) {
+			shaderpacksDirectory = FMLPaths.GAMEDIR.get().resolve("shaderpacks");
+		}
+
+		return shaderpacksDirectory;
 	}
 }

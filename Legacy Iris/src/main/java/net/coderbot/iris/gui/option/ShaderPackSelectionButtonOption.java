@@ -1,21 +1,15 @@
 package net.coderbot.iris.gui.option;
 
 import net.coderbot.iris.gui.screen.ShaderPackScreen;
-import net.minecraft.client.AbstractOption;
-import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
-//import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-//import net.minecraft.client.gui.widget.AbstractButtonWidget;
-//import net.minecraft.client.gui.widget.OptionButtonWidget;
-import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.client.gui.widget.button.OptionButton;
-//import net.minecraft.client.options.GameOptions;
-//import net.minecraft.client.options.Option;
-//import net.minecraft.text.TranslatableText;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.Option;
+import net.minecraft.client.Options;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.OptionButton;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TranslatableComponent;
 
-public class ShaderPackSelectionButtonOption extends AbstractOption {
+public class ShaderPackSelectionButtonOption extends Option {
 	private final Screen parent;
 	private final Minecraft client;
 
@@ -26,12 +20,12 @@ public class ShaderPackSelectionButtonOption extends AbstractOption {
 	}
 
 	@Override
-	public AbstractButton createWidget(GameSettings options, int x, int y, int width) {
+	public AbstractWidget createButton(Options options, int x, int y, int width) {
 		return new OptionButton(
 				x, y, width, 20,
 				this,
-				new TranslationTextComponent("options.iris.shaderPackSelection"),
-				button -> client.displayGuiScreen(new ShaderPackScreen(parent))
+				new TranslatableComponent("options.iris.shaderPackSelection"),
+				button -> client.setScreen(new ShaderPackScreen(parent))
 		);
 	}
 }

@@ -5,10 +5,10 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "MixinBarrierParticle",
-    "MixinBlockDustParticle",
     "MixinFireworkSparkParticle",
-    "MixinParticleManager",
-    "MixinWorldRenderer"
+    "MixinLevelRenderer",
+    "MixinParticleEngine",
+    "MixinTerrainParticle"
   ],
   "injectors": {
     "defaultRequire": 1

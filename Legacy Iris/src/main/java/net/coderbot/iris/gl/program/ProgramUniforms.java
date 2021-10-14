@@ -16,8 +16,6 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20C;
 
-//import net.minecraft.client.MinecraftClient;
-
 public class ProgramUniforms {
 	private static ProgramUniforms active;
 	private final ImmutableList<Uniform> perTick;
@@ -45,7 +43,7 @@ public class ProgramUniforms {
 	}
 
 	private static long getCurrentTick() {
-		return Objects.requireNonNull(Minecraft.getInstance().world).getGameTime();
+		return Objects.requireNonNull(Minecraft.getInstance().level).getGameTime();
 	}
 
 	public void update() {
@@ -228,7 +226,7 @@ public class ProgramUniforms {
 						expectedName = "(unsupported type: " + getTypeName(type) + ")";
 					}
 
-					Iris.logger.error("[" + this.name + "] Wrong uniform type for " + name + ": Iris is providing " + provided + " but the program expects " + expectedName + ". Disabling that uniform.");
+					Iris.logger.error("[" + this.name + "] Wrong uniform type for " + name + ": Retina is providing " + provided + " but the program expects " + expectedName + ". Disabling that uniform.");
 
 					once.remove(name);
 					perTick.remove(name);
