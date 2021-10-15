@@ -28,12 +28,12 @@ https://www.curseforge.com/members/someoneelsewastaken/projects
 
 ### Mod Progress
 
-Sulfuric - 100% Finished
+Sulfuric: - 100% Finished
 
-Magnesium - 100% Finished
+Magnesium: - 100% Finished
 
-Iris - 90% Finished: Currently works with all mods aside from modded dimensions. Will not be released until Approved by the original team.
+Chrysanthemum: - 90% Finished: Currently works with all mods aside from modded dimensions. Will not be released until Approved by the original team.
 
-Hydrogen - 0% Finished: Removed do to the port being conceptually and in practice, bad. I plan to remake the project at a later point
+Helium: - 0% Finished: Removed do to the port being conceptually and in practice, bad. I plan to remake the project at a later point
 
-Lithium: 100% Finished: I have no plans to release this as there is a port that already exists..
+Beryllium: 100% Finished: I have no plans to release this as there is a port that already exists..
