@@ -16,8 +16,8 @@ apply plugin: "org.spongepowered.mixin"
 
 
 version = '1.0'
-group = 'someoneelse.oxygen' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'oxygen'
+group = 'someoneelse.magnesium' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'magnesium'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -31,7 +31,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            arg "-mixin.config=oxygen.mixins.json"
+            arg "-mixin.config=magnesium.mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -42,7 +42,7 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-            arg "-mixin.config=sodium.mixins.json"
+            arg "-mixin.config=magnesium.mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -64,7 +64,7 @@ minecraft {
 }
 
 mixin {
-    add sourceSets.main, "oxygen.refmap.json"
+    add sourceSets.main, "magnesium.refmap.json"
 }
 
 dependencies {
@@ -95,14 +95,14 @@ jar {
 jar {
     manifest {
         attributes([
-                "Specification-Title": "oxygen",
+                "Specification-Title": "magnesium",
                 //"Specification-Vendor": "examplemodsareus",
                 "Specification-Version": "1", // We are version 1 of ourselves
                 "Implementation-Title": "${project.name}",
                 "Implementation-Version": "${version}",
                 //"Implementation-Vendor" :"examplemodsareus",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs": "oxygen.mixins.json"
+                "MixinConfigs": "magnesium.mixins.json"
         ])
     }
 }
