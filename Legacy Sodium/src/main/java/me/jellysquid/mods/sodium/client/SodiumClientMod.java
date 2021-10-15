@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Paths;
 
-@Mod("oxygen")
+@Mod("magnesium")
 public class SodiumClientMod {
 
     public SodiumClientMod() {
@@ -32,7 +32,7 @@ public class SodiumClientMod {
 
 
     public void setup(final FMLCommonSetupEvent event) {
-        MOD_VERSION = ModList.get().getModContainerById("oxygen").get().getModInfo().getVersion().toString();
+        MOD_VERSION = ModList.get().getModContainerById("magnesium").get().getModInfo().getVersion().toString();
 
     }
 
@@ -61,7 +61,7 @@ public class SodiumClientMod {
 
     public static Logger logger() {
         if (LOGGER == null) {
-            LOGGER = LogManager.getLogger("Oxygen");
+            LOGGER = LogManager.getLogger("Magnesium");
         }
 
         return LOGGER;
