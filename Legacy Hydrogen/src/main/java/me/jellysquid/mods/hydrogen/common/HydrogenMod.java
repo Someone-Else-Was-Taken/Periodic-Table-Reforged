@@ -15,8 +15,5 @@ public class HydrogenMod {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
 
-        HydrogenPreLaunch.onLaunch();
-
-
     }
 }

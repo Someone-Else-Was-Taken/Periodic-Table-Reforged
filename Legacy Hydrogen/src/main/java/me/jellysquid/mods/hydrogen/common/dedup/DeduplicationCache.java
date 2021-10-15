@@ -3,54 +3,37 @@ package me.jellysquid.mods.hydrogen.common.dedup;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 
-import java.util.Objects;
-
 public class DeduplicationCache<T> {
-    private final ObjectOpenCustomHashSet<T> pool;
+    private final ObjectOpenCustomHashSet<T> cache;
 
-    private int attemptedInsertions = 0;
-    private int deduplicated = 0;
+    private int size = 0;
 
     public DeduplicationCache(Hash.Strategy<T> strategy) {
-        this.pool = new ObjectOpenCustomHashSet<>(strategy);
-    }
-
-    public DeduplicationCache() {
-        this.pool = new ObjectOpenCustomHashSet<>(new Hash.Strategy<T>() {
-            @Override
-            public int hashCode(T o) {
-                return Objects.hashCode(o);
-            }
-
-            @Override
-            public boolean equals(T a, T b) {
-                return Objects.equals(a, b);
-            }
-        });
+        this.cache = new ObjectOpenCustomHashSet<>(strategy);
     }
 
     public synchronized T deduplicate(T item) {
-        this.attemptedInsertions++;
+        this.size++;
 
-        T result = this.pool.addOrGet(item);
-
-        if (result != item) {
-            this.deduplicated++;
-        }
-
-        return result;
+        return this.cache.addOrGet(item);
     }
 
-    public synchronized void clearCache() {
-        this.attemptedInsertions = 0;
-        this.deduplicated = 0;
+    public void clearCache() {
+        this.cache.clear();
+        this.size = 0;
+    }
 
-        this.pool.clear();
+    public int getSize() {
+        return this.size;
+    }
+
+    public int getDeduplicatedCount() {
+        return this.size - this.cache.size();
     }
 
     @Override
-    public synchronized String toString() {
-        return String.format("DeduplicationCache ( %d/%d de-duplicated, %d pooled )",
-                this.deduplicated, this.attemptedInsertions, this.pool.size());
+    public String toString() {
+        return String.format("DeduplicationCache ( %d de-duplicated, %d entries )",
+                this.getDeduplicatedCount(), this.getSize());
     }
 }

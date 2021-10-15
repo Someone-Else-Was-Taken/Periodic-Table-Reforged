@@ -8,8 +8,6 @@
   "client": [
     "client.model.MixinBakedQuad",
     "client.model.MixinBasicBakedModel",
-    "client.model.MixinModelIdentifier",
-    "client.model.MixinModelLoader",
     "client.model.MixinMultipartBakedModel",
     "client.model.MixinWeightedBakedModel",
     "client.model.json.MixinAndMultipartModelSelector",
@@ -23,7 +21,7 @@
     "chunk.MixinChunkSerializer",
     "chunk.MixinWorldChunk",
     "nbt.MixinCompoundTag",
-    "state.MixinState",
-    "util.MixinIdentifier"
-  ]
+    "state.MixinState"
+  ],
+  "refmap": "hydrogen.refmap.json"
 }

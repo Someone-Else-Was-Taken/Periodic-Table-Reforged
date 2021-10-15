@@ -37,7 +37,7 @@ public class MixinState<O, S> {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void reinit(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> mapCodec, CallbackInfo ci) {
-        this.properties = ClassConstructors.createFastImmutableMap(this.properties);
+
     }
 
     @Inject(method = "func_235899_a_", at = @At("RETURN"))

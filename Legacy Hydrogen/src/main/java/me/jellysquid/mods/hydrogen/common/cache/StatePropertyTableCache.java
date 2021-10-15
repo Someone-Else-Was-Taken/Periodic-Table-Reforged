@@ -1,12 +1,12 @@
 package me.jellysquid.mods.hydrogen.common.cache;
 
+
 import me.jellysquid.mods.hydrogen.common.collections.FastImmutableTableCache;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.state.Property;
-//import net.minecraft.state.property.Property;
 
 /**
  * Many of the column and row key arrays in block state tables will be duplicated, leading to an unnecessary waste of

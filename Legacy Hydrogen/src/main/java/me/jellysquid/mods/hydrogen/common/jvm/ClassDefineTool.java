@@ -1,5 +1,6 @@
 package me.jellysquid.mods.hydrogen.common.jvm;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +27,7 @@ public class ClassDefineTool {
         }
     }
 
-    public static void defineClass(ClassLoader loader, String name) throws ReflectiveOperationException {
+    public static Class<?> defineClass(Class<ImmutableMap> loader, String name) throws ReflectiveOperationException {
         String path = "/" + name.replace('.', '/') + ".class";
         URL url = ClassDefineTool.class.getResource(path);
 
@@ -41,6 +42,7 @@ public class ClassDefineTool {
         }
 
         DEFINE.invoke(loader, code, 0, code.length);
+        return null;
     }
 
 }
