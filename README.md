@@ -42,4 +42,4 @@ Remaining Mod Progress:
 
 Lithium: 99% - All that remains is a few critical fixes.
 
-Iris: Maybe 100% - Finished port locally. Needs testing still.
+Iris: Currently Complete, Will Remain Private until Approved.
