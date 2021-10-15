@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
 }
@@ -16,8 +16,8 @@ apply plugin: "org.spongepowered.mixin"
 
 
 version = '1.0'
-group = 'someoneelse.phosphorreforged' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'phosphor'
+group = 'someoneelse.sulfur' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'sulfur'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -31,7 +31,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            arg "-mixin.config=phosphor.mixins.json"
+            arg "-mixin.config=sulfur.mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -42,6 +42,7 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
+            arg "-mixin.config=sulfur.mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -63,7 +64,7 @@ minecraft {
 }
 
 mixin {
-    add sourceSets.main, "phosphor.refmap.json"
+    add sourceSets.main, "sulfur.refmap.json"
 }
 
 dependencies {
@@ -94,14 +95,14 @@ jar {
 jar {
     manifest {
         attributes([
-                "Specification-Title": "phosphor",
+                "Specification-Title": "sulfur",
                 //"Specification-Vendor": "examplemodsareus",
                 "Specification-Version": "1", // We are version 1 of ourselves
                 "Implementation-Title": "${project.name}",
                 "Implementation-Version": "${version}",
                 //"Implementation-Vendor" :"examplemodsareus",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs": "phosphor.mixins.json"
+                "MixinConfigs": "sulfur.mixins.json"
         ])
     }
 }

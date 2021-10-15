@@ -35,5 +35,5 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "phosphor.refmap.json"
+  "refmap": "sulfur.refmap.json"
 }

@@ -15,11 +15,11 @@ issueTrackerURL="" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
-modId="phosphor" #mandatory
+modId="sulfur" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 version="1.0" #mandatory
  # A display name for the mod
-displayName="Phosphor Reforged" #mandatory
+displayName="Sulfur" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -32,5 +32,5 @@ credits="SomeoneElse, CaffeineMC" #optional
 authors="SomeoneElse" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Something Something Phosphor Make Light go speedy
+Something Something Sulfur Make Light go speedy
 '''
