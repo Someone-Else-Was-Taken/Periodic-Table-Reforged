@@ -8,6 +8,7 @@
   "client": [
     "client.model.MixinBakedQuad",
     "client.model.MixinBasicBakedModel",
+    "client.model.MixinModelIdentifier",
     "client.model.MixinModelLoader",
     "client.model.MixinMultipartBakedModel",
     "client.model.MixinWeightedBakedModel",
@@ -22,7 +23,7 @@
     "chunk.MixinChunkSerializer",
     "chunk.MixinWorldChunk",
     "nbt.MixinCompoundTag",
-    "nbt.TagCollectionManager",
-    "state.MixinState"
+    "state.MixinState",
+    "util.MixinIdentifier"
   ]
 }
