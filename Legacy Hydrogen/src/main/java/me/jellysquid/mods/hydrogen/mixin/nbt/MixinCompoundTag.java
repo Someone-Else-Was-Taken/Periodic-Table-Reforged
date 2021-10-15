@@ -19,10 +19,10 @@ public class MixinCompoundTag {
     @Mutable
     @Shadow
     @Final
-    private Map<String, Tag> tags;
+    private Map<String, Tag> tagMap;
 
     @Inject(method = "<init>(Ljava/util/Map;)V", at = @At("RETURN"))
     private void reinit(Map<String, Tag> tags, CallbackInfo ci) {
-        this.tags = tags instanceof Object2ObjectMap ? tags : new Object2ObjectOpenHashMap<>(tags);
+        this.tagMap = tags instanceof Object2ObjectMap ? tags : new Object2ObjectOpenHashMap<>(tags);
     }
 }

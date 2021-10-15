@@ -3,37 +3,54 @@ package me.jellysquid.mods.hydrogen.common.dedup;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 
-public class DeduplicationCache<T> {
-    private final ObjectOpenCustomHashSet<T> cache;
+import java.util.Objects;
 
-    private int size = 0;
+public class DeduplicationCache<T> {
+    private final ObjectOpenCustomHashSet<T> pool;
+
+    private int attemptedInsertions = 0;
+    private int deduplicated = 0;
 
     public DeduplicationCache(Hash.Strategy<T> strategy) {
-        this.cache = new ObjectOpenCustomHashSet<>(strategy);
+        this.pool = new ObjectOpenCustomHashSet<>(strategy);
+    }
+
+    public DeduplicationCache() {
+        this.pool = new ObjectOpenCustomHashSet<>(new Hash.Strategy<T>() {
+            @Override
+            public int hashCode(T o) {
+                return Objects.hashCode(o);
+            }
+
+            @Override
+            public boolean equals(T a, T b) {
+                return Objects.equals(a, b);
+            }
+        });
     }
 
     public synchronized T deduplicate(T item) {
-        this.size++;
+        this.attemptedInsertions++;
 
-        return this.cache.addOrGet(item);
+        T result = this.pool.addOrGet(item);
+
+        if (result != item) {
+            this.deduplicated++;
+        }
+
+        return result;
     }
 
-    public void clearCache() {
-        this.cache.clear();
-        this.size = 0;
-    }
+    public synchronized void clearCache() {
+        this.attemptedInsertions = 0;
+        this.deduplicated = 0;
 
-    public int getSize() {
-        return this.size;
-    }
-
-    public int getDeduplicatedCount() {
-        return this.size - this.cache.size();
+        this.pool.clear();
     }
 
     @Override
-    public String toString() {
-        return String.format("DeduplicationCache ( %d de-duplicated, %d entries )",
-                this.getDeduplicatedCount(), this.getSize());
+    public synchronized String toString() {
+        return String.format("DeduplicationCache ( %d/%d de-duplicated, %d pooled )",
+                this.deduplicated, this.attemptedInsertions, this.pool.size());
     }
 }

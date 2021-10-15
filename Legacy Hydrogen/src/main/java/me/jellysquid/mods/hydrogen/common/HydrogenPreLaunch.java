@@ -5,7 +5,7 @@ import me.jellysquid.mods.hydrogen.common.jvm.ClassConstructors;
 
 public class HydrogenPreLaunch {
 
-    public void onLaunch() {
+    public static void onLaunch() {
         ClassConstructors.init();
     }
 }

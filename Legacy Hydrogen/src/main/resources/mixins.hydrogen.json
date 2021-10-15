@@ -22,6 +22,7 @@
     "chunk.MixinChunkSerializer",
     "chunk.MixinWorldChunk",
     "nbt.MixinCompoundTag",
+    "nbt.TagCollectionManager",
     "state.MixinState"
   ]
 }
