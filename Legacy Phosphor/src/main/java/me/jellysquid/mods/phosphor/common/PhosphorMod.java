@@ -5,7 +5,7 @@ package me.jellysquid.mods.phosphor.common;
 import net.minecraftforge.fml.common.Mod;
 
 @SuppressWarnings("unused")
-@Mod("sulfur")
+@Mod("sulfuric")
 public class PhosphorMod{
     public void onInitialize() { }
 }
