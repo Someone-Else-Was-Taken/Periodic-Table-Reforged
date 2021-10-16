@@ -94,11 +94,10 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                     buffers.setRenderOffset(pos.getX() - renderOffset.getX(), pos.getY() - renderOffset.getY(), pos.getZ() - renderOffset.getZ());
 
                     if (blockState.getRenderType() == BlockRenderType.MODEL) {
-                        for (RenderType layer : RenderType.getBlockRenderTypes()) {
-                            if (!RenderTypeLookup.canRenderInLayer(blockState, layer)) {
-                                continue;
-                            }
+                        RenderType layer = RenderTypeLookup.getChunkRenderType(blockState);
+
                             ForgeHooksClient.setRenderLayer(layer);
+
                             IModelData modelData;
                             modelData = ModelDataManager.getModelData(Objects.requireNonNull(Minecraft.getInstance().world), pos);
                             if (modelData == null) {
@@ -113,7 +112,7 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                             if (cache.getBlockRenderer().renderModel(slice, blockState, pos, model, buffers.get(layer), true, seed, modelData)) {
                                 bounds.addBlock(relX, relY, relZ);
                             }
-                        }
+
                     }
 
                     FluidState fluidState = blockState.getFluidState();
