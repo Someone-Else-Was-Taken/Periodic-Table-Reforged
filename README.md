@@ -4,7 +4,7 @@ This is an Unofficial port of the core CaffeineMC Mods, alongside Iris.
 This is in no way related to the original mod teams, Code credit goes out to each mod's respective developers.
 
 
-CaffeineMC:
+### CaffeineMC
 
 Sodium - https://www.curseforge.com/minecraft/mc-mods/sodium
 
@@ -15,31 +15,25 @@ Phosphor - https://www.curseforge.com/minecraft/mc-mods/phosphor
 Hydrogen - https://modrinth.com/mod/hydrogen
 
 
-Iris Team:
+### Iris Team:
 
 Iris - https://www.curseforge.com/minecraft/mc-mods/irisshaders
 
 
 
-Currently the only finished ports are Sodium, Hydrogen and Phosphor, (Feel free to build lithium) you can find them on my CF Page or you can use the direct links..
+### Port Downloads
 
 https://www.curseforge.com/members/someoneelsewastaken/projects
 
-Magnesium(Sodium):
-https://www.curseforge.com/minecraft/mc-mods/sodium-reforged
 
-Sulfuric(Phosphor):
-https://www.curseforge.com/minecraft/mc-mods/phosphor-reforged
+### Mod Progress
 
-Hydrogen Reforged:
-https://www.curseforge.com/minecraft/mc-mods/hydrogen-reforged
+Sulfuric: - 100% Finished
 
+Magnesium: - 100% Finished
 
+Chrysanthemum: - 90% Finished: Currently works with all mods aside from modded dimensions. Will not be released until Approved by the original team.
 
+Helium: - 0% Finished: Removed do to the port being conceptually and in practice, bad. I plan to remake the project at a later point
 
-
-Remaining Mod Progress:
-
-Lithium: 99% - All that remains is a few critical fixes.
-
-Iris: Currently Complete, Will Remain Private until Approved.
+Beryllium: 100% Finished: I have no plans to release this as there is a port that already exists..
