@@ -3,6 +3,8 @@
 This is an Unofficial port of the core CaffeineMC Mods, alongside Iris.
 This is in no way related to the original mod teams, Code credit goes out to each mod's respective developers.
 
+Iris is not compatible with Magnesium. I need to port Iris-Sodium at some point.
+
 
 ### CaffeineMC
 
