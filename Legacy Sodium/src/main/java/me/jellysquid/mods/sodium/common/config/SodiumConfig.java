@@ -110,6 +110,16 @@ public class SodiumConfig {
             this.options.get("mixin.features.item").addModOverride(false, "tetra");
         }
 
+        if(FMLLoader.getLoadingModList().getModFileById("tetra") != null)
+        {
+            this.options.get("mixin.features.item").addModOverride(false, "silentgear");
+        }
+
+        if(FMLLoader.getLoadingModList().getModFileById("tconstruct") != null)
+        {
+            this.options.get("mixin.features.item").addModOverride(false, "tconstruct");
+        }
+
         if(FMLLoader.getLoadingModList().getModFileById("abnormals_core") != null)
         {
             this.options.get("mixin.features.world_ticking").addModOverride(false, "abnormals_core");
