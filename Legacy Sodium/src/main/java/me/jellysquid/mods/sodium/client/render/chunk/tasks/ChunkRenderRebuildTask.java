@@ -94,8 +94,10 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                     buffers.setRenderOffset(pos.getX() - renderOffset.getX(), pos.getY() - renderOffset.getY(), pos.getZ() - renderOffset.getZ());
 
                     if (blockState.getRenderType() == BlockRenderType.MODEL) {
-                        RenderType layer = RenderTypeLookup.getChunkRenderType(blockState);
-
+                        for (RenderType layer : RenderType.getBlockRenderTypes()) {
+                            if (!RenderTypeLookup.canRenderInLayer(blockState, layer)) {
+                                continue;
+                            }
                             ForgeHooksClient.setRenderLayer(layer);
 
                             IModelData modelData;
@@ -112,6 +114,7 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                             if (cache.getBlockRenderer().renderModel(slice, blockState, pos, model, buffers.get(layer), true, seed, modelData)) {
                                 bounds.addBlock(relX, relY, relZ);
                             }
+                        }
 
                     }
 
