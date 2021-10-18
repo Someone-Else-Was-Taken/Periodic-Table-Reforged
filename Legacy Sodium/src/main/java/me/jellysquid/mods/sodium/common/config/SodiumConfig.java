@@ -105,6 +105,7 @@ public class SodiumConfig {
             this.options.get("mixin.features.item").addModOverride(false, "quark");
         }
 
+        //Mods use custom textures for a singular item. May be
         if(FMLLoader.getLoadingModList().getModFileById("tetra") != null)
         {
             this.options.get("mixin.features.item").addModOverride(false, "tetra");
@@ -120,6 +121,7 @@ public class SodiumConfig {
             this.options.get("mixin.features.item").addModOverride(false, "tconstruct");
         }
 
+        //Both SLS and Magnesium override the same mixin. These are not compatible and nothing is lost disabling the mixin.
         if(FMLLoader.getLoadingModList().getModFileById("seamless_loading_screen") != null)
         {
             this.options.get("mixin.features.gui.fast_loading_screen").addModOverride(false, "seamless_loading_screen");
