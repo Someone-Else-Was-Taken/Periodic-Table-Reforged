@@ -108,28 +108,28 @@ public class SodiumConfig {
         //Mods use custom textures for a singular item. May be
         if(FMLLoader.getLoadingModList().getModFileById("tetra") != null)
         {
-            this.options.get("mixin.features.item").addModOverride(false, "tetra");
+            this.options.get("features.item").addModOverride(false, "tetra");
         }
 
         if(FMLLoader.getLoadingModList().getModFileById("tetra") != null)
         {
-            this.options.get("mixin.features.item").addModOverride(false, "silentgear");
+            this.options.get("features.item").addModOverride(false, "silentgear");
         }
 
         if(FMLLoader.getLoadingModList().getModFileById("tconstruct") != null)
         {
-            this.options.get("mixin.features.item").addModOverride(false, "tconstruct");
+            this.options.get("features.item").addModOverride(false, "tconstruct");
         }
 
         //Both SLS and Magnesium override the same mixin. These are not compatible and nothing is lost disabling the mixin.
         if(FMLLoader.getLoadingModList().getModFileById("seamless_loading_screen") != null)
         {
-            this.options.get("mixin.features.gui.fast_loading_screen").addModOverride(false, "seamless_loading_screen");
+            this.options.get("features.gui.fast_loading_screen").addModOverride(false, "seamless_loading_screen");
         }
 
         if(FMLLoader.getLoadingModList().getModFileById("abnormals_core") != null)
         {
-            this.options.get("mixin.features.world_ticking").addModOverride(false, "abnormals_core");
+            this.options.get("features.world_ticking").addModOverride(false, "abnormals_core");
         }
 
     }
