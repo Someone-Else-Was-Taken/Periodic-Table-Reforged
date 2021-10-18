@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * Uses a priority of 999 so that we apply before Indigo's mixins.
  */
-@Mixin(targets = "net.minecraft.client.renderer.chunk.ChunkRenderDispatcher$RenderChunk$RebuildTask", priority = 999, remap = true)
+@Mixin(targets = "net.minecraft.client.renderer.chunk.ChunkRenderDispatcher$ChunkRender$RebuildTask", priority = 999, remap = true)
 public class MixinChunkRebuildTask {
 	private static final String RENDER = "compile(FFFLnet/minecraft/client/renderer/chunk/ChunkRenderDispatcher$CompiledChunk;Lnet/minecraft/client/renderer/RegionRenderCacheBuilder;)Ljava/util/Set;";
 
@@ -63,16 +63,16 @@ public class MixinChunkRebuildTask {
 	}
 
 	@Inject(method = RENDER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/BlockRendererDispatcher;renderLiquid(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockDisplayReader;Lcom/mojang/blaze3d/vertex/IVertexBuilder;Lnet/minecraft/fluid/FluidState;)Z"), locals = LocalCapture.CAPTURE_FAILHARD, remap = true)
-	private void iris$onRenderLiquid(float cameraX, float cameraY, float cameraZ, ChunkRenderDispatcher.CompiledChunk data, RegionRenderCacheBuilder buffers, CallbackInfoReturnable<Set> cir, int i, BlockPos blockPos, BlockPos blockPos2, VisGraph chunkOcclusionDataBuilder, Set set, ChunkRenderCache chunkRendererRegion, MatrixStack poseStack, Random random, BlockRendererDispatcher blockRenderManager, Iterator var15, BlockPos blockPos3, BlockState blockState, FluidState fluidState, RenderType renderType, BufferBuilder bufferBuilder2) {
-		if (bufferBuilder2 instanceof BlockSensitiveBufferBuilder) {
-			lastBufferBuilder = ((BlockSensitiveBufferBuilder) bufferBuilder2);
+	private void iris$onRenderLiquid(float cameraY, float cameraZ, ChunkRenderDispatcher.CompiledChunk data, RegionRenderCacheBuilder buffers, CallbackInfoReturnable<Set> cir, int i, BlockPos blockPos, BlockPos blockPos2, VisGraph chunkOcclusionDataBuilder, Set set, ChunkRenderCache chunkRendererRegion, MatrixStack matrixStack, Random random, BlockRendererDispatcher blockRenderManager, Iterator var15, BlockPos blockPos3, BlockState blockState, FluidState fluidState, RenderType renderLayer, BufferBuilder bufferBuilder) {
+		if (bufferBuilder instanceof BlockSensitiveBufferBuilder) {
+			lastBufferBuilder = ((BlockSensitiveBufferBuilder) bufferBuilder);
 			// All fluids have a ShadersMod render type of 1, to match behavior of Minecraft 1.7 and earlier.
 			// TODO: We're using createLegacyBlock? That seems like something that Mojang wants to deprecate.
 			lastBufferBuilder.beginBlock(resolveBlockId(fluidState.createLegacyBlock()), (short) 1);
 		}
 	}
 
-	@Inject(method = RENDER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/BlockRendererDispatcher;renderLiquid(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockDisplayReader;Lcom/mojang/blaze3d/vertex/IVertexBuilder;Lnet/minecraft/fluid/FluidState;)Z", shift = At.Shift.AFTER))
+	@Inject(method = RENDER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/BlockRendererDispatcher;renderFluid(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockDisplayReader;Lcom/mojang/blaze3d/vertex/IVertexBuilder;Lnet/minecraft/fluid/FluidState;)Z", shift = At.Shift.AFTER))
 	private void iris$finishRenderingLiquid(float cameraX, float cameraY, float cameraZ, ChunkRenderDispatcher.CompiledChunk data, RegionRenderCacheBuilder buffers, CallbackInfoReturnable<Set> cir) {
 		if (lastBufferBuilder != null) {
 			lastBufferBuilder.endBlock();
@@ -80,7 +80,7 @@ public class MixinChunkRebuildTask {
 		}
 	}
 
-	@Inject(method = RENDER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/BlockRendererDispatcher;renderBatched(Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockDisplayReader;Lcom/mojang/blaze3d/matrix/MatrixStack;Lcom/mojang/blaze3d/vertex/IVertexBuilder;ZLjava/util/Random;)Z"), locals = LocalCapture.CAPTURE_FAILHARD)
+	@Inject(method = RENDER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/BlockRendererDispatcher;renderModel(Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockDisplayReader;Lcom/mojang/blaze3d/matrix/MatrixStack;Lcom/mojang/blaze3d/vertex/IVertexBuilder;ZLjava/util/Random;)Z"), locals = LocalCapture.CAPTURE_FAILHARD)
 	private void iris$onRenderBlock(float cameraX, float cameraY, float cameraZ, ChunkRenderDispatcher.CompiledChunk data, RegionRenderCacheBuilder buffers, CallbackInfoReturnable<Set> cir, int i, BlockPos blockPos, BlockPos blockPos2, VisGraph chunkOcclusionDataBuilder, Set set, ChunkRenderCache chunkRendererRegion, MatrixStack poseStack, Random random, BlockRendererDispatcher blockRenderManager, Iterator var15, BlockPos blockPos3, BlockState blockState, RenderType renderType2, BufferBuilder bufferBuilder2) {
 		if (bufferBuilder2 instanceof BlockSensitiveBufferBuilder) {
 			lastBufferBuilder = ((BlockSensitiveBufferBuilder) bufferBuilder2);
@@ -89,7 +89,7 @@ public class MixinChunkRebuildTask {
 		}
 	}
 
-	@Inject(method = RENDER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/BlockRendererDispatcher;renderBatched(Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockDisplayReader;Lcom/mojang/blaze3d/matrix/MatrixStack;Lcom/mojang/blaze3d/vertex/IVertexBuilder;ZLjava/util/Random;)Z", shift = At.Shift.AFTER))
+	@Inject(method = RENDER, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/BlockRendererDispatcher;renderModel(Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/IBlockDisplayReader;Lcom/mojang/blaze3d/matrix/MatrixStack;Lcom/mojang/blaze3d/vertex/IVertexBuilder;ZLjava/util/Random;)Z", shift = At.Shift.AFTER))
 	private void iris$finishRenderingBlock(float cameraX, float cameraY, float cameraZ, ChunkRenderDispatcher.CompiledChunk data, RegionRenderCacheBuilder buffers, CallbackInfoReturnable<Set> cir) {
 		if (lastBufferBuilder != null) {
 			lastBufferBuilder.endBlock();
