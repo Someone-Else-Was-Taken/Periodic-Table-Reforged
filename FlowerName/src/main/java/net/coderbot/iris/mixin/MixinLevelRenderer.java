@@ -126,7 +126,7 @@ public class MixinLevelRenderer {
 		RenderSystem.depthMask(true);
 	}
 
-	@Inject(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getTimeOfDay(F)F"),
+	@Inject(method = RENDER_SKY, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getTimeOfDay(F)F"),
 			slice = @Slice(from = @At(value = "FIELD", target = "net/minecraft/util/math/vector/Vector3f.YP : Lnet/minecraft/util/math/vector/Vector3f;")))
 	private void iris$renderSky$tiltSun(MatrixStack poseStack, float tickDelta, CallbackInfo callback) {
 		poseStack.mulPose(Vector3f.ZP.rotationDegrees(pipeline.getSunPathRotation()));
