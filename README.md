@@ -39,3 +39,11 @@ Chrysanthemum: - 90% Finished: Currently works with all mods aside from modded d
 Helium: - 0% Finished: Removed do to the port being conceptually and in practice, bad. I plan to remake the project at a later point
 
 Beryllium: 100% Finished: I have no plans to release this as there is a port that already exists..
+
+
+
+### Contact
+
+If you need to contact me, feel free to send me a private message on CF 
+
+Or Message me on Discord. You can find me in many other Mod Servers.
