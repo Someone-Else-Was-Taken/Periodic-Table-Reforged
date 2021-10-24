@@ -40,7 +40,7 @@ public abstract class MixinPaintingEntityRenderer extends EntityRenderer<Paintin
      */
     @Redirect(method = "func_229122_a_", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/WorldRenderer;getCombinedLight(Lnet/minecraft/world/IBlockDisplayReader;Lnet/minecraft/util/math/BlockPos;)I"))
     public int redirectLightmapCoord(IBlockDisplayReader world, BlockPos pos) {
-        if (SodiumClientMod.options().quality.smoothLighting == SodiumGameOptions.LightingQuality.HIGH) {
+        if (SodiumClientMod.options().quality.smoothLighting == SodiumGameOptions.LightingQuality.HIGH && this.entity != null) {
             return EntityLighter.getBlendedLight(this, this.entity, tickDelta);
         } else {
             return WorldRenderer.getCombinedLight(world, pos);
