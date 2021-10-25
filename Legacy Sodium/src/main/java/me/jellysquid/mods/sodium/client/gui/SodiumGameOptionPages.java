@@ -372,4 +372,20 @@ public class SodiumGameOptionPages {
 
         return new OptionPage("Advanced", ImmutableList.copyOf(groups));
     }
+
+    public static OptionPage debug() {
+        List<OptionGroup> groups = new ArrayList<>();
+
+        groups.add(OptionGroup.createBuilder()
+                .add(OptionImpl.createBuilder(boolean.class, sodiumOpts)
+                        .setName("Display FPS")
+                        .setTooltip("Displays the Current Client FPS. Primarily for Benchmarking.")
+                        .setControl(TickBoxControl::new)
+                        .setBinding((opts, value) -> opts.debug.displayFps = value, opts -> opts.debug.displayFps)
+                        .setImpact(OptionImpact.LOW)
+                        .build())
+                .build());
+
+        return new OptionPage("Debug", ImmutableList.copyOf(groups));
+    }
 }
