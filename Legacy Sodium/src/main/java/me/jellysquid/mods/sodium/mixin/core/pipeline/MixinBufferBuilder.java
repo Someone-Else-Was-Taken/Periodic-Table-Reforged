@@ -19,7 +19,10 @@ import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+mport org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 @Mixin(BufferBuilder.class)
@@ -44,6 +47,14 @@ public abstract class MixinBufferBuilder implements VertexBufferView, VertexDrai
 
     @Shadow
     private int vertexCount;
+
+    @Redirect(method = "getNextBuffer", at = @At(value = "INVOKE", target = "Ljava/nio/Buffer;limit(I)Ljava/nio/Buffer;"))
+    public Buffer debugGetNextBuffer(Buffer buffer, int newLimit) {
+        ensureBufferCapacity(newLimit);
+        buffer = (Buffer) this.byteBuffer;
+        buffer.limit(newLimit);
+        return buffer;
+    }
 
     @Override
     public boolean ensureBufferCapacity(int bytes) {
