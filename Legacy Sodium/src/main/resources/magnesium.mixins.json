@@ -24,6 +24,7 @@
     "core.pipeline.MixinVertexFormat",
     "features.block.MixinBlockModelRenderer",
     "features.block.MixinWorldRenderer",
+	"features.block.MixinLeavesBlock",
     "features.buffer_builder.fast_advance.MixinBufferBuilder",
     "features.buffer_builder.fast_sort.MixinBufferBuilder",
     "features.buffer_builder.intrinsics.MixinBufferBuilder",

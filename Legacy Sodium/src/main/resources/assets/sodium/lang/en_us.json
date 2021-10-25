@@ -47,6 +47,8 @@
   "sodium.options.use_particle_culling.tooltip": "If enabled, only particles which are determined to be visible will be rendered. This can provide a significant improvement to frame rates when many particles are nearby.",
   "sodium.options.animate_only_visible_textures.name": "Animate Only Visible Textures",
   "sodium.options.animate_only_visible_textures.tooltip": "If enabled, only animated textures determined to be visible will be updated. This can provide a significant boost to frame rates on some hardware. If you experience issues with some textures not being animated, disable this option.",
+  "sodium.options.leaves_culling.name": "Use Leaves Culling",
+  "sodium.options.leaves_culling.tooltip": "If enabled, Leaves that are not in direct view will be culled.  This can result in an FPS boost at the cost of visual quality, making leaves more transparent.",
   "sodium.options.use_memory_intrinsics.name": "Use Memory Intrinsics",
   "sodium.options.use_memory_intrinsics.tooltip": "If enabled, special intrinsics will be used to speed up the copying of client memory in certain vertex-limited scenarios, such as particle and text rendering. This option only exists for debugging purposes and should be left enabled unless you know what you are doing.",
   "sodium.options.disable_driver_blacklist.name": "Disable Driver Blacklist",

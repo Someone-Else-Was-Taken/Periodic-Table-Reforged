@@ -33,6 +33,7 @@ public class SodiumGameOptions {
         public boolean useVertexArrayObjects = true;
         public boolean useChunkMultidraw = true;
 
+        public boolean useLeavesCulling = false;
         public boolean animateOnlyVisibleTextures = true;
         public boolean useEntityCulling = true;
         public boolean useParticleCulling = true;
