@@ -93,7 +93,7 @@ public class MixinItemRenderer {
                 if (colorProvider == null) {
                     color = ColorARGB.toABGR(this.itemColors.getColor(itemStackIn, bakedQuad.getTintIndex()), 255);
 
-                color = ColorARGB.toABGR((colorProvider.getColor(stack, bakedQuad.getTintIndex())), 255);
+                color = ColorARGB.toABGR((colorProvider.getColor(itemStackIn, bakedQuad.getTintIndex())), 255);
                 } else {
                     color = ColorARGB.toABGR((colorProvider.getColor(itemStackIn, bakedQuad.getTintIndex())), 255);
                 }
