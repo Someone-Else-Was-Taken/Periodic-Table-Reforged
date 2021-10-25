@@ -9,26 +9,22 @@ import me.jellysquid.mods.sodium.client.world.cloned.ClonedChunkSectionCache;
 import me.jellysquid.mods.sodium.client.world.cloned.PackedIntegerArrayExtended;
 import me.jellysquid.mods.sodium.client.world.cloned.palette.ClonedPalette;
 import net.minecraft.block.BlockState;
-//import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BitArray;
 import net.minecraft.util.Direction;
-//import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableBoundingBox;
 import net.minecraft.util.math.SectionPos;
-//import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeManager;
-//import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
-//import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.lighting.WorldLightManager;
 
@@ -220,6 +216,13 @@ public class WorldSlice implements IBlockDisplayReader, BiomeManager.IBiomeReade
         }
     }
 
+    private int getBlockIndex(MutableBoundingBox box, int x, int y, int z) {
+        int x2 = x - box.minX;
+        int y2 = y - box.minY;
+        int z2 = z - box.minZ;
+        return (y2 * BLOCK_LENGTH * BLOCK_LENGTH) + (z2 * BLOCK_LENGTH) + x2;
+    }
+
     private void unpackBlockDataZ(BlockState[] states, ClonedChunkSection section) {
         ((PackedIntegerArrayExtended) section.getBlockData())
                 .copyUsingPalette(states, section.getBlockPalette());
@@ -227,16 +230,20 @@ public class WorldSlice implements IBlockDisplayReader, BiomeManager.IBiomeReade
 
     @Override
     public BlockState getBlockState(BlockPos pos) {
-        return this.getBlockState(pos.getX(), pos.getY(), pos.getZ());
+        return this.getBlockState(pos.getX(), pos.getY(), pos.getZ(), pos);
     }
 
-    public BlockState getBlockState(int x, int y, int z) {
-        int relX = x - this.baseX;
-        int relY = y - this.baseY;
-        int relZ = z - this.baseZ;
+    public BlockState getBlockState(int x, int y, int z, BlockPos pos) {
+       if (World.isYOutOfBounds(y)) {
+            return Blocks.VOID_AIR.getDefaultState();
+        }
 
-        return this.blockStatesArrays[getLocalSectionIndex(relX >> 4, relY >> 4, relZ >> 4)]
-                [getLocalBlockIndex(relX & 15, relY & 15, relZ & 15)];
+        int index = this.getBlockIndex(this.context.getVolume(), x, y, z);
+        if (index < 0 || index >= this.blockStates.length) {
+            return this.world.getBlockState(pos == null ? new BlockPos(x, y, z) : pos);
+        }
+
+        return this.blockStates[index];
     }
 
     public BlockState getBlockStateRelative(int x, int y, int z) {
@@ -262,13 +269,14 @@ public class WorldSlice implements IBlockDisplayReader, BiomeManager.IBiomeReade
 
     @Override
     public TileEntity getTileEntity(BlockPos pos) {
-        return this.getBlockEntity(pos.getX(), pos.getY(), pos.getZ());
-    }
+        int relX = pos.getX() - this.baseX;
+        int relY = pos.getY() - this.baseY;
+        int relZ = pos.getZ() - this.baseZ;
 
-    public TileEntity getBlockEntity(int x, int y, int z) {
-        int relX = x - this.baseX;
-        int relY = y - this.baseY;
-        int relZ = z - this.baseZ;
+        int index = getLocalSectionIndex(relX >> 4, relY >> 4, relZ >> 4);
+        if (index < 0 || index >= this.sections.length) {
+            return this.world.getTileEntity(pos);
+        }
 
         return this.sections[getLocalSectionIndex(relX >> 4, relY >> 4, relZ >> 4)]
                 .getBlockEntity(relX & 15, relY & 15, relZ & 15);
