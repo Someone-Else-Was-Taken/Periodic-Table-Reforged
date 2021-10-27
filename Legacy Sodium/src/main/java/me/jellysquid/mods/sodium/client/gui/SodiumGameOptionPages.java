@@ -364,7 +364,7 @@ public class SodiumGameOptionPages {
         return new OptionPage("Advanced", ImmutableList.copyOf(groups));
     }
 
-    public static OptionPage debug() {
+    public static OptionPage experimental() {
         List<OptionGroup> groups = new ArrayList<>();
 
         groups.add(OptionGroup.createBuilder()
@@ -372,7 +372,7 @@ public class SodiumGameOptionPages {
                         .setName("Display FPS")
                         .setTooltip("Displays the Current Client FPS. Primarily for Benchmarking.")
                         .setControl(TickBoxControl::new)
-                        .setBinding((opts, value) -> opts.debug.displayFps = value, opts -> opts.debug.displayFps)
+                        .setBinding((opts, value) -> opts.experimental.displayFps = value, opts -> opts.experimental.displayFps)
                         .setImpact(OptionImpact.LOW)
                         .build())
                 .build());

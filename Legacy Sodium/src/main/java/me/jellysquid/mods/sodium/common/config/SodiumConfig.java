@@ -105,6 +105,11 @@ public class SodiumConfig {
             this.options.get(getMixinRuleName("features.item")).addModOverride(false, "quark");
         }
 
+        if(FMLLoader.getLoadingModList().getModFileById("twilightforest") != null)
+        {
+            this.options.get(getMixinRuleName("features.item")).addModOverride(false, "twilightforest");
+        }
+
         //Both SLS and Magnesium override the same mixin. These are not compatible and nothing is lost disabling the mixin.
         if(FMLLoader.getLoadingModList().getModFileById("seamless_loading_screen") != null)
         {
