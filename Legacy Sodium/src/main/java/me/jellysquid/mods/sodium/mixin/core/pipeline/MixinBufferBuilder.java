@@ -51,10 +51,10 @@ public abstract class MixinBufferBuilder implements VertexBufferView, VertexDrai
 
     @Redirect(method = "getNextBuffer", at = @At(value = "INVOKE", target = "Ljava/nio/Buffer;limit(I)Ljava/nio/Buffer;"))
     public Buffer getNextBuffer(Buffer buffer, int newLimit) {
-        if(newLimit <= 1024) {
-            ensureBufferCapacity(newLimit);
-            buffer = (Buffer) this.byteBuffer;
-            buffer.limit(newLimit);
+        ensureBufferCapacity(newLimit);
+        buffer = (Buffer) this.byteBuffer;
+        buffer.limit(newLimit);
+        if(newLimit <= 512) {
             return buffer;
         }
         return null;
