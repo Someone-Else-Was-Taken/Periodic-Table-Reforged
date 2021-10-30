@@ -57,10 +57,6 @@ public abstract class MixinBufferBuilder implements VertexBufferView, VertexDrai
             buffer.limit(newLimit);
             return buffer;
         }
-        else {
-            buffer.limit(0);
-            newLimit = 0;
-        }
         return null;
     }
 
