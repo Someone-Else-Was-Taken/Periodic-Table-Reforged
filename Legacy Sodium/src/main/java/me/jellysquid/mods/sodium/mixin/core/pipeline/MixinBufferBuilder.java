@@ -48,13 +48,23 @@ public abstract class MixinBufferBuilder implements VertexBufferView, VertexDrai
     @Shadow
     private int vertexCount;
 
+
     @Redirect(method = "getNextBuffer", at = @At(value = "INVOKE", target = "Ljava/nio/Buffer;limit(I)Ljava/nio/Buffer;"))
-    public Buffer debugGetNextBuffer(Buffer buffer, int newLimit) {
-        ensureBufferCapacity(newLimit);
-        buffer = (Buffer) this.byteBuffer;
-        buffer.limit(newLimit);
-        return buffer;
+    public Buffer getNextBuffer(Buffer buffer, int newLimit) {
+        if(newLimit <= 1024) {
+            ensureBufferCapacity(newLimit);
+            buffer = (Buffer) this.byteBuffer;
+            buffer.limit(newLimit);
+            return buffer;
+        }
+        else {
+            buffer.limit(0);
+            newLimit = 0;
+        }
+        return null;
     }
+
+
 
     @Override
     public boolean ensureBufferCapacity(int bytes) {
