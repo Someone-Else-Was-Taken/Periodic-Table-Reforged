@@ -431,6 +431,10 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
         while (!this.importantRebuildQueue.isEmpty()) {
             ChunkRenderContainer<T> render = this.importantRebuildQueue.dequeue();
 
+            if (render == null) {
+                continue;
+            }
+
             // Do not allow distant chunks to block rendering
             if (!this.isChunkPrioritized(render)) {
                 this.builder.deferRebuild(render);
