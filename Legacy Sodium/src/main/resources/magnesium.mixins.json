@@ -58,7 +58,8 @@
     "features.render_layer.MixinRenderLayers",
     "features.texture_tracking.MixinSprite",
     "features.texture_tracking.MixinSpriteAtlasTexture",
-    "features.world_ticking.MixinClientWorld"
+    "features.world_ticking.MixinClientWorld",
+    "features.render_layer.leaves.MixinLeavesBlock"
   ],
   "refmap": "magnesium.refmap.json"
 }
