@@ -231,7 +231,11 @@ public class MultidrawChunkRenderBackend extends ChunkRenderShaderBackend<Multid
     private void setupUploadBatches(Iterator<ChunkBuildResult<MultidrawGraphicsState>> renders) {
         while (renders.hasNext()) {
             ChunkBuildResult<MultidrawGraphicsState> result = renders.next();
+            if(result == null) {
+                continue;
+            }
             ChunkRenderContainer<MultidrawGraphicsState> render = result.render;
+
 
             ChunkRegion<MultidrawGraphicsState> region = this.bufferManager.getRegion(render.getChunkX(), render.getChunkY(), render.getChunkZ());
 
