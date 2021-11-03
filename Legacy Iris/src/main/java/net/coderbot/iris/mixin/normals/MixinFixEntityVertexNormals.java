@@ -68,10 +68,10 @@ public class MixinFixEntityVertexNormals {
 		// we're only interested in it because we want to restore the matrix state before rendering the last
 		// immediate buffers
 		@Slice(id = "after_translucent_rendering", from = @At(value = "FIELD:FIRST",
-			target = "net/minecraft/client/renderer/WorldRenderer.transparencyChain : Lnet/minecraft/client/shader/ShaderGroup;")),
+			target = "net/minecraft/client/renderer/LevelRenderer.transparencyChain : Lnet/minecraft/client/renderer/PostChain;")),
 		// The opposite of the previous slice, everything up until the translucency rendering.
 		@Slice(id = "before_translucent_rendering",
-			from = @At(value = "INVOKE_STRING", target = PROFILER_SWAP, args = "ldc=entities"),
+			from = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/IProfiler;popPush(Ljava/lang/String;)V", args = "ldc=entities"),
 			to = @At(value = "FIELD:FIRST", target =
 				"net/minecraft/client/renderer/LevelRenderer.transparencyChain : Lnet/minecraft/client/renderer/PostChain;")
 		)
@@ -90,7 +90,7 @@ public class MixinFixEntityVertexNormals {
 		poseStack.last().normal().setIdentity();
 	}
 
-	@Inject(method = CHECK_EMPTY, at = {
+	@Inject(method = RENDER, at = {
 		@At(value = "INVOKE", target = CHECK_EMPTY),
 		// We only want to select the pushMatrix call that happens right before DebugRenderer::render
 		// We use a custom slice here to make sure that we only target this single call.
@@ -104,7 +104,7 @@ public class MixinFixEntityVertexNormals {
 	}, slice = @Slice(id = "before_debug_rendering",
 		from = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;crosshairPickEntity:Lnet/minecraft/entity/Entity;"),
 		to = @At(value = "INVOKE", target =
-			"Lnet/minecraft/client/renderer/LevelRenderer;renderDebug(Lnet/minecraft/client/Camera;)V")
+				"Lnet/minecraft/client/renderer/WorldRenderer;renderDebug(Lnet/minecraft/client/renderer/ActiveRenderInfo;)V")
 	))
 	private void iris$teardownGlMatrix(MatrixStack poseStack, float tickDelta, long limitTime,
 									   boolean renderBlockOutline, ActiveRenderInfo camera, GameRenderer gameRenderer,
