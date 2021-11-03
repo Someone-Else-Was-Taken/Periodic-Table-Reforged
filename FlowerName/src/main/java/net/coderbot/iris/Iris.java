@@ -49,9 +49,9 @@ import org.lwjgl.glfw.GLFW;
 //import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 //import net.fabricmc.loader.api.FabricLoader;
 
-@Mod("iris")
+@Mod("pupil")
 public class Iris {
-	public static final String MODID = "iris";
+	public static final String MODID = "pupil";
 	public static final Logger logger = LogManager.getLogger(MODID);
 	// The recommended version of Magnesium for use with Insert_Flower_Name
 	//private static final String SODIUM_VERSION = "0.2.0+IRIS4";

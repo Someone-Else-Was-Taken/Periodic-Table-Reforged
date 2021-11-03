@@ -19,7 +19,7 @@ modId="iris" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 version="0.5" #mandatory
  # A display name for the mod
-displayName="Flower Name" #mandatory
+displayName="Pupil" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI

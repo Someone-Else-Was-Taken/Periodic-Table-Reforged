@@ -16,8 +16,8 @@ apply plugin: "org.spongepowered.mixin"
 
 
 version = '1.0'
-group = 'someoneelse.iris' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'iris'
+group = 'someoneelse.pupil' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'pupil'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -31,7 +31,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            arg "-mixin.config=mixins.iris.json"
+            arg "-mixin.config=mixins.pupil.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -42,7 +42,7 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-            arg "-mixin.config=mixins.iris.json"
+            arg "-mixin.config=mixins.pupil.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -64,7 +64,7 @@ minecraft {
 }
 
 mixin {
-    add sourceSets.main, "iris.refmap.json"
+    add sourceSets.main, "pupil.refmap.json"
 }
 
 dependencies {
