@@ -109,11 +109,16 @@ public class MultidrawChunkRenderBackend extends ChunkRenderShaderBackend<Multid
 
     @Override
     public void upload(CommandList commandList, Iterator<ChunkBuildResult<MultidrawGraphicsState>> queue) {
-        this.setupUploadBatches(queue);
+        if(queue != null) {
+            this.setupUploadBatches(queue);
+        }
+
 
         commandList.bindBuffer(GlBufferTarget.ARRAY_BUFFER, this.uploadBuffer);
 
         while (!this.pendingUploads.isEmpty()) {
+
+
             ChunkRegion<MultidrawGraphicsState> region = this.pendingUploads.dequeue();
 
             GlBufferArena arena = region.getBufferArena();
