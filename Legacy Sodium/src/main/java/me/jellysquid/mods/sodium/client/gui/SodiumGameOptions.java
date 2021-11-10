@@ -47,6 +47,7 @@ public class SodiumGameOptions {
 
     public static class ExperimentalSettings {
         public boolean displayFps = false;
+        public int displayFpsPos = 2;
     }
 
     public static class QualitySettings {

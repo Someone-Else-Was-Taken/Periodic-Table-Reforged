@@ -383,6 +383,14 @@ public class SodiumGameOptionPages {
                         .setBinding((opts, value) -> opts.experimental.displayFps = value, opts -> opts.experimental.displayFps)
                         .setImpact(OptionImpact.LOW)
                         .build())
+                .add(OptionImpl.createBuilder(int.class, sodiumOpts)
+                        .setName("FPS Display Position")
+                        .setTooltip("The Position for the FPS Display")
+                        .setControl(option -> new SliderControl(option, 2, 20, 2, ControlValueFormatter.quantity("Pixels")))
+                        .setImpact(OptionImpact.LOW)
+                        .setBinding((opts, value) -> opts.experimental.displayFpsPos = value, opts -> opts.experimental.displayFpsPos)
+                        .build()
+                )
                 .build());
 
         return new OptionPage("Experimental", ImmutableList.copyOf(groups));
