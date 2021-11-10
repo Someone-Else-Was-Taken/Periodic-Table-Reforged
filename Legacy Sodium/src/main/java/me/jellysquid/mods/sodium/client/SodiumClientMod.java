@@ -26,13 +26,16 @@ public class SodiumClientMod {
     private static Logger LOGGER;
 
     private static String MOD_VERSION;
-
-
-
-
+    private static String BE_LOADED;
 
     public void setup(final FMLCommonSetupEvent event) {
         MOD_VERSION = ModList.get().getModContainerById("magnesium").get().getModInfo().getVersion().toString();
+        BE_LOADED = ModList.get().getModContainerById("betterendforge").get().getModInfo().getVersion().toString();
+
+        //Throws a NPE before Entering Game if an Incompatible Mod is Installed.
+        if(BE_LOADED.contains("1.6.3")) {
+            throw new NullPointerException("Magnesium is not compatible with BetterEnd(Forge). Please replace it with BetterEnd Reforked.");
+        }
 
     }
 
