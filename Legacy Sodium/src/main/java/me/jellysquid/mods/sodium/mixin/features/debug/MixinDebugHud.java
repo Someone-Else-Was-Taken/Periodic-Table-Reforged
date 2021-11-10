@@ -29,7 +29,7 @@ public abstract class MixinDebugHud {
     private ArrayList<String> redirectRightTextEarly(Object[] elements) {
         ArrayList<String> strings = Lists.newArrayList((String[]) elements);
         strings.add("");
-        strings.add("Sodium Renderer");
+        strings.add("Magnesium Renderer");
         strings.add(TextFormatting.UNDERLINE + getFormattedVersionText());
         strings.add("");
 
