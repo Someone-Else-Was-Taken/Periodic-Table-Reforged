@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemColors.class)
 public class MixinItemColors implements ItemColorsExtended {
-    private Reference2ReferenceMap<IRegistryDelegate<Item>, IItemColor> itemsToColor;
+    private Reference2ReferenceMap<IItemProvider, IItemColor> itemsToColor;
 
     private static final IItemColor DEFAULT_PROVIDER = (stack, tintIdx) -> -1;
 
@@ -32,12 +32,12 @@ public class MixinItemColors implements ItemColorsExtended {
     @Inject(method = "register", at = @At("HEAD"))
     private void preRegisterColor(IItemColor mapper, IItemProvider[] convertibles, CallbackInfo ci) {
         for (IItemProvider convertible : convertibles) {
-            this.itemsToColor.put(convertible.asItem().delegate, mapper);
+            this.itemsToColor.put(convertible.asItem(), mapper);
         }
     }
 
     @Override
     public IItemColor getColorProvider(ItemStack stack) {
-        return this.itemsToColor.get(stack.getItem().delegate);
+        return this.itemsToColor.get(stack.getItem());
     }
 }
