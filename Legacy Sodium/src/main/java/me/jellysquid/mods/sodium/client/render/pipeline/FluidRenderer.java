@@ -47,18 +47,15 @@ import net.minecraft.util.math.vector.Vector3d;
 //import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.biome.BiomeColors;
+import net.minecraftforge.client.ForgeHooksClient;
 
 public class FluidRenderer {
     private static final IBlockColor FLUID_COLOR_PROVIDER = (state, world, pos, tintIndex) -> {
         if (world == null) return 0xFFFFFFFF;
-        return BiomeColors.getWaterColor(world, pos);
+        return state.getFluidState().getFluid().getAttributes().getColor(world, pos);
     };
 
     private final BlockPos.Mutable scratchPos = new BlockPos.Mutable();
-
-    private final TextureAtlasSprite[] lavaSprites = new TextureAtlasSprite[2];
-    private final TextureAtlasSprite[] waterSprites = new TextureAtlasSprite[2];
-    private final TextureAtlasSprite waterOverlaySprite;
 
     private final ModelQuadViewMutable quad = new ModelQuad();
 
@@ -69,15 +66,6 @@ public class FluidRenderer {
     private final int[] quadColors = new int[4];
 
     public FluidRenderer(Minecraft client, LightPipelineProvider lighters, BiomeColorBlender biomeColorBlender) {
-        BlockModelShapes models = client.getModelManager().getBlockModelShapes();
-
-        this.lavaSprites[0] = models.getTexture(Blocks.LAVA.getDefaultState());
-        this.lavaSprites[1] = ModelBakery.LOCATION_LAVA_FLOW.getSprite();
-
-        this.waterSprites[0] = models.getTexture(Blocks.WATER.getDefaultState());
-        this.waterSprites[1] = ModelBakery.LOCATION_WATER_FLOW.getSprite();
-
-        this.waterOverlaySprite = ModelBakery.LOCATION_WATER_OVERLAY.getSprite();
 
         int normal = Norm3b.pack(0.0f, 1.0f, 0.0f);
 
@@ -136,8 +124,8 @@ public class FluidRenderer {
             return false;
         }
 
-        boolean lava = fluidState.isTagged(FluidTags.LAVA);
-        TextureAtlasSprite[] sprites = lava ? this.lavaSprites : this.waterSprites;
+        TextureAtlasSprite[] sprites = ForgeHooksClient.getFluidSprites(world, pos, fluidState);
+        boolean hc = fluidState.getFluid().getAttributes().getColor() != 0xffffffff;
 
         boolean rendered = false;
 
@@ -150,7 +138,7 @@ public class FluidRenderer {
 
         final ModelQuadViewMutable quad = this.quad;
 
-        LightMode lightMode = !lava && Minecraft.isAmbientOcclusionEnabled() ? LightMode.SMOOTH : LightMode.FLAT;
+        LightMode lightMode = hc && Minecraft.isAmbientOcclusionEnabled() ? LightMode.SMOOTH : LightMode.FLAT;
         LightPipeline lighter = this.lighters.getLighter(lightMode);
 
         quad.setFlags(0);
@@ -217,7 +205,7 @@ public class FluidRenderer {
             this.setVertex(quad, 2, 1.0F, h3, 1.0F, u3, v3);
             this.setVertex(quad, 3, 1.0F, h4, 0.0f, u4, v4);
 
-            this.calculateQuadColors(quad, world, pos, lighter, Direction.UP, 1.0F, !lava);
+            this.calculateQuadColors(quad, world, pos, lighter, Direction.UP, 1.0F, hc);
             this.flushQuad(buffers, quad, facing, false);
 
             if (fluidState.shouldRenderSides(world, this.scratchPos.setPos(posX, posY + 1, posZ))) {
@@ -246,7 +234,7 @@ public class FluidRenderer {
             this.setVertex(quad, 2, 1.0F, yOffset, 0.0f, maxU, minV);
             this.setVertex(quad, 3, 1.0F, yOffset, 1.0F, maxU, maxV);
 
-            this.calculateQuadColors(quad, world, pos, lighter, Direction.DOWN, 1.0F, !lava);
+            this.calculateQuadColors(quad, world, pos, lighter, Direction.DOWN, 1.0F, hc);
             this.flushQuad(buffers, quad, ModelQuadFacing.DOWN, false);
 
             rendered = true;
@@ -321,13 +309,14 @@ public class FluidRenderer {
                 int adjZ = posZ + dir.getZOffset();
 
                 TextureAtlasSprite sprite = sprites[1];
+                TextureAtlasSprite oSprite = sprites[2];
 
-                if (!lava) {
+                if (oSprite != null) {
                     BlockPos posAdj = this.scratchPos.setPos(adjX, adjY, adjZ);
                     Block block = world.getBlockState(posAdj).getBlock();
 
                     if (block == Blocks.GLASS || block instanceof StainedGlassBlock) {
-                        sprite = this.waterOverlaySprite;
+                        sprite = oSprite;
                     }
                 }
 
@@ -346,10 +335,10 @@ public class FluidRenderer {
 
                 float br = dir.getAxis() == Direction.Axis.Z ? 0.8F : 0.6F;
 
-                this.calculateQuadColors(quad, world, pos, lighter, dir, br, !lava);
+                this.calculateQuadColors(quad, world, pos, lighter, dir, br, hc);
                 this.flushQuad(buffers, quad, ModelQuadFacing.fromDirection(dir), false);
 
-                if (sprite != this.waterOverlaySprite) {
+                if (sprite != oSprite) {
                     this.setVertex(quad, 0, x1, c1, z1, u1, v1);
                     this.setVertex(quad, 1, x1, yOffset, z1, u1, v3);
                     this.setVertex(quad, 2, x2, yOffset, z2, u2, v3);
