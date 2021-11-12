@@ -10,9 +10,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod("hydrogen")
+@Mod("helium")
 public class HydrogenMod {
-    public static final Logger LOGGER = LogManager.getLogger("Hydrogen");
+    public static final Logger LOGGER = LogManager.getLogger("Helium");
 
 
     public HydrogenMod() {

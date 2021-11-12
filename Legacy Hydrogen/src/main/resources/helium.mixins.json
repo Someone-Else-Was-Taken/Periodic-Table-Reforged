@@ -27,5 +27,5 @@
     "chunk.MixinWorldChunk",
     "nbt.MixinCompoundTag"
   ],
-  "refmap": "hydrogen.refmap.json"
+  "refmap": "helium.refmap.json"
 }
