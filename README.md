@@ -1,4 +1,4 @@
-# CaffeineMC Reforged
+# Periodic Table Reforged
 
 This is an Unofficial port of the core CaffeineMC Mods, alongside Iris.
 This is in no way related to the original mod teams, Code credit goes out to each mod's respective developers.
