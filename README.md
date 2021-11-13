@@ -33,6 +33,12 @@ Hydrogen -> Helium
 
 Iris -> Pupil (Unreleased)
 
+## Iris Information
+
+Currently Iris Reforged is Compatible with all Shaders that Fabric Iris can run.
+
+If using Create/Flywheel, as with Magnesium, run "/flywheel backend off" to prevent visual glitches.
+
 ## Contact
 
 If you need to contact me, feel free to send me a private message on CF 
