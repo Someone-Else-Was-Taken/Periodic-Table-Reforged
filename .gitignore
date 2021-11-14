@@ -6,7 +6,6 @@ build
 .gitignore
 logs
 run
-iris
 gradle
 FlowerSodium
 
