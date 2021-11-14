@@ -1,6 +1,7 @@
 package me.jellysquid.mods.sodium.client.gui;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import me.jellysquid.mods.sodium.client.gui.options.*;
 import me.jellysquid.mods.sodium.client.gui.options.binding.compat.VanillaBooleanOptionBinding;
@@ -13,6 +14,8 @@ import me.jellysquid.mods.sodium.client.gui.options.storage.SodiumOptionsStorage
 //import me.jellysquid.mods.sodium.client.render.chunk.backends.multidraw.MultidrawChunkRenderBackend;
 //import me.jellysquid.mods.sodium.client.render.chunk.backends.multidraw.MultidrawChunkRenderBackend;
 import me.jellysquid.mods.sodium.client.util.UnsafeUtil;
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.gui.option.IrisVideoSettings;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.AttackIndicatorStatus;
@@ -47,6 +50,17 @@ public class SodiumGameOptionPages {
                         .setBinding((options, value) -> options.renderDistanceChunks = value, options -> options.renderDistanceChunks)
                         .setImpact(OptionImpact.HIGH)
                         .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD)
+                        .build())
+                .add(OptionImpl.createBuilder(int.class, vanillaOpts)
+                        .setName("Max Shadow Distance")
+                        .setTooltip("The shadow render distance controls how far away terrain can potentially be rendered in the shadow pass. Lower distances mean that less terrain will be " +
+                                "rendered, improving frame rates. This option cannot be changed on packs which explicitly specify a shadow render distance. The actual shadow render distance is capped by the " +
+                                "View Distance setting.")
+                        .setControl(option -> new SliderControl(option, 0, 32, 1, ControlValueFormatter.quantity("Chunks")))
+                        .setBinding((options, value) -> IrisVideoSettings.shadowDistance = value,
+                                options -> IrisVideoSettings.getOverriddenShadowDistance(IrisVideoSettings.shadowDistance))
+                        .setImpact(OptionImpact.HIGH)
+                        .setEnabled(IrisVideoSettings.isShadowDistanceSliderEnabled())
                         .build())
                 .add(OptionImpl.createBuilder(int.class, vanillaOpts)
                         .setName("Brightness")
@@ -142,22 +156,46 @@ public class SodiumGameOptionPages {
         return new OptionPage("General", ImmutableList.copyOf(groups));
     }
 
+    enum SupportedGraphicsMode {
+        FAST, FANCY;
+
+        static SupportedGraphicsMode fromVanilla(GraphicsFanciness vanilla) {
+            if (vanilla == GraphicsFanciness.FAST) {
+                return FAST;
+            } else {
+                return FANCY;
+            }
+        }
+
+        GraphicsFanciness toVanilla() {
+            if (this == FAST) {
+                return GraphicsFanciness.FAST;
+            } else {
+                return GraphicsFanciness.FANCY;
+            }
+        }
+    }
+
     public static OptionPage quality() {
         List<OptionGroup> groups = new ArrayList<>();
-
-        groups.add(OptionGroup.createBuilder()
-                .add(OptionImpl.createBuilder(GraphicsFanciness.class, vanillaOpts)
-                        .setName("Graphics Quality")
-                        .setTooltip("The default graphics quality controls some legacy options and is necessary for mod compatibility. If the options below are left to " +
-                                "\"Default\", they will use this setting.")
-                        .setControl(option -> new CyclingControl<>(option, GraphicsFanciness.class, new String[] { "Fast", "Fancy", "Fabulous" }))
-                        .setBinding(
-                                (opts, value) -> opts.graphicFanciness = value,
-                                opts -> opts.graphicFanciness)
-                        .setImpact(OptionImpact.HIGH)
-                        .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD)
-                        .build())
-                .build());
+        OptionImpl.Builder graphicsQuality;
+        if (!Iris.getIrisConfig().areShadersEnabled() && GlStateManager.isFabulous()) {
+            graphicsQuality = OptionImpl.createBuilder(GraphicsFanciness.class, vanillaOpts).setControl(option -> new CyclingControl<>(option, GraphicsFanciness.class, new String[] { "Fast", "Fancy", "Fabulous" }))
+                    .setBinding(
+                            (opts, value) -> opts.graphicFanciness = value,
+                            opts -> opts.graphicFanciness);
+        } else {
+            graphicsQuality = OptionImpl.createBuilder(SupportedGraphicsMode.class, vanillaOpts).setControl(option -> new CyclingControl<>(option, SupportedGraphicsMode.class, new String[] { "Fast", "Fancy"/*, "Fabulous"*/ }))
+                    .setBinding(
+                            (opts, value) -> opts.graphicFanciness = value.toVanilla(),
+                            opts -> SupportedGraphicsMode.fromVanilla(opts.graphicFanciness));
+        }
+        groups.add(OptionGroup.createBuilder().add(graphicsQuality.setName("Graphics Quality")
+                .setTooltip("The default graphics quality controls some legacy options and is necessary for mod compatibility. If the options below are left to " +
+                        "\"Default\", they will use this setting. Fabulous graphics are blocked while shaders are enabled.")
+                .setImpact(OptionImpact.HIGH)
+                .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD)
+                .build()).build());
 
         groups.add(OptionGroup.createBuilder()
                 .add(OptionImpl.createBuilder(SodiumGameOptions.GraphicsQuality.class, sodiumOpts)
