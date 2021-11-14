@@ -32,5 +32,5 @@ credits="SomeoneElse, coderbot" #optional
 authors="SomeoneElse" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Something Something Shaders but good?
+Forge port of a new shaders mod for Minecraft intended to be compatible with existing ShadersMod/Optifine shaders
 '''
