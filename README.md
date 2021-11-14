@@ -38,11 +38,11 @@ Iris -> Pupil (Unreleased)
 1. ~~Periodic Table~~
 2. ~~Create/Flwheel~~
 3. ~~Botania~~
-4. ComputerCraft
-5. Astral Sorcery
-6. Twilight Forest + Blue Skies (Modded Dimensions)
-7. Crucial 2
-8. BC Reforged
+4. ~~ComputerCraft~~
+5. Astral Sorcery (Not at all)
+6. ~~Twilight Forest + Blue Skies~~ (Doesnt crash, does not render Skybox textures)
+7. ~~Crucial 2~~
+8. ~~BC Reforged~~
 9. BM+
 10. ATM?
 
