@@ -15,7 +15,7 @@ issueTrackerURL="" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
-modId="iris" #mandatory
+modId="pupil" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 version="0.1" #mandatory
  # A display name for the mod

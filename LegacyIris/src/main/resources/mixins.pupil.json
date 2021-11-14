@@ -68,5 +68,5 @@
   "injectors": {
     "defaultRequire": 1
   },
-  "refmap": "iris.refmap.json"
+  "refmap": "pupil.refmap.json"
 }
