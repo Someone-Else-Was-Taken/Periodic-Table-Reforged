@@ -1,4 +1,4 @@
-package net.coderbot.batchedentityrendering.mixin;
+package net.coderbot.iris.mixin.batchedentityrenderer;
 
 import net.minecraft.client.renderer.RenderState;
 //import net.minecraft.client.renderer.RenderStateShard;

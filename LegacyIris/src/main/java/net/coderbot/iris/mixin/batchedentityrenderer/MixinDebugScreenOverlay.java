@@ -1,4 +1,4 @@
-package net.coderbot.batchedentityrendering.mixin;
+package net.coderbot.iris.mixin.batchedentityrenderer;
 
 import net.coderbot.batchedentityrendering.impl.BatchingDebugMessageHelper;
 import net.coderbot.batchedentityrendering.impl.DrawCallTrackingRenderBuffers;

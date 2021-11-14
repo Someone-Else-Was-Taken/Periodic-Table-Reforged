@@ -1,4 +1,4 @@
-package net.coderbot.batchedentityrendering.mixin;
+package net.coderbot.iris.mixin.batchedentityrenderer;
 
 //import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.matrix.MatrixStack;

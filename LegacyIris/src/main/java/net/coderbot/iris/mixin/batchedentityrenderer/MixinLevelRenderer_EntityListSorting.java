@@ -1,4 +1,4 @@
-package net.coderbot.batchedentityrendering.mixin;
+package net.coderbot.iris.mixin.batchedentityrenderer;
 
 //import net.minecraft.client.multiplayer.ClientLevel;
 //import net.minecraft.client.renderer.LevelRenderer;

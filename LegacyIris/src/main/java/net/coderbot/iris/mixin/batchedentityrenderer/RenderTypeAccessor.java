@@ -1,4 +1,4 @@
-package net.coderbot.batchedentityrendering.mixin;
+package net.coderbot.iris.mixin.batchedentityrenderer;
 
 //import net.fabricmc.api.EnvType;
 //import net.fabricmc.api.Environment;

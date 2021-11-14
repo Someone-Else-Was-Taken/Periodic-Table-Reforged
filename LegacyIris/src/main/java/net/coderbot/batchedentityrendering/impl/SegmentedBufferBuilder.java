@@ -4,7 +4,7 @@ package net.coderbot.batchedentityrendering.impl;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 //import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
-import net.coderbot.batchedentityrendering.mixin.RenderTypeAccessor;
+import net.coderbot.iris.mixin.batchedentityrenderer.RenderTypeAccessor;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 //import net.minecraft.client.renderer.MultiBufferSource;

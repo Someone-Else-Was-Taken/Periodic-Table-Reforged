@@ -1,4 +1,4 @@
-package net.coderbot.batchedentityrendering.mixin;
+package net.coderbot.iris.mixin.batchedentityrenderer;
 
 //import com.mojang.blaze3d.vertex.VertexFormat;
 import net.coderbot.batchedentityrendering.impl.BlendingStateHolder;

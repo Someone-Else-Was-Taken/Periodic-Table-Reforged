@@ -1,7 +1,7 @@
 package net.coderbot.batchedentityrendering.impl.wrappers;
 
 import net.coderbot.batchedentityrendering.impl.WrappableRenderType;
-import net.coderbot.batchedentityrendering.mixin.RenderTypeAccessor;
+import net.coderbot.iris.mixin.batchedentityrenderer.RenderTypeAccessor;
 import net.minecraft.client.renderer.RenderType;
 //import org.jetbrains.annotations.Nullable;
 

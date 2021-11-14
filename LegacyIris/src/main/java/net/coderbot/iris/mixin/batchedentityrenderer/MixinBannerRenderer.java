@@ -1,4 +1,4 @@
-package net.coderbot.batchedentityrendering.mixin;
+package net.coderbot.iris.mixin.batchedentityrenderer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 //import com.mojang.blaze3d.vertex.PoseStack;
@@ -39,7 +39,7 @@ public class MixinBannerRenderer {
     private static Groupable groupableToEnd;
     private static int index;
 
-    @ModifyVariable(method = "render", at = @At("HEAD"))
+    @ModifyVariable(method = "renderPatterns(Lcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;IILnet/minecraft/client/renderer/model/ModelRenderer;Lnet/minecraft/client/renderer/model/RenderMaterial;ZLjava/util/List;)V", at = @At("HEAD"))
     private static IRenderTypeBuffer iris$wrapBufferSource(IRenderTypeBuffer multiBufferSource) {
         if (multiBufferSource instanceof Groupable) {
             Groupable groupable = (Groupable) multiBufferSource;
@@ -57,8 +57,8 @@ public class MixinBannerRenderer {
         return multiBufferSource;
     }
 
-    @Inject(method = RENDER_PATTERNS, at = @At("RETURN"))
-    private static void iris$endRenderingCanvas(MatrixStack poseStack, IRenderTypeBuffer multiBufferSource, int i, int j, ModelRenderer modelPart, RenderMaterial material, boolean bl, List<Pair<BannerPattern, DyeColor>> list, boolean bl2, CallbackInfo ci) {
+    @Inject(method = "renderPatterns(Lcom/mojang/blaze3d/matrix/MatrixStack;Lnet/minecraft/client/renderer/IRenderTypeBuffer;IILnet/minecraft/client/renderer/model/ModelRenderer;Lnet/minecraft/client/renderer/model/RenderMaterial;ZLjava/util/List;)V", at = @At("RETURN"))
+    private static void iris$endRenderingCanvas(MatrixStack p_230180_0_, IRenderTypeBuffer p_230180_1_, int p_230180_2_, int p_230180_3_, ModelRenderer p_230180_4_, RenderMaterial p_230180_5_, boolean p_230180_6_, List<Pair<BannerPattern, DyeColor>> p_230180_7_, CallbackInfo ci) {
         if (groupableToEnd != null) {
             groupableToEnd.endGroup();
             groupableToEnd = null;
