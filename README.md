@@ -33,11 +33,18 @@ Hydrogen -> Helium
 
 Iris -> Pupil (Unreleased)
 
-## Iris Information
+## Iris Release Checklist
 
-Currently Iris Reforged is Compatible with all Shaders that Fabric Iris can run.
-
-If using Create/Flywheel, as with Magnesium, run "/flywheel backend off" to prevent visual glitches.
+1. ~~Periodic Table~~
+2. ~~Create/Flwheel~~
+3. ~~Botania~~
+4. ComputerCraft
+5. Astral Sorcery
+6. Twilight Forest + Blue Skies (Modded Dimensions)
+7. Crucial 2
+8. BC Reforged
+9. BM+
+10. ATM?
 
 ## Contact
 
