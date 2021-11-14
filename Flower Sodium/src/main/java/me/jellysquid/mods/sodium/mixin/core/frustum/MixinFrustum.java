@@ -81,6 +81,10 @@ public class MixinFrustum implements FrustumExtended {
 
     @Override
     public boolean fastAabbTest(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+        if (!preAabbTest(minX, minY, minZ, maxX, maxY, maxZ)) {
+            return false;
+        }
+
         return this.isBoxInFrustumRaw(minX - this.xF, minY - this.yF, minZ - this.zF,
                 maxX - this.xF, maxY - this.yF, maxZ - this.zF);
     }

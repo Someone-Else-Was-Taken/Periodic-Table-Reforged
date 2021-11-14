@@ -98,9 +98,9 @@ public class MultidrawChunkRenderBackend extends ChunkRenderShaderBackend<Multid
         this.bufferManager = new ChunkRegionManager<>(device);
 
         try (CommandList commands = device.createCommandList()) {
-            this.uploadBuffer = commands.createMutableBuffer(GlBufferUsage.GL_STREAM_COPY);
+            this.uploadBuffer = commands.createMutableBuffer(GlBufferUsage.GL_STREAM_DRAW);
             this.uniformBuffer = commands.createMutableBuffer(GlBufferUsage.GL_STATIC_DRAW);
-            this.commandBuffer = isWindowsIntelDriver() ? null : commands.createMutableBuffer(GlBufferUsage.GL_STATIC_DRAW);
+            this.commandBuffer = isWindowsIntelDriver() ? null : commands.createMutableBuffer(GlBufferUsage.GL_STREAM_DRAW);
         }
 
         this.uniformBufferBuilder = ChunkDrawParamsVector.create(2048);
@@ -114,11 +114,12 @@ public class MultidrawChunkRenderBackend extends ChunkRenderShaderBackend<Multid
         }
 
 
+
+        this.setupUploadBatches(queue);
+
         commandList.bindBuffer(GlBufferTarget.ARRAY_BUFFER, this.uploadBuffer);
 
         while (!this.pendingUploads.isEmpty()) {
-
-
             ChunkRegion<MultidrawGraphicsState> region = this.pendingUploads.dequeue();
 
             GlBufferArena arena = region.getBufferArena();
@@ -184,7 +185,11 @@ public class MultidrawChunkRenderBackend extends ChunkRenderShaderBackend<Multid
                         new GlVertexAttributeBinding(ChunkShaderBindingPoints.TEX_COORD,
                                 this.vertexFormat.getAttribute(ChunkMeshAttribute.TEXTURE)),
                         new GlVertexAttributeBinding(ChunkShaderBindingPoints.LIGHT_COORD,
-                                this.vertexFormat.getAttribute(ChunkMeshAttribute.LIGHT))
+                                this.vertexFormat.getAttribute(ChunkMeshAttribute.LIGHT)),
+                        new GlVertexAttributeBinding(ChunkShaderBindingPoints.BLOCK_ID, vertexFormat.getAttribute(ChunkMeshAttribute.BLOCK_ID)),
+                        new GlVertexAttributeBinding(ChunkShaderBindingPoints.MID_TEX_COORD, vertexFormat.getAttribute(ChunkMeshAttribute.MID_TEX_COORD)),
+                        new GlVertexAttributeBinding(ChunkShaderBindingPoints.TANGENT, vertexFormat.getAttribute(ChunkMeshAttribute.TANGENT)),
+                        new GlVertexAttributeBinding(ChunkShaderBindingPoints.NORMAL, vertexFormat.getAttribute(ChunkMeshAttribute.NORMAL))
                 }, false),
                 new TessellationBinding(this.uniformBuffer, new GlVertexAttributeBinding[] {
                         new GlVertexAttributeBinding(ChunkShaderBindingPoints.MODEL_OFFSET,
@@ -236,11 +241,10 @@ public class MultidrawChunkRenderBackend extends ChunkRenderShaderBackend<Multid
     private void setupUploadBatches(Iterator<ChunkBuildResult<MultidrawGraphicsState>> renders) {
         while (renders.hasNext()) {
             ChunkBuildResult<MultidrawGraphicsState> result = renders.next();
-            if(result == null) {
-                continue;
-            }
-            ChunkRenderContainer<MultidrawGraphicsState> render = result.render;
 
+
+
+            ChunkRenderContainer<MultidrawGraphicsState> render = result.render;
 
             ChunkRegion<MultidrawGraphicsState> region = this.bufferManager.getRegion(render.getChunkX(), render.getChunkY(), render.getChunkZ());
 

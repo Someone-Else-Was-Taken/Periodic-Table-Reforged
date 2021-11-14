@@ -33,6 +33,8 @@ import me.jellysquid.mods.sodium.common.util.collections.FutureDequeDrain;
 //import net.minecraft.block.entity.BlockEntity;
 //import net.minecraft.client.render.Camera;
 //import net.minecraft.client.util.math.MatrixStack;
+import net.coderbot.iris.Iris;
+import net.coderbot.iris.shadows.ShadowRenderingState;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.tileentity.TileEntity;
@@ -79,10 +81,10 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
     private final ObjectArrayFIFOQueue<ChunkRenderContainer<T>> unloadQueue = new ObjectArrayFIFOQueue<>();
 
     @SuppressWarnings("unchecked")
-    private final ChunkRenderList<T>[] chunkRenderLists = new ChunkRenderList[BlockRenderPass.COUNT];
-    private final ObjectList<ChunkRenderContainer<T>> tickableChunks = new ObjectArrayList<>();
+    private ChunkRenderList<T>[] chunkRenderLists = new ChunkRenderList[BlockRenderPass.COUNT];
+    private ObjectList<ChunkRenderContainer<T>> tickableChunks = new ObjectArrayList<>();
 
-    private final ObjectList<TileEntity> visibleBlockEntities = new ObjectArrayList<>();
+    private ObjectList<TileEntity> visibleBlockEntities = new ObjectArrayList<>();
 
     private final SodiumWorldRenderer renderer;
     private final ClientWorld world;
@@ -98,6 +100,13 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
     private boolean useFogCulling;
     private double fogRenderCutoff;
 
+    private ChunkRenderList<T>[] chunkRenderListsSwap = new ChunkRenderList[BlockRenderPass.COUNT];
+    private ObjectList<ChunkRenderContainer<T>> tickableChunksSwap = new ObjectArrayList<>();
+    private ObjectList<TileEntity> visibleBlockEntitiesSwap = new ObjectArrayList<>();
+    private int visibleChunkCountSwap;
+    private boolean dirtySwap;
+
+
     public ChunkRenderManager(SodiumWorldRenderer renderer, ChunkRenderBackend<T> backend, BlockRenderPassManager renderPassManager, ClientWorld world, int renderDistance) {
         this.backend = backend;
         this.renderer = renderer;
@@ -107,13 +116,40 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
         this.builder.init(world, renderPassManager);
 
         this.dirty = true;
+        this.dirtySwap = true;
 
         for (int i = 0; i < this.chunkRenderLists.length; i++) {
             this.chunkRenderLists[i] = new ChunkRenderList<>();
         }
 
+        for (int i = 0; i < this.chunkRenderListsSwap.length; i++) {
+            this.chunkRenderListsSwap[i] = new ChunkRenderList<>();
+        }
+
         this.culler = new ChunkGraphCuller(world, renderDistance);
         this.useBlockFaceCulling = SodiumClientMod.options().advanced.useBlockFaceCulling;
+    }
+
+    public void swapState() {
+        ChunkRenderList<T>[] chunkRenderListsTmp = chunkRenderLists;
+        chunkRenderLists = chunkRenderListsSwap;
+        chunkRenderListsSwap = chunkRenderListsTmp;
+
+        ObjectList<ChunkRenderContainer<T>> tickableChunksTmp = tickableChunks;
+        tickableChunks = tickableChunksSwap;
+        tickableChunksSwap = tickableChunksTmp;
+
+        ObjectList<TileEntity> visibleBlockEntitiesTmp = visibleBlockEntities;
+        visibleBlockEntities = visibleBlockEntitiesSwap;
+        visibleBlockEntitiesSwap = visibleBlockEntitiesTmp;
+
+        int visibleChunkCountTmp = visibleChunkCount;
+        visibleChunkCount = visibleChunkCountSwap;
+        visibleChunkCountSwap = visibleChunkCountTmp;
+
+        boolean dirtyTmp = dirty;
+        dirty = dirtySwap;
+        dirtySwap = dirtyTmp;
     }
 
     public void update(ActiveRenderInfo camera, FrustumExtended frustum, int frame, boolean spectator) {
@@ -135,7 +171,8 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
 
         this.useFogCulling = false;
 
-        if (SodiumClientMod.options().advanced.useFogOcclusion) {
+        // Iris: disable fog culling when shaders are enabled since shaderpacks aren't guaranteed to actually implement fog.
+        if (SodiumClientMod.options().advanced.useFogOcclusion && !Iris.getCurrentPack().isPresent()) {
             float dist = LegacyFogHelper.getFogCutoff() + FOG_PLANE_OFFSET;
 
             if (dist != 0.0f) {
@@ -157,11 +194,13 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
     }
 
     private void addChunk(ChunkRenderContainer<T> render) {
-        if (render.needsRebuild() && render.canRebuild()) {
-            if (render.needsImportantRebuild()) {
-                this.importantRebuildQueue.enqueue(render);
-            } else {
-                this.rebuildQueue.enqueue(render);
+        if (!ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+            if (render.needsRebuild() && render.canRebuild()) {
+                if (render.needsImportantRebuild() && !ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+                    this.importantRebuildQueue.enqueue(render);
+                } else {
+                    this.rebuildQueue.enqueue(render);
+                }
             }
         }
 
@@ -207,7 +246,8 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
 
     private int computeVisibleFaces(ChunkRenderContainer<T> render) {
         // If chunk face culling is disabled, render all faces
-        if (!this.useBlockFaceCulling) {
+        // TODO: Enable chunk face culling during the shadow pass
+        if (!this.useBlockFaceCulling || ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
             return ChunkFaceFlags.ALL;
         }
 
@@ -262,8 +302,10 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
     }
 
     private void reset() {
-        this.rebuildQueue.clear();
-        this.importantRebuildQueue.clear();
+        if (!ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+            this.rebuildQueue.clear();
+            this.importantRebuildQueue.clear();
+        }
 
         this.visibleBlockEntities.clear();
 
@@ -405,7 +447,7 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
         RenderDevice device = RenderDevice.INSTANCE;
         CommandList commandList = device.createCommandList();
 
-        this.backend.begin(matrixStack);
+        this.backend.begin(matrixStack, pass);
         this.backend.render(commandList, iterator, new ChunkCameraContext(x, y, z));
         this.backend.end(matrixStack);
 
@@ -431,9 +473,9 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
         while (!this.importantRebuildQueue.isEmpty()) {
             ChunkRenderContainer<T> render = this.importantRebuildQueue.dequeue();
 
-            if (render == null) {
-                continue;
-            }
+
+
+
 
             // Do not allow distant chunks to block rendering
             if (!this.isChunkPrioritized(render)) {

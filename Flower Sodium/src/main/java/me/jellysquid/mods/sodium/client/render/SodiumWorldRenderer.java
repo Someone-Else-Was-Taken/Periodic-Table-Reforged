@@ -27,6 +27,7 @@ import me.jellysquid.mods.sodium.client.world.ChunkStatusListener;
 import me.jellysquid.mods.sodium.client.world.ChunkStatusListenerManager;
 import me.jellysquid.mods.sodium.common.util.ListUtil;
 //import net.minecraft.block.entity.BlockEntity;
+import net.coderbot.iris.shadows.ShadowRenderingState;
 import net.minecraft.client.Minecraft;
 //import net.minecraft.client.MinecraftClient;
 //import net.minecraft.client.network.ClientPlayerEntity;
@@ -164,6 +165,7 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
     public void scheduleTerrainUpdate() {
         // BUG: seems to be called before init
         if (this.chunkRenderManager != null) {
+            this.ensureStateSwapped();
             this.chunkRenderManager.markDirty();
         }
     }
@@ -173,6 +175,22 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
      */
     public boolean isTerrainRenderComplete() {
         return this.chunkRenderManager.isBuildComplete();
+    }
+
+    private boolean wasRenderingShadows = false;
+
+    public void restoreStateIfShadowsWereBeingRendered() {
+        if (wasRenderingShadows && !ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+            this.chunkRenderManager.swapState();
+            wasRenderingShadows = false;
+        }
+    }
+
+    private void ensureStateSwapped() {
+        if (!wasRenderingShadows && ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+            this.chunkRenderManager.swapState();
+            wasRenderingShadows = true;
+        }
     }
 
     /**
@@ -186,6 +204,8 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
         if (this.client.gameSettings.renderDistanceChunks != this.renderDistance) {
             this.reload();
         }
+
+        ensureStateSwapped();
 
         IProfiler profiler = this.client.getProfiler();
         profiler.startSection("camera_setup");
@@ -203,6 +223,11 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
         boolean dirty = pos.x != this.lastCameraX || pos.y != this.lastCameraY || pos.z != this.lastCameraZ ||
                 pitch != this.lastCameraPitch || yaw != this.lastCameraYaw;
 
+        if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+            // TODO: Detect when the sun/moon isn't moving
+            dirty = true;
+        }
+
         if (dirty) {
             this.chunkRenderManager.markDirty();
         }
@@ -215,7 +240,11 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
 
         profiler.endStartSection("chunk_update");
 
-        this.chunkRenderManager.updateChunks();
+
+
+        if (!ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+            this.chunkRenderManager.updateChunks();
+        }
 
         if (!hasForcedFrustum && this.chunkRenderManager.isDirty()) {
             profiler.endStartSection("chunk_graph_rebuild");
@@ -236,6 +265,8 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
      * Performs a render pass for the given {@link RenderType} and draws all visible chunks for it.
      */
     public void drawChunkLayer(RenderType renderLayer, MatrixStack matrixStack, double x, double y, double z) {
+        restoreStateIfShadowsWereBeingRendered();
+
         BlockRenderPass pass = this.renderPassManager.getRenderPassForLayer(renderLayer);
         pass.startDrawing();
 
@@ -275,11 +306,7 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
 
         final ChunkVertexType vertexFormat;
 
-        if (opts.advanced.useCompactVertexFormat) {
-            vertexFormat = DefaultModelVertexFormats.MODEL_VERTEX_HFP;
-        } else {
-            vertexFormat = DefaultModelVertexFormats.MODEL_VERTEX_SFP;
-        }
+        vertexFormat = DefaultModelVertexFormats.MODEL_VERTEX_XHFP;
 
         this.chunkRenderBackend = createChunkRenderBackend(device, opts, vertexFormat);
         this.chunkRenderBackend.createShaders(device);

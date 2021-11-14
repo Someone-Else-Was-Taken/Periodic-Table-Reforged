@@ -94,12 +94,13 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                     buffers.setRenderOffset(pos.getX() - renderOffset.getX(), pos.getY() - renderOffset.getY(), pos.getZ() - renderOffset.getZ());
 
                     if (blockState.getRenderType() == BlockRenderType.MODEL) {
+                        buffers.setMaterialId(blockState, (short) -1);
+
                         for (RenderType layer : RenderType.getBlockRenderTypes()) {
                             if (!RenderTypeLookup.canRenderInLayer(blockState, layer)) {
                                 continue;
                             }
                             ForgeHooksClient.setRenderLayer(layer);
-
                             IModelData modelData;
                             modelData = ModelDataManager.getModelData(Objects.requireNonNull(Minecraft.getInstance().world), pos);
                             if (modelData == null) {
@@ -114,18 +115,24 @@ public class ChunkRenderRebuildTask<T extends ChunkGraphicsState> extends ChunkR
                             if (cache.getBlockRenderer().renderModel(slice, blockState, pos, model, buffers.get(layer), true, seed, modelData)) {
                                 bounds.addBlock(relX, relY, relZ);
                             }
-                        }
 
+                            buffers.resetMaterialId();
+                        }
                     }
 
                     FluidState fluidState = blockState.getFluidState();
 
                     if (!fluidState.isEmpty()) {
+                        // All fluids have a ShadersMod render type of 1, to match behavior of Minecraft 1.7 and earlier.
+                        buffers.setMaterialId(fluidState.getBlockState(), (short) 1);
+
                         RenderType layer = RenderTypeLookup.getRenderType(fluidState);
 
                         if (cache.getFluidRenderer().render(slice, fluidState, pos, buffers.get(layer))) {
                             bounds.addBlock(relX, relY, relZ);
                         }
+
+                        buffers.resetMaterialId();
                     }
 
                     if (blockState.hasTileEntity()) {

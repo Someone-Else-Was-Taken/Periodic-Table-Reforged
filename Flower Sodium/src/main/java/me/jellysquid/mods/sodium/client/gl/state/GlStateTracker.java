@@ -24,10 +24,10 @@ public class GlStateTracker {
     public boolean makeBufferActive(GlBufferTarget target, GlBuffer buffer) {
         return this.makeBufferActive(target, buffer == null ? GlBuffer.NULL_BUFFER_ID : buffer.handle());
     }
-    
+
     private boolean makeBufferActive(GlBufferTarget target, int buffer) {
         int prevBuffer = this.bufferState[target.ordinal()];
-        
+
         if (prevBuffer == UNASSIGNED_HANDLE) {
             this.bufferRestoreState[target.ordinal()] = GL20C.glGetInteger(target.getBindingParameter());
         }

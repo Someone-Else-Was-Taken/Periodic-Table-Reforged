@@ -16,6 +16,7 @@ import me.jellysquid.mods.sodium.client.util.color.ColorABGR;
 import me.jellysquid.mods.sodium.client.util.rand.XoRoShiRoRandom;
 import me.jellysquid.mods.sodium.client.world.biome.BlockColorsExtended;
 import me.jellysquid.mods.sodium.common.util.DirectionUtil;
+import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 //import net.minecraft.client.MinecraftClient;
@@ -52,6 +53,8 @@ public class BlockRenderer {
 
     private final boolean useAmbientOcclusion;
 
+    private boolean separateAo;
+
     public BlockRenderer(Minecraft client, LightPipelineProvider lighters, BiomeColorBlender biomeColorBlender) {
         this.blockColors = (BlockColorsExtended) client.getBlockColors();
         this.biomeColorBlender = biomeColorBlender;
@@ -66,6 +69,8 @@ public class BlockRenderer {
         LightPipeline lighter = this.lighters.getLighter(this.getLightingMode(state, model));
         modelData = model.getModelData(world, pos, state, modelData);
         Vector3d offset = state.getOffset(world, pos);
+
+        this.separateAo = BlockRenderingSettings.INSTANCE.shouldUseSeparateAo();
 
         boolean rendered = false;
 
@@ -144,7 +149,15 @@ public class BlockRenderer {
             float y = src.getY(srcIndex) + (float) offset.getY();
             float z = src.getZ(srcIndex) + (float) offset.getZ();
 
-            int color = ColorABGR.mul(colors != null ? colors[srcIndex] : 0xFFFFFFFF, light.br[srcIndex]);
+            float ao = light.br[srcIndex];
+            int color = colors != null ? colors[srcIndex] : 0xFFFFFFFF;
+
+            if (separateAo) {
+                color &= 0x00FFFFFF;
+                color |= ((int) (ao * 255.0f)) << 24;
+            } else {
+                color = ColorABGR.mul(color, ao);
+            }
 
             float u = src.getTexU(srcIndex);
             float v = src.getTexV(srcIndex);

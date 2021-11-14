@@ -3,6 +3,7 @@ package me.jellysquid.mods.sodium.client.render;
 //import net.minecraft.client.util.math.MatrixStack;
 //import net.minecraft.util.math.Matrix4f;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import net.coderbot.iris.shadows.ShadowRenderingState;
 import net.minecraft.util.math.vector.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 
@@ -31,7 +32,13 @@ public class GameRendererContext {
 
         FloatBuffer bufModelViewProjection = memoryStack.mallocFloat(16);
 
-        Matrix4f matrix = PROJECTION_MATRIX.copy();
+        Matrix4f matrix;
+
+        if (ShadowRenderingState.areShadowsCurrentlyBeingRendered()) {
+            matrix = ShadowRenderingState.getShadowOrthoMatrix();
+        } else {
+            matrix = PROJECTION_MATRIX.copy();
+        }
         matrix.mul(matrices.getMatrix());
         matrix.write(bufModelViewProjection);
 

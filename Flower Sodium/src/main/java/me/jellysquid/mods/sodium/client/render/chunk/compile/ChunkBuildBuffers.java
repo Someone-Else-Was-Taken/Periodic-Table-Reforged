@@ -11,10 +11,14 @@ import me.jellysquid.mods.sodium.client.render.chunk.compile.buffers.ChunkModelV
 import me.jellysquid.mods.sodium.client.render.chunk.data.ChunkMeshData;
 import me.jellysquid.mods.sodium.client.render.chunk.data.ChunkRenderData;
 import me.jellysquid.mods.sodium.client.render.chunk.format.ChunkModelOffset;
+import me.jellysquid.mods.sodium.client.render.chunk.format.MaterialIdHolder;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPass;
 import me.jellysquid.mods.sodium.client.render.chunk.passes.BlockRenderPassManager;
 import me.jellysquid.mods.sodium.client.util.UnsafeUtil;
 //import net.minecraft.client.render.RenderLayer;
+import net.coderbot.iris.block_rendering.BlockRenderingSettings;
+import net.coderbot.iris.shaderpack.IdMap;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderType;
 //import net.minecraft.client.util.GlAllocationUtils;
@@ -34,6 +38,7 @@ public class ChunkBuildBuffers {
 
     private final BlockRenderPassManager renderPassManager;
     private final ChunkModelOffset offset;
+    private final MaterialIdHolder idHolder;
 
     public ChunkBuildBuffers(ChunkVertexType vertexType, BlockRenderPassManager renderPassManager) {
         this.vertexType = vertexType;
@@ -43,6 +48,14 @@ public class ChunkBuildBuffers {
         this.buffersByLayer = new VertexBufferBuilder[BlockRenderPass.COUNT][ModelQuadFacing.COUNT];
 
         this.offset = new ChunkModelOffset();
+
+        IdMap map = BlockRenderingSettings.INSTANCE.getIdMap();
+
+        if (map != null) {
+            this.idHolder = new MaterialIdHolder(map.getBlockProperties());
+        } else {
+            this.idHolder = new MaterialIdHolder();
+        }
 
         for (RenderType layer : RenderType.getBlockRenderTypes()) {
             int passId = this.renderPassManager.getRenderPassId(layer);
@@ -60,7 +73,7 @@ public class ChunkBuildBuffers {
             ChunkModelVertexTransformer[] writers = new ChunkModelVertexTransformer[ModelQuadFacing.COUNT];
 
             for (ModelQuadFacing facing : ModelQuadFacing.VALUES) {
-                writers[facing.ordinal()] = new ChunkModelVertexTransformer(this.vertexType.createBufferWriter(this.buffersByLayer[i][facing.ordinal()], UnsafeUtil.isAvailable()), this.offset);
+                writers[facing.ordinal()] = new ChunkModelVertexTransformer(this.vertexType.createBufferWriter(this.buffersByLayer[i][facing.ordinal()], UnsafeUtil.isAvailable(), idHolder), this.offset);
             }
 
             this.delegates[i] = new BakedChunkModelBuffers(writers, renderData);
@@ -123,5 +136,13 @@ public class ChunkBuildBuffers {
 
     public void setRenderOffset(int x, int y, int z) {
         this.offset.set(x, y, z);
+    }
+
+    public void setMaterialId(BlockState state, short renderType) {
+        this.idHolder.set(state, renderType);
+    }
+
+    public void resetMaterialId() {
+        this.idHolder.reset();
     }
 }

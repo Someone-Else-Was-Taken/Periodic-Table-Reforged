@@ -15,6 +15,7 @@ import me.jellysquid.mods.sodium.client.render.chunk.format.ModelVertexSink;
 import me.jellysquid.mods.sodium.client.util.Norm3b;
 import me.jellysquid.mods.sodium.client.util.color.ColorABGR;
 import me.jellysquid.mods.sodium.common.util.DirectionUtil;
+import net.coderbot.iris.block_rendering.BlockRenderingSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -65,6 +66,8 @@ public class FluidRenderer {
     private final QuadLightData quadLightData = new QuadLightData();
     private final int[] quadColors = new int[4];
 
+    private boolean separateAo;
+
     public FluidRenderer(Minecraft client, LightPipelineProvider lighters, BiomeColorBlender biomeColorBlender) {
 
         int normal = Norm3b.pack(0.0f, 1.0f, 0.0f);
@@ -111,6 +114,8 @@ public class FluidRenderer {
         int posZ = pos.getZ();
 
         Fluid fluid = fluidState.getFluid();
+
+        this.separateAo = BlockRenderingSettings.INSTANCE.shouldUseSeparateAo();
 
         boolean sfUp = this.isFluidExposed(world, posX, posY + 1, posZ, fluid);
         boolean sfDown = this.isFluidExposed(world, posX, posY - 1, posZ, fluid) &&
@@ -366,6 +371,18 @@ public class FluidRenderer {
 
         for (int i = 0; i < 4; i++) {
             this.quadColors[i] = ColorABGR.mul(biomeColors != null ? biomeColors[i] : 0xFFFFFFFF, light.br[i] * brightness);
+
+            float ao = light.br[i] * brightness;
+            int color = biomeColors != null ? biomeColors[i] : 0xFFFFFFFF;
+
+            if (separateAo) {
+                color &= 0x00FFFFFF;
+                color |= ((int) (ao * 255.0f)) << 24;
+            } else {
+                color = ColorABGR.mul(color, ao);
+            }
+
+            this.quadColors[i] = color;
         }
     }
 
