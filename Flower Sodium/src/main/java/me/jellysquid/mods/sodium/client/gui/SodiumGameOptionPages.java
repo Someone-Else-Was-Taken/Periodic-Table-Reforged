@@ -261,7 +261,7 @@ public class SodiumGameOptionPages {
                         .setTooltip("If enabled, basic shadows will be rendered beneath mobs and other entities.")
                         .setControl(TickBoxControl::new)
                         .setBinding((opts, value) -> opts.entityShadows = value, opts -> opts.entityShadows)
-                        .setImpact(OptionImpact.LOW)
+                        .setImpact(OptionImpact.MEDIUM)
                         .build())
                 .add(OptionImpl.createBuilder(boolean.class, sodiumOpts)
                         .setName("Vignette")
