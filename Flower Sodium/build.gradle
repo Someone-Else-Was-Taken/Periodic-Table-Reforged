@@ -25,6 +25,10 @@ println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getPro
 
 repositories {
     mavenLocal()
+    maven {
+        name 'tterrag maven'
+        url 'https://maven.tterrag.com/'
+    }
 }
 minecraft {
     mappings channel: 'snapshot', version: '20210309-1.16.5'
@@ -75,6 +79,8 @@ dependencies {
     // mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
     implementation fg.deobf("someoneelse.pupil:LegacyIris:0.1")
+    implementation fg.deobf("com.jozufozu.flywheel:Flywheel:1.16-0.2.4.52")
+    compileOnly fg.deobf("com.jozufozu.flywheel:Flywheel:1.16-0.2.4.52")
 }
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is
