@@ -31,7 +31,7 @@ Phosphor -> Sulfuric
 
 Hydrogen -> Helium
 
-Iris -> Pupil (Unreleased)
+Iris -> Pupil
 
 ## Iris Release Checklist
 
@@ -43,7 +43,7 @@ Iris -> Pupil (Unreleased)
 6. ~~Twilight Forest + Blue Skies~~ (Doesnt crash, does not render Skybox textures)
 7. ~~Crucial 2~~
 8. ~~BC Reforged~~
-9. BM+
+9. ~~BM+~~
 10. ATM?
 
 ## Contact
