@@ -100,7 +100,7 @@ public class SodiumConfig {
 
     private void applyModOverrides() {
         //Item Mixin Overrides
-        String[] itemMtr = {"quark", "tconstruct", "twilightforest", "codechickenlib"};
+        String[] itemMtr = {"quark", "tconstruct", "codechickenlib"};
 
         for(int i = 0; i < itemMtr.length; i++) {
             if(FMLLoader.getLoadingModList().getModFileById(itemMtr[i]) != null)
