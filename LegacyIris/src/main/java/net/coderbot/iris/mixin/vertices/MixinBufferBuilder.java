@@ -71,6 +71,9 @@ public abstract class MixinBufferBuilder implements IVertexConsumer, BlockSensit
 	private @Nullable
 	VertexFormatElement currentElement;
 
+
+	@Shadow protected abstract void ensureCapacity(int p_181670_1_);
+
 	@Inject(method = "begin", at = @At("HEAD"))
 	private void iris$onBegin(int drawMode, VertexFormat format, CallbackInfo ci) {
 		extending = format == DefaultVertexFormats.BLOCK || format == IrisVertexFormats.TERRAIN;
@@ -107,10 +110,12 @@ public abstract class MixinBufferBuilder implements IVertexConsumer, BlockSensit
 
 	@Inject(method = "endVertex", at = @At("HEAD"))
 	private void iris$beforeNext(CallbackInfo ci) {
+
 		if (!extending) {
 			return;
 		}
 
+		this.ensureCapacity(15);
 		this.putFloat(0, currentBlock);
 		this.putFloat(4, currentRenderType);
 		this.putFloat(8, (short) -1);
@@ -124,6 +129,9 @@ public abstract class MixinBufferBuilder implements IVertexConsumer, BlockSensit
 		this.putFloat(8, 0F);
 		this.putFloat(12, 1F);
 		this.nextElement();
+
+
+
 
 		vertexCount += 1;
 
