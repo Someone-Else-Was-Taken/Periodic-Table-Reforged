@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Arrays;
+
 import static me.jellysquid.mods.sodium.client.util.ModelQuadUtil.*;
 
 @Mixin(BakedQuad.class)
@@ -36,6 +38,7 @@ public class MixinBakedQuad implements ModelQuadView {
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(int[] vertexData, int colorIndex, Direction face, TextureAtlasSprite sprite, boolean shade, CallbackInfo ci) {
         this.cachedFlags = ModelQuadFlags.getQuadFlags((BakedQuad) (Object) this);
+
     }
 
     @Override
@@ -59,7 +62,9 @@ public class MixinBakedQuad implements ModelQuadView {
             return this.vertexData[vertexOffset(idx) + COLOR_INDEX];
         } else
         {
-            return vertexData.length;
+
+            int[] vertexData2 = Arrays.copyOf(vertexData, (vertexOffset(idx) + COLOR_INDEX) * 4);
+            return vertexData2[vertexOffset(idx) + COLOR_INDEX];
         }
 
     }

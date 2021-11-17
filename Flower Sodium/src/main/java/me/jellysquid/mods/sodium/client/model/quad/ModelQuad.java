@@ -13,7 +13,7 @@ import static me.jellysquid.mods.sodium.client.util.ModelQuadUtil.*;
  * for storing quad vertex data.
  */
 public class ModelQuad implements ModelQuadViewMutable {
-    private final int[] data = new int[VERTEX_SIZE * 4];
+    private final int[] data = new int[VERTEX_SIZE * 8];
     private int flags;
 
     private TextureAtlasSprite sprite;
@@ -106,13 +106,7 @@ public class ModelQuad implements ModelQuadViewMutable {
 
     @Override
     public int getColor(int idx) {
-        if(vertexOffset(idx) + COLOR_INDEX < data.length) {
-            return this.data[vertexOffset(idx) + COLOR_INDEX];
-        }
-        else {
-            return data.length;
-        }
-
+        return this.data[vertexOffset(idx) + COLOR_INDEX];
     }
 
     @Override
