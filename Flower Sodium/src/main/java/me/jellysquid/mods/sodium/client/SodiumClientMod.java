@@ -17,8 +17,11 @@ import java.nio.file.Paths;
 
 @Mod("magnesium")
 public class SodiumClientMod {
-
+    public static boolean hasFlywheel;
+    public static boolean hasCCBackport;
     public SodiumClientMod() {
+        hasFlywheel = ModList.get().isLoaded("flywheel");
+        hasCCBackport = ModList.get().isLoaded("cavesandcliffs");
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
     }
 

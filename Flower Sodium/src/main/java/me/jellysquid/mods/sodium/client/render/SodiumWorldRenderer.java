@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.jellysquid.mods.sodium.client.SodiumClientMod;
+import me.jellysquid.mods.sodium.client.compat.FlywheelCompat;
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptions;
 import me.jellysquid.mods.sodium.client.model.vertex.type.ChunkVertexType;
@@ -386,7 +387,7 @@ public class SodiumWorldRenderer implements ChunkStatusListener {
 
     public void onChunkRenderUpdated(int x, int y, int z, ChunkRenderData meshBefore, ChunkRenderData meshAfter) {
         ListUtil.updateList(this.globalBlockEntities, meshBefore.getGlobalBlockEntities(), meshAfter.getGlobalBlockEntities());
-
+        FlywheelCompat.AvoidRender(this.globalBlockEntities);
         this.chunkRenderManager.onChunkRenderUpdates(x, y, z, meshAfter);
     }
 

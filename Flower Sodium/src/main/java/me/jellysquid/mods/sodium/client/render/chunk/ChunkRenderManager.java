@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import me.jellysquid.mods.sodium.client.SodiumClientMod;
+import me.jellysquid.mods.sodium.client.compat.FlywheelCompat;
 import me.jellysquid.mods.sodium.client.gl.compat.LegacyFogHelper;
 import me.jellysquid.mods.sodium.client.gl.device.CommandList;
 import me.jellysquid.mods.sodium.client.gl.device.RenderDevice;
@@ -255,7 +256,9 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
 
         // Always render groups of vertices not belonging to any given face
         int visibleFaces = ChunkFaceFlags.UNASSIGNED;
+        if(!SodiumClientMod.hasCCBackport) {
 
+        }
         if (this.cameraY > bounds.y1) {
             visibleFaces |= ChunkFaceFlags.UP;
         }
@@ -288,6 +291,7 @@ public class ChunkRenderManager<T extends ChunkGraphicsState> implements ChunkSt
 
         if (!blockEntities.isEmpty()) {
             this.visibleBlockEntities.addAll(blockEntities);
+            FlywheelCompat.AvoidRender(this.visibleBlockEntities);
         }
     }
 
