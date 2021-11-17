@@ -15,7 +15,7 @@ apply plugin: 'maven-publish'
 apply plugin: "org.spongepowered.mixin"
 
 
-version = '1.4'
+version = '1.5'
 group = 'someoneelse.magnesium' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'magnesium'
 
@@ -67,11 +67,6 @@ mixin {
     add sourceSets.main, "magnesium.refmap.json"
 }
 
-repositories {
-    flatDir {
-        dirs 'iris'
-    }
-}
 
 dependencies {
 
@@ -79,7 +74,6 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.16.5-36.2.4'
     // mixin
     annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
-    compileOnly "iris:pupil:0.1"
 }
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is
