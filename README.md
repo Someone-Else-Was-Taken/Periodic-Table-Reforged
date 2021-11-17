@@ -4,8 +4,7 @@
 ![GitHub license](https://img.shields.io/github/license/Someone-Else-Was-Taken/Periodic-Table-Reforged.svg)
 ![GitHub issues](https://img.shields.io/github/issues/Someone-Else-Was-Taken/Periodic-Table-Reforged.svg)
 
-This is an Unofficial port of the core CaffeineMC Mods, alongside Iris.
-This is in no way related to the original mod teams, Code credit goes out to each mod's respective developers.
+Old Repository for my ports of the CaffeineMC and Iris Modset. This will stay up until I copy the issues over to the new Repositories.
 
 ---
 
