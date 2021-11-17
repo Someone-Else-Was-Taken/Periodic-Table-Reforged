@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.RenderState;
 //import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.tileentity.TileEntity;
+import com.jozufozu.flywheel.backend.instancing.InstancedRenderRegistry;
 //import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
