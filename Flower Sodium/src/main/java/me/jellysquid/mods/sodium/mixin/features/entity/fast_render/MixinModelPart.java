@@ -32,7 +32,7 @@ public class MixinModelPart {
      * @reason Use optimized vertex writer, avoid allocations, use quick matrix transformations
      */
     @Overwrite
-    private void doRender(MatrixStack.Entry matrices, IVertexBuilder vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+    public void doRender(MatrixStack.Entry matrices, IVertexBuilder vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         Matrix3fExtended normalExt = MatrixUtil.getExtendedMatrix(matrices.getNormal());
         Matrix4fExtended modelExt = MatrixUtil.getExtendedMatrix(matrices.getMatrix());
 
