@@ -1,6 +1,6 @@
 <img src="Legacy%20Sodium/src/main/resources/assets/sodium/icon.png" width="128"><img src="LegacyIris/src/main/resources/assets/iris/icon.png" width="128">
 
-# Periodic Table Reforged
+# 1.16.5镁的汉化
 ![GitHub license](https://img.shields.io/github/license/Someone-Else-Was-Taken/Periodic-Table-Reforged.svg)
 ![GitHub issues](https://img.shields.io/github/issues/Someone-Else-Was-Taken/Periodic-Table-Reforged.svg)
 
